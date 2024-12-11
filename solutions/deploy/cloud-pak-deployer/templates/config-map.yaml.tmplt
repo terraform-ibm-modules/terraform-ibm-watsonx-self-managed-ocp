@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${cloud_pak_deployer_config_map_name}
+  namespace: ${cloud_pak_deployer_namespace_name}
+data:
+  cpd-config.yaml: |
+    ${cloud_pak_deployer_config_map_data}

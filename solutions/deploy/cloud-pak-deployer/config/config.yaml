@@ -1,0 +1,64 @@
+cp4d:
+- cartridges:
+  - license_service:
+      state: disabled
+      threads_per_core: 2
+    name: cp-foundation
+  - name: lite
+  - description: watsonx.ai
+    models:
+    - model_id: google-flan-t5-xxl
+      state: removed
+    - model_id: google-flan-ul2
+      state: removed
+    - model_id: eleutherai-gpt-neox-20b
+      state: removed
+    - model_id: ibm-granite-13b-chat-v1
+      state: removed
+    - model_id: ibm-granite-13b-instruct-v1
+      state: removed
+    - model_id: meta-llama-llama-2-70b-chat
+      state: removed
+    - model_id: ibm-mpt-7b-instruct2
+      state: removed
+    - model_id: bigscience-mt0-xxl
+      state: removed
+    - model_id: bigcode-starcoder
+      state: removed
+    - model_id: ibm-granite-13b-chat-v2
+      state: removed
+    - model_id: meta-llama-llama-3-8b-instruct
+      state: removed
+    name: watsonx_ai
+    state: removed
+  - description: Watson Assistant
+    name: watson-assistant
+    size: small
+    state: removed
+  - description: Watson Discovery
+    name: watson-discovery
+    state: removed
+  - description: watsonx.data
+    name: watsonx_data
+    state: removed
+  cp4d_version: 5.0.2
+  openshift_cluster_name: roks-test-workload-cluster
+  project: cpd
+  sequential_install: True
+global_config:
+  cloud_platform: existing-ocp
+  confirm_destroy: True
+  environment_name: cpdenv
+openshift:
+- cluster_name: roks-test-workload-cluster
+  domain_name: roks-test-workload-cluster
+  gpu:
+    install: False
+  name: roks-test-workload-cluster
+  ocp_version: 4.16
+  openshift_ai:
+    channel: fast
+    install: False
+  openshift_storage:
+  - storage_name: auto-storage
+    storage_type: auto
