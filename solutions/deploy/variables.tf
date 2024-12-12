@@ -20,15 +20,15 @@ variable "region" {
 }
 
 variable "cloud_pak_deployer_image" {
-  default     = null
   description = "Cloud Pak Deployer image location. If not defined, it will build the image via code engine"
   type        = string
+  default     = null
 }
 
 variable "cloud_pak_deployer_release" {
-  default     = "v3.0.3"
   description = "Release of Cloud Pak Deployer version to use. View releases at: https://github.com/IBM/cloud-pak-deployer/releases."
   type        = string
+  default     = "v3.1.1"
 }
 
 variable "cloud_pak_deployer_secret" {
@@ -112,7 +112,6 @@ variable "cpd_entitlement_key" {
 }
 
 variable "cpd_version" {
-  default     = "5.0.2"
   description = "Cloud Pak for Data version to install.  Only version 5.x.x is supported"
   type        = string
 
@@ -120,37 +119,45 @@ variable "cpd_version" {
     error_message = "Cloud pak for data major version 5 is supported."
     condition     = split(".", var.cpd_version)[0] == "5"
   }
+
+  default = "5.0.3"
 }
 
 #  Only used in the watsonx.ai offering flavour
 variable "watsonx_ai_install" {
-  default     = false
   description = "Determine whether the watsonx.ai cartridge for the deployer will be installed"
   type        = bool
+  default     = false
 }
 
 #  Only used in the watsonx.ai offering flavour
 variable "watsonx_ai_models" {
-  default     = ["ibm-granite-13b-instruct-v2"]
   description = "List of watsonx.ai models to install.  Information on the foundation models including pre-reqs can be found here - https://www.ibm.com/docs/en/cloud-paks/cp-data/5.0.x?topic=install-foundation-models.  Use the ModelID as input"
   type        = list(string)
+  default     = ["ibm-granite-13b-instruct-v2"]
 }
 
 #  Only used in the watsonx.data offering flavour
 variable "watsonx_data_install" {
-  default     = false
   description = "Determine whether the watsonx.data cartridge for the deployer will be installed"
   type        = bool
+  default     = false
 }
 
 variable "watson_discovery_install" {
-  default     = false
   description = "If watsonx.ai is being installed, also install watson discovery"
   type        = bool
+  default     = false
 }
 
 variable "watson_assistant_install" {
-  default     = false
   description = "If watsonx.ai is being installed, also install watson assistant"
   type        = bool
+  default     = false
+}
+
+variable "wait_for_cpd_job_completion" {
+  description = "Wait for the cloud-pak-deployer to complete before continuing"
+  type        = bool
+  default     = true
 }

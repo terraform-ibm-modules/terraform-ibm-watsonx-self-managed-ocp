@@ -54,3 +54,9 @@ variable "schematics_workspace" {
   description = "Object containing general information on the IBM Cloud Schematics Workspace this automation may be running on"
   type        = any
 }
+
+variable "wait_for_cpd_job_completion" {
+  description = "Wait for the cloud-pak-deployer to complete before continuing"
+  type        = bool
+  default     = true
+}

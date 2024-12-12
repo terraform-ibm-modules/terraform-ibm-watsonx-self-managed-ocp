@@ -71,15 +71,17 @@ module "cloud_pak_deployer" {
     }
   )
   cloud_pak_deployer_image = var.cloud_pak_deployer_image != null ? var.cloud_pak_deployer_image : module.build_cpd_image[0].container_registry_output_image
+
   cloud_pak_deployer_secret = var.cloud_pak_deployer_secret != null ? var.cloud_pak_deployer_secret : (var.cloud_pak_deployer_image == null ?
   { username : "iamapikey", password : var.ibmcloud_api_key, server : module.build_cpd_image[0].container_registry_server } : null)
 
-  cluster_name         = var.cluster_name
-  cpd_accept_license   = var.cpd_accept_license
-  cpd_admin_password   = var.cpd_admin_password
-  cpd_entitlement_key  = var.cpd_entitlement_key
-  kube_config_path     = local.kube_config_path
-  schematics_workspace = local.schematics_workspace
+  cluster_name                = var.cluster_name
+  cpd_accept_license          = var.cpd_accept_license
+  cpd_admin_password          = var.cpd_admin_password
+  cpd_entitlement_key         = var.cpd_entitlement_key
+  kube_config_path            = local.kube_config_path
+  schematics_workspace        = local.schematics_workspace
+  wait_for_cpd_job_completion = var.wait_for_cpd_job_completion
 }
 
 # Cloud Pak Deployer configuration file local variable(s) only

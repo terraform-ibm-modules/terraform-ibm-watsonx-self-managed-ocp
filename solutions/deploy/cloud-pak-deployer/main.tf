@@ -20,24 +20,17 @@ locals {
   oc = "oc --kubeconfig ${var.kube_config_path}"
   paths = {
     definitions = "${var.schematics_workspace.persistent_dir_exists ? "${var.schematics_workspace.persistent_dir_path}/" : ""}${path.module}/definitions"
-    scripts     = "${path.module}/scripts"
     templates   = "${path.module}/templates"
   }
   yaml_files = {
-    cluster_role_binding    = "cluster-role-binding.yaml.tmplt"
-    config_map              = "config-map.yaml.tmplt"
-    job_uninstall_cpd       = "job-uninstall-cpd.yaml.tmplt"
-    namespace               = "namespace.yaml.tmplt"
-    persistent_volume_claim = "persistent-volume-claim.yaml.tmplt"
-    secret                  = "secret.yaml.tmplt" # pragma: allowlist secret
-    service_account         = "service-account.yaml.tmplt"
+    job_uninstall_cpd = "job-uninstall-cpd.yaml.tftpl"
   }
+  image_secret_map = var.cloud_pak_deployer_secret != null ? { name = "cpd-docker-cfg" } : {}
 }
 
 # Generate configuration file
 # https://ibm.github.io/cloud-pak-deployer/50-advanced/run-on-openshift/build-image-and-run-deployer-on-openshift/#create-configuration
 resource "local_file" "config" {
-  # content  = replace(yamlencode(var.cloud_pak_deployer_config), "/((?:^|\n)[\\s-]*)\"([\\w-]+)\":/", "$1$2:")
   content  = replace(yamlencode(var.cloud_pak_deployer_config), "\"", "")
   filename = local.cloud_pak_deployer.config_path
 }
@@ -45,57 +38,51 @@ resource "local_file" "config" {
 resource "local_file" "deployer_definitions" {
   for_each = local.yaml_files
   content = templatefile("${local.paths.templates}/${each.value}", {
-    cloud_pak_deployer_cluster_role_binding_name    = local.cloud_pak_deployer.cluster_role_binding_name
-    cloud_pak_deployer_cluster_role_name            = local.cloud_pak_deployer.cluster_role_name
-    cloud_pak_deployer_config_map_data              = indent(4, local_file.config.content)
     cloud_pak_deployer_config_map_name              = local.cloud_pak_deployer.config_map_name
     cloud_pak_deployer_image                        = local.cloud_pak_deployer.image
     cloud_pak_deployer_job_label                    = local.cloud_pak_deployer.job_label
     cloud_pak_deployer_job_name                     = local.cloud_pak_deployer.job_name
     cloud_pak_deployer_namespace_name               = local.cloud_pak_deployer.namespace_name
     cloud_pak_deployer_persistent_volume_claim_name = local.cloud_pak_deployer.persistent_volume_claim_name
-    cloud_pak_deployer_script_accept_license_flag   = local.cloud_pak_deployer.script_accept_license_flag
     cloud_pak_deployer_service_account_name         = local.cloud_pak_deployer.service_account_name
-    cloud_pak_deployer_vault_secret_name_admin      = "cp4d_admin_cpd_${replace(var.cluster_name, "-", "_")}"
-    cpd_admin_password                              = var.cpd_admin_password
-    cpd_entitlement_key                             = base64encode(var.cpd_entitlement_key)
-    cpd_entitlement_key_secret_key_name             = local.cpd.entitlement_key_secret_key_name
-    cpd_entitlement_key_secret_name                 = local.cpd.entitlement_key_secret_name
   })
   filename = "${local.paths.definitions}/${each.value}"
 }
 
-resource "kubernetes_manifest" "cloud_pak_deployer_namespace" {
-  manifest = yamldecode(local_file.deployer_definitions["namespace"].content)
-  wait {
-    fields = {
-      "status.phase" = "Active"
-    }
-  }
-  lifecycle {
-    replace_triggered_by = [local_file.deployer_definitions["namespace"]]
+resource "kubernetes_namespace_v1" "cloud_pak_deployer_namespace" {
+  metadata {
+    name = local.cloud_pak_deployer.namespace_name
   }
 }
 
-resource "kubernetes_manifest" "cpd_entitlement_key_secret" {
-  depends_on = [kubernetes_manifest.cloud_pak_deployer_namespace]
-  manifest   = yamldecode(local_file.deployer_definitions["secret"].content)
-  lifecycle {
-    replace_triggered_by = [local_file.deployer_definitions["secret"]]
+
+resource "kubernetes_secret" "cpd_entitlement_key_secret" {
+  depends_on = [kubernetes_namespace_v1.cloud_pak_deployer_namespace]
+
+  metadata {
+    name      = local.cpd.entitlement_key_secret_name
+    namespace = local.cloud_pak_deployer.namespace_name
+  }
+
+  data = {
+    (local.cpd.entitlement_key_secret_key_name) = var.cpd_entitlement_key
   }
 }
 
-resource "kubernetes_manifest" "cloud_pak_deployer_service_account" {
-  depends_on = [kubernetes_manifest.cpd_entitlement_key_secret]
-  manifest   = yamldecode(local_file.deployer_definitions["service_account"].content)
-  lifecycle {
-    replace_triggered_by = [local_file.deployer_definitions["service_account"]]
+resource "kubernetes_service_account_v1" "cloud_pak_deployer_service_account" {
+  depends_on = [kubernetes_namespace_v1.cloud_pak_deployer_namespace]
+
+  metadata {
+    name      = local.cloud_pak_deployer.service_account_name
+    namespace = local.cloud_pak_deployer.namespace_name
   }
 }
+
 
 # TODO: Replace with kubernetes_manifest resource
 resource "null_resource" "cloud_pak_deployer_security_context_constraint" {
-  depends_on = [kubernetes_manifest.cloud_pak_deployer_service_account]
+  depends_on = [kubernetes_service_account_v1.cloud_pak_deployer_service_account]
+
   triggers = {
     namespace_name                   = local.cloud_pak_deployer.namespace_name
     security_context_constraint_name = local.cloud_pak_deployer.security_context_constraint_name
@@ -113,16 +100,30 @@ resource "null_resource" "cloud_pak_deployer_security_context_constraint" {
   }
 }
 
-resource "kubernetes_manifest" "cloud_pak_deployer_cluster_role_binding" {
-  depends_on = [null_resource.cloud_pak_deployer_security_context_constraint]
-  manifest   = yamldecode(local_file.deployer_definitions["cluster_role_binding"].content)
-  lifecycle {
-    replace_triggered_by = [local_file.deployer_definitions["cluster_role_binding"]]
+resource "kubernetes_cluster_role_binding_v1" "cloud_pak_deployer_cluster_role_binding" {
+  depends_on = [
+    kubernetes_namespace_v1.cloud_pak_deployer_namespace,
+    kubernetes_service_account_v1.cloud_pak_deployer_service_account
+  ]
+
+  metadata {
+    name = local.cloud_pak_deployer.cluster_role_binding_name
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = local.cloud_pak_deployer.cluster_role_name
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = local.cloud_pak_deployer.service_account_name
+    namespace = local.cloud_pak_deployer.namespace_name
   }
 }
 
 resource "kubernetes_secret" "docker_cfg_secret" {
-  count = var.cloud_pak_deployer_secret != null ? 1 : 0
+  count      = var.cloud_pak_deployer_secret != null ? 1 : 0
+  depends_on = [kubernetes_namespace_v1.cloud_pak_deployer_namespace]
 
   metadata {
     name      = "cpd-docker-cfg"
@@ -143,46 +144,50 @@ resource "kubernetes_secret" "docker_cfg_secret" {
       }
     })
   }
-
-  depends_on = [kubernetes_manifest.cloud_pak_deployer_namespace]
 }
 
-resource "kubernetes_manifest" "cloud_pak_deployer_configmap" {
-  depends_on = [kubernetes_manifest.cloud_pak_deployer_cluster_role_binding]
-  manifest   = yamldecode(local_file.deployer_definitions["config_map"].content)
-  lifecycle {
-    replace_triggered_by = [local_file.deployer_definitions["config_map"]]
+resource "kubernetes_config_map_v1" "cloud_pak_deployer_configmap" {
+  depends_on = [kubernetes_namespace_v1.cloud_pak_deployer_namespace]
+
+  metadata {
+    name      = local.cloud_pak_deployer.config_map_name
+    namespace = local.cloud_pak_deployer.namespace_name
+  }
+
+  data = {
+    "cpd-config.yaml" = local_file.config.content
   }
 }
 
-resource "kubernetes_manifest" "cloud_pak_deployer_persistent_volume_claim" {
-  depends_on = [kubernetes_manifest.cloud_pak_deployer_configmap]
-  manifest   = yamldecode(local_file.deployer_definitions["persistent_volume_claim"].content)
-  wait {
-    fields = {
-      "status.phase" = "Bound"
+resource "kubernetes_persistent_volume_claim_v1" "cloud_pak_deployer_persistent_volume_claim" {
+  depends_on = [kubernetes_namespace_v1.cloud_pak_deployer_namespace]
+
+  metadata {
+    name      = local.cloud_pak_deployer.persistent_volume_claim_name
+    namespace = local.cloud_pak_deployer.namespace_name
+  }
+  spec {
+    resources {
+      requests = {
+        storage = "10Gi"
+      }
     }
+    access_modes = ["ReadWriteOnce"]
   }
-  timeouts {
-    create = "15m"
-    delete = "15m"
-  }
-  lifecycle {
-    replace_triggered_by = [local_file.deployer_definitions["persistent_volume_claim"]]
-  }
+
+  wait_until_bound = true
 }
 
 resource "kubernetes_job_v1" "cloud_pak_deployer_job" {
   depends_on = [
-    kubernetes_manifest.cloud_pak_deployer_cluster_role_binding,
-    kubernetes_manifest.cloud_pak_deployer_configmap,
-    kubernetes_manifest.cloud_pak_deployer_namespace,
-    kubernetes_manifest.cloud_pak_deployer_persistent_volume_claim,
-    kubernetes_manifest.cloud_pak_deployer_persistent_volume_claim,
-    kubernetes_manifest.cloud_pak_deployer_service_account,
-    kubernetes_manifest.cpd_entitlement_key_secret,
+    kubernetes_namespace_v1.cloud_pak_deployer_namespace,
+    kubernetes_secret.cpd_entitlement_key_secret,
+    kubernetes_service_account_v1.cloud_pak_deployer_service_account,
     null_resource.cloud_pak_deployer_security_context_constraint,
-    kubernetes_secret.docker_cfg_secret
+    kubernetes_cluster_role_binding_v1.cloud_pak_deployer_cluster_role_binding,
+    kubernetes_secret.docker_cfg_secret,
+    kubernetes_config_map_v1.cloud_pak_deployer_configmap,
+    kubernetes_persistent_volume_claim_v1.cloud_pak_deployer_persistent_volume_claim
   ]
 
   metadata {
@@ -204,9 +209,14 @@ resource "kubernetes_job_v1" "cloud_pak_deployer_job" {
         }
       }
       spec {
-        image_pull_secrets {
-          name = var.cloud_pak_deployer_secret != null ? "cpd-docker-cfg" : ""
+        dynamic "image_pull_secrets" {
+          for_each = local.image_secret_map
+
+          content {
+            name = image_pull_secrets.value
+          }
         }
+
         container {
           name                       = local.cloud_pak_deployer.job_name
           image                      = local.cloud_pak_deployer.image
@@ -239,7 +249,7 @@ resource "kubernetes_job_v1" "cloud_pak_deployer_job" {
             mount_path = "/Data/cpd-status"
           }
           command = ["/bin/sh", "-xc"]
-          args    = ["/cloud-pak-deployer/cp-deploy.sh vault set -vs cp4d_admin_cpd_${replace(var.cluster_name, "-", "_")} -vsv ${var.cpd_admin_password} && /cloud-pak-deployer/cp-deploy.sh env apply --skip-cli-downloads -vvvv ${local.cloud_pak_deployer.script_accept_license_flag}"]
+          args    = ["/cloud-pak-deployer/cp-deploy.sh vault set -vs cp4d_admin_cpd_${replace(var.cluster_name, "-", "_")} -vsv ${var.cpd_admin_password} && /cloud-pak-deployer/cp-deploy.sh env apply -vvvv ${local.cloud_pak_deployer.script_accept_license_flag}"]
         }
         restart_policy = "Never"
         security_context {
@@ -261,23 +271,21 @@ resource "kubernetes_job_v1" "cloud_pak_deployer_job" {
       }
     }
   }
-  wait_for_completion = true
+  wait_for_completion = var.wait_for_cpd_job_completion
   timeouts {
     create = "5h"
   }
   lifecycle {
     replace_triggered_by = [
       local_file.config,
-      local_file.deployer_definitions["config_map"],
-      local_file.deployer_definitions["namespace"],
-      local_file.deployer_definitions["persistent_volume_claim"],
-      local_file.deployer_definitions["secret"],
-      local_file.deployer_definitions["service_account"]
+      kubernetes_config_map_v1.cloud_pak_deployer_configmap
     ]
   }
 }
 
 resource "terraform_data" "uninstall_cpd" {
+  depends_on = [kubernetes_job_v1.cloud_pak_deployer_job]
+
   triggers_replace = {
     job_name                   = yamldecode(local_file.deployer_definitions["job_uninstall_cpd"].content).metadata.name
     job_uninstall_cpd_filename = local_file.deployer_definitions["job_uninstall_cpd"].filename
@@ -298,27 +306,34 @@ resource "terraform_data" "uninstall_cpd" {
       #!/bin/bash
 
       ${self.input.oc} create -f ${self.input.job_uninstall_cpd_filename}
-      if [[ $? -ne 0 ]]; then echo "Unable to create job ${self.input.job_name}; exiting..." && exit 1; fi
+      if [ $? -ne 0 ]; then echo "Unable to create job ${self.input.job_name}; exiting..." && exit 1; fi
 
-      timeout_seconds=900 # 15 minutes
+      timeout_seconds=1800 # 30 minutes
       sleep_seconds=5
       number_of_tries=$((timeout_seconds / sleep_seconds))
       complete=false
       failed=false
 
-      for ((i = 1; i <= $number_of_tries; i++)); do
+      i=0
+      while [ $i -lt $number_of_tries ]; do
 
-        echo "Waiting for job... ($${i}/$${number_of_tries})"
+        echo "Running job ... $i"
+        ${self.input.oc} get jobs -n ${self.input.namespace_name}
 
         ${self.input.oc} wait --for=condition=complete job ${self.input.job_name} -n ${self.input.namespace_name} --timeout=0 2>/dev/null
-        if [[ $? -eq 0 ]]; then complete=true && break; fi
+        if [ $? -eq 0 ]; then complete=true && break; fi
 
         ${self.input.oc} wait --for=condition=failed job ${self.input.job_name} -n ${self.input.namespace_name} --timeout=0 2>/dev/null
-        if [[ $? -eq 0 ]]; then failed=true && break; fi
+        if [ $? -eq 0 ]; then failed=true && break; fi
+
+        i=`expr $i + 1`
 
         sleep $sleep_seconds
 
       done
+
+      ${self.input.oc} get pods -n ${self.input.namespace_name}
+      ${self.input.oc} describe pods -n ${self.input.namespace_name}
 
       if $failed; then
           echo "Job ${self.input.job_name} failed"
@@ -326,7 +341,7 @@ resource "terraform_data" "uninstall_cpd" {
         elif $complete; then
           echo "Job ${self.input.job_name} completed successfully"
           ${self.input.oc} delete -f ${self.input.job_uninstall_cpd_filename}
-          if [[ $? -ne 0 ]]; then echo "Unable to delete job ${self.input.job_name}; exiting..." && exit 1; fi
+          if [ $? -ne 0 ]; then echo "Unable to delete job ${self.input.job_name}; exiting..." && exit 1; fi
           exit 0
       fi
     EOF

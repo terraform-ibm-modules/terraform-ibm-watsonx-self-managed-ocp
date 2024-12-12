@@ -25,5 +25,30 @@ locals {
       }
     ]
   }
-  watsonx_ai_models_available = ["google-flan-t5-xxl", "google-flan-ul2", "eleutherai-gpt-neox-20b", "ibm-granite-13b-chat-v1", "ibm-granite-13b-instruct-v1", "meta-llama-llama-2-70b-chat", "ibm-mpt-7b-instruct2", "bigscience-mt0-xxl", "bigcode-starcoder", "ibm-granite-13b-chat-v2", "meta-llama-llama-3-8b-instruct"]
+  watsonx_ai_models_available = [
+    "allam-1-13b-instruct",
+    "codellama-codellama-34b-instruct-hf",
+    "elyza-japanese-llama-2-7b-instruct",
+    "google-flan-t5-xl", "google-flan-t5-xxl",
+    "google-flan-ul2",
+    "ibm-granite-7b-lab",
+    "ibm-granite-8b-japanese",
+    "ibm-granite-13b-chat-v2",
+    "ibm-granite-13b-instruct-v2",
+    "ibm-granite-20b-multilingual",
+    "granite-3b-code-instruct",
+    "granite-8b-code-instruct",
+    "granite-20b-code-instruct",
+    "granite-34b-code-instruct",
+    "core42-jais-13b-chat",
+    "meta-llama-llama-2-13b-chat",
+    "mncai-llama-2-13b-dpo-v7",
+    "llama-3-1-8b-instruct",
+    "llama-3-1-70b-instruct",
+    "llama-3-405b-instruct",
+    "meta-llama-llama-3-8b-instruct",
+    "meta-llama-llama-3-70b-instruct",
+    "ibm-mistralai-merlinite-7b",
+    "bigscience-mt0-xxl"
+  ]
 }
