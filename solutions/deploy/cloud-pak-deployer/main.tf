@@ -332,7 +332,6 @@ resource "terraform_data" "uninstall_cpd" {
 
       done
 
-      ${self.input.oc} get pods -n ${self.input.namespace_name}
       ${self.input.oc} describe pods -n ${self.input.namespace_name}
 
       if $failed; then
