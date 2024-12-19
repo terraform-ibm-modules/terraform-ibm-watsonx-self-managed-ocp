@@ -20,7 +20,7 @@ For information, see "Module names and descriptions" at
 https://terraform-ibm-modules.github.io/documentation/#/implementation-guidelines?id=module-names-and-descriptions
 -->
 
-Install cloud pak for data onto an existing Red Hat OpenShift cluster.
+Install cloud pak fo data (WatsonX) onto an existing Red Hat OpenShift cluster.
 
 
 <!-- The following content is automatically populated by the pre-commit hook -->
