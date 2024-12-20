@@ -34,6 +34,11 @@ Install IBM Cloud Pak for Data and its services onto an existing Red Hat OpenShi
   - [terraform-ibm-cloudpak-data](#terraform-ibm-cloudpak-data)
     - [Usage](#usage)
     - [Required access policies](#required-access-policies)
+    - [Requirements](#requirements)
+    - [Modules](#modules)
+    - [Resources](#resources)
+    - [Inputs](#inputs)
+    - [Outputs](#outputs)
   - [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 
