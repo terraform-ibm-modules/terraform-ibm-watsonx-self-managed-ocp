@@ -29,9 +29,12 @@ Install IBM Cloud Pak for Data and its services onto an existing Red Hat OpenShi
 <!-- The following content is automatically populated by the pre-commit hook -->
 <!-- BEGIN OVERVIEW HOOK -->
 ## Overview
-* [terraform-ibm-cloudpak-data](#terraform-ibm-cloudpak-data)
-* [Examples](./examples/basic)
-* [Contributing](#contributing)
+- [Terraform modules template project](#terraform-modules-template-project)
+  - [Overview](#overview)
+  - [terraform-ibm-cloudpak-data](#terraform-ibm-cloudpak-data)
+    - [Usage](#usage)
+    - [Required access policies](#required-access-policies)
+  - [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 
 
