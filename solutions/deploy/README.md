@@ -1,5 +1,5 @@
 <!-- Update this title with a descriptive name. Use sentence case. -->
-# Terraform modules template project
+# IBM Cloud Pak for Data module
 
 <!--
 Update status and "latest release" badges:
@@ -25,21 +25,11 @@ Install IBM Cloud Pak for Data and its services onto an existing Red Hat OpenShi
 - Watson Assistant
 - Watson Discovery
 
-
 <!-- The following content is automatically populated by the pre-commit hook -->
 <!-- BEGIN OVERVIEW HOOK -->
 ## Overview
-- [Terraform modules template project](#terraform-modules-template-project)
-  - [Overview](#overview)
-  - [terraform-ibm-cloudpak-data](#terraform-ibm-cloudpak-data)
-    - [Usage](#usage)
-    - [Required access policies](#required-access-policies)
-    - [Requirements](#requirements)
-    - [Modules](#modules)
-    - [Resources](#resources)
-    - [Inputs](#inputs)
-    - [Outputs](#outputs)
-  - [Contributing](#contributing)
+* [terraform-ibm-cloudpak-data](#terraform-ibm-cloudpak-data)
+* [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 
 
@@ -88,7 +78,6 @@ To view all available service permissions, you can go in the
 console at Manage > Access (IAM) > Access groups and click into an existing group
 (or create a new one) and in the 'Access' tab click 'Assign access'.
 -->
-
 
 You need the following permissions to run this module:
 
