@@ -17,6 +17,8 @@ locals {
     eu-gb    = "private.uk.icr.io"
     us-south = "private.us.icr.io"
   }
+
+  resource_group_id = var.code_engine_project_id != null ? data.ibm_code_engine_project.code_engine_project[0].resource_group_id : module.resource_group[0].resource_group_id
 }
 
 ##############################################################################
@@ -29,7 +31,13 @@ resource "random_string" "random" {
   special = false
 }
 
+data "ibm_code_engine_project" "code_engine_project" {
+  count      = var.code_engine_project_id != null ? 1 : 0
+  project_id = var.code_engine_project_id
+}
+
 module "resource_group" {
+  count   = var.code_engine_project_id == null ? 1 : 0
   source  = "terraform-ibm-modules/resource-group/ibm"
   version = "1.1.6"
 
@@ -42,66 +50,58 @@ module "resource_group" {
 ##############################################################################
 resource "ibm_cr_namespace" "cr_namespace" {
   name              = local.container_registry_namespace
-  resource_group_id = module.resource_group.resource_group_id
+  resource_group_id = local.resource_group_id
 }
 
 ##############################################################################
 # Code engine resources
 ##############################################################################
-resource "ibm_code_engine_project" "ce_project" {
-  name              = local.code_engine_project_name
-  resource_group_id = module.resource_group.resource_group_id
-}
-
-resource "ibm_code_engine_secret" "registry_secret" {
-  project_id = ibm_code_engine_project.ce_project.id
-  name       = "registry-secret"
-  format     = "registry"
-
-  data = {
-    password = var.ibmcloud_api_key
-    server   = local.container_registry_server
-    username = "iamapikey"
+module "code_engine" {
+  source              = "terraform-ibm-modules/code-engine/ibm"
+  version             = "2.1.5"
+  project_name        = var.code_engine_project_id == null ? local.code_engine_project_name : null
+  existing_project_id = var.code_engine_project_id
+  resource_group_id   = local.resource_group_id
+  secrets = {
+    "registry-secret" = {
+      format = "registry"
+      data = {
+        "password" : var.ibmcloud_api_key,
+        "server" : local.container_registry_server,
+        "username" : "iamapikey"
+      }
+    }
   }
 }
 
-resource "ibm_code_engine_build" "code_engine_build_instance" {
-  project_id      = ibm_code_engine_project.ce_project.project_id
+module "code_engine_build" {
+  source  = "terraform-ibm-modules/code-engine/ibm//modules/build"
+  version = "2.1.5"
+
   name            = "cpd-build"
+  project_id      = module.code_engine.project_id
   output_image    = local.container_registry_output_image
-  output_secret   = ibm_code_engine_secret.registry_secret.name
-  source_url      = "https://github.com/argeiger/cpd-test"
+  output_secret   = "registry-secret" # pragma: allowlist secret
+  source_url      = "https://github.com/IBM/cloud-pak-deployer"
   source_revision = var.cloud_pak_deployer_release
   strategy_type   = "dockerfile"
+
+  depends_on = [module.code_engine]
 }
 
 resource "restapi_object" "buildrun" {
-  path = "/v2/projects/${ibm_code_engine_project.ce_project.project_id}/build_runs"
+  path = "/v2/projects/${module.code_engine.project_id}/build_runs"
   data = jsonencode(
     {
-      build_name = ibm_code_engine_build.code_engine_build_instance.name
-      timeout    = 3600
+      build_name = module.code_engine_build.name
     }
   )
-  id_attribute = "name"
 }
 
 resource "time_sleep" "wait_for_build" {
-  create_duration = "2m"
+  create_duration = "10m"
 
   depends_on = [
     restapi_object.buildrun
   ]
-}
-
-resource "restapi_object" "buildstatus" {
-  path = "/v2/projects/${ibm_code_engine_project.ce_project.project_id}/build_runs"
-  data = jsonencode(
-    {
-      build_name = ibm_code_engine_build.code_engine_build_instance.name
-    }
-  )
-  id_attribute = "name"
-
-  depends_on = [time_sleep.wait_for_build]
 }

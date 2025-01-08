@@ -43,6 +43,12 @@ variable "code_engine_project_name" {
   default = null
 }
 
+variable "code_engine_project_id" {
+  description = "If you want to use an existing project, you can pass the code engine project id vs a new project being created."
+  type        = string
+  default     = null
+}
+
 variable "cloud_pak_deployer_release" {
   description = "The release of cloud pak deployer to build the image off of"
   type        = string

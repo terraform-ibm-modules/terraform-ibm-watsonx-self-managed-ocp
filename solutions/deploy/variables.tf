@@ -19,6 +19,30 @@ variable "region" {
   type        = string
 }
 
+variable "resource_group" {
+  description = "Resource group to provision services within.  If not defined, a resource group called {prefix}-cpd will be created"
+  type        = string
+  default     = null
+}
+
+variable "resource_group_exists" {
+  description = "Resource group exists or not within the account."
+  type        = bool
+  default     = false
+}
+
+variable "code_engine_project_name" {
+  description = "If the variable cloud_pak_deployer_image is null, it will build the image with code engine and store it within a private icr registry.  Provide a name if you want to set the name.  If not defined, default will be {prefix}-cpd-{random-suffix}"
+  type        = string
+  default     = null
+}
+
+variable "code_engine_project_id" {
+  description = "If you want to use an existing project, you can pass the code engine project id and the cloud pak deployer build will be built within the existing project vs a new one being created."
+  type        = string
+  default     = null
+}
+
 variable "cloud_pak_deployer_image" {
   description = "Cloud Pak Deployer image location. If not defined, it will build the image via code engine"
   type        = string
@@ -28,7 +52,7 @@ variable "cloud_pak_deployer_image" {
 variable "cloud_pak_deployer_release" {
   description = "Release of Cloud Pak Deployer version to use. View releases at: https://github.com/IBM/cloud-pak-deployer/releases."
   type        = string
-  default     = "v3.1.1"
+  default     = "v3.1.2"
 }
 
 variable "cloud_pak_deployer_secret" {

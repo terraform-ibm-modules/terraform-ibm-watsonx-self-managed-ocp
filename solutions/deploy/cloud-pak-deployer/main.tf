@@ -45,6 +45,7 @@ resource "local_file" "deployer_definitions" {
     cloud_pak_deployer_namespace_name               = local.cloud_pak_deployer.namespace_name
     cloud_pak_deployer_persistent_volume_claim_name = local.cloud_pak_deployer.persistent_volume_claim_name
     cloud_pak_deployer_service_account_name         = local.cloud_pak_deployer.service_account_name
+    cloud_pak_deployer_image_secret                 = local.image_secret_map == null || local.image_secret_map == {} ? "" : join(",", [for key, value in local.image_secret_map : "- ${key}: ${value}"])
   })
   filename = "${local.paths.definitions}/${each.value}"
 }
@@ -57,7 +58,9 @@ resource "kubernetes_namespace_v1" "cloud_pak_deployer_namespace" {
 
 
 resource "kubernetes_secret" "cpd_entitlement_key_secret" {
-  depends_on = [kubernetes_namespace_v1.cloud_pak_deployer_namespace]
+  depends_on = [
+    kubernetes_namespace_v1.cloud_pak_deployer_namespace
+  ]
 
   metadata {
     name      = local.cpd.entitlement_key_secret_name
@@ -70,7 +73,9 @@ resource "kubernetes_secret" "cpd_entitlement_key_secret" {
 }
 
 resource "kubernetes_service_account_v1" "cloud_pak_deployer_service_account" {
-  depends_on = [kubernetes_namespace_v1.cloud_pak_deployer_namespace]
+  depends_on = [
+    kubernetes_namespace_v1.cloud_pak_deployer_namespace
+  ]
 
   metadata {
     name      = local.cloud_pak_deployer.service_account_name
@@ -78,10 +83,10 @@ resource "kubernetes_service_account_v1" "cloud_pak_deployer_service_account" {
   }
 }
 
-
-# TODO: Replace with kubernetes_manifest resource
 resource "null_resource" "cloud_pak_deployer_security_context_constraint" {
-  depends_on = [kubernetes_service_account_v1.cloud_pak_deployer_service_account]
+  depends_on = [
+    kubernetes_service_account_v1.cloud_pak_deployer_service_account
+  ]
 
   triggers = {
     namespace_name                   = local.cloud_pak_deployer.namespace_name
@@ -91,12 +96,10 @@ resource "null_resource" "cloud_pak_deployer_security_context_constraint" {
   }
   provisioner "local-exec" {
     command = "${self.triggers.oc} adm policy add-scc-to-user ${self.triggers.security_context_constraint_name} -z ${self.triggers.service_account_name} -n ${self.triggers.namespace_name}"
-    # quiet   = true # Only supported in Terraform 1.6+
   }
   provisioner "local-exec" {
     when    = destroy
     command = "${self.triggers.oc} adm policy remove-scc-from-user ${self.triggers.security_context_constraint_name} -z ${self.triggers.service_account_name} -n ${self.triggers.namespace_name}"
-    # quiet   = true # Only supported in Terraform 1.6+
   }
 }
 
@@ -122,8 +125,10 @@ resource "kubernetes_cluster_role_binding_v1" "cloud_pak_deployer_cluster_role_b
 }
 
 resource "kubernetes_secret" "docker_cfg_secret" {
-  count      = var.cloud_pak_deployer_secret != null ? 1 : 0
-  depends_on = [kubernetes_namespace_v1.cloud_pak_deployer_namespace]
+  count = var.cloud_pak_deployer_secret != null ? 1 : 0
+  depends_on = [
+    kubernetes_namespace_v1.cloud_pak_deployer_namespace
+  ]
 
   metadata {
     name      = "cpd-docker-cfg"
@@ -147,7 +152,9 @@ resource "kubernetes_secret" "docker_cfg_secret" {
 }
 
 resource "kubernetes_config_map_v1" "cloud_pak_deployer_configmap" {
-  depends_on = [kubernetes_namespace_v1.cloud_pak_deployer_namespace]
+  depends_on = [
+    kubernetes_namespace_v1.cloud_pak_deployer_namespace
+  ]
 
   metadata {
     name      = local.cloud_pak_deployer.config_map_name
@@ -283,66 +290,18 @@ resource "kubernetes_job_v1" "cloud_pak_deployer_job" {
   }
 }
 
-resource "terraform_data" "uninstall_cpd" {
+resource "shell_script" "uninstall" {
   depends_on = [kubernetes_job_v1.cloud_pak_deployer_job]
 
-  triggers_replace = {
-    job_name                   = yamldecode(local_file.deployer_definitions["job_uninstall_cpd"].content).metadata.name
-    job_uninstall_cpd_filename = local_file.deployer_definitions["job_uninstall_cpd"].filename
-    namespace_name             = local.cloud_pak_deployer.namespace_name
-    oc                         = local.oc
+  lifecycle_commands {
+    create = ""
+    delete = file("${path.module}/scripts/uninstall.sh.tftpl")
   }
 
-  input = {
-    job_name                   = yamldecode(local_file.deployer_definitions["job_uninstall_cpd"].content).metadata.name
-    job_uninstall_cpd_filename = local_file.deployer_definitions["job_uninstall_cpd"].filename
-    namespace_name             = local.cloud_pak_deployer.namespace_name
-    oc                         = local.oc
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<EOF
-      #!/bin/bash
-
-      ${self.input.oc} create -f ${self.input.job_uninstall_cpd_filename}
-      if [ $? -ne 0 ]; then echo "Unable to create job ${self.input.job_name}; exiting..." && exit 1; fi
-
-      timeout_seconds=1800 # 30 minutes
-      sleep_seconds=5
-      number_of_tries=$((timeout_seconds / sleep_seconds))
-      complete=false
-      failed=false
-
-      i=0
-      while [ $i -lt $number_of_tries ]; do
-
-        echo "Running job ... $i"
-        ${self.input.oc} get jobs -n ${self.input.namespace_name}
-
-        ${self.input.oc} wait --for=condition=complete job ${self.input.job_name} -n ${self.input.namespace_name} --timeout=0 2>/dev/null
-        if [ $? -eq 0 ]; then complete=true && break; fi
-
-        ${self.input.oc} wait --for=condition=failed job ${self.input.job_name} -n ${self.input.namespace_name} --timeout=0 2>/dev/null
-        if [ $? -eq 0 ]; then failed=true && break; fi
-
-        i=`expr $i + 1`
-
-        sleep $sleep_seconds
-
-      done
-
-      ${self.input.oc} describe pods -n ${self.input.namespace_name}
-
-      if $failed; then
-          echo "Job ${self.input.job_name} failed"
-          exit 1
-        elif $complete; then
-          echo "Job ${self.input.job_name} completed successfully"
-          ${self.input.oc} delete -f ${self.input.job_uninstall_cpd_filename}
-          if [ $? -ne 0 ]; then echo "Unable to delete job ${self.input.job_name}; exiting..." && exit 1; fi
-          exit 0
-      fi
-    EOF
+  environment = {
+    JOB_NAME                   = yamldecode(local_file.deployer_definitions["job_uninstall_cpd"].content).metadata.name
+    JOB_UNINSTALL_CPD_FILENAME = local_file.deployer_definitions["job_uninstall_cpd"].filename
+    NAMESPACE_NAME             = local.cloud_pak_deployer.namespace_name
+    OC                         = local.oc
   }
 }

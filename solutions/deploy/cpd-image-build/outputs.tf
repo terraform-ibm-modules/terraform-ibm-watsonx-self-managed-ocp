@@ -22,8 +22,3 @@ output "code_engine_project_name" {
   description = "The name of the code engine project that was created"
   value       = local.code_engine_project_name
 }
-
-output "container_build_status" {
-  description = "Status of the container build"
-  value       = restapi_object.buildstatus.api_data.status
-}

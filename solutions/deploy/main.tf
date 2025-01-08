@@ -23,6 +23,10 @@ module "build_cpd_image" {
   ibmcloud_api_key           = var.ibmcloud_api_key
   prefix                     = var.prefix
   region                     = var.region
+  code_engine_project_name   = var.code_engine_project_name
+  code_engine_project_id     = var.code_engine_project_id
+  resource_group             = var.resource_group
+  resource_group_exists      = var.resource_group_exists
   cloud_pak_deployer_release = var.cloud_pak_deployer_release
 }
 
