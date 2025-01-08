@@ -25,6 +25,7 @@ func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptio
 			List: []string{
 				"module.cloudpak_data.module.cloud_pak_deployer.kubernetes_namespace_v1.cloud_pak_deployer_namespace",
 				"module.cloudpak_data.module.cloud_pak_deployer.kubernetes_service_account_v1.cloud_pak_deployer_service_account",
+				"module.cloudpak_data.module.cloud_pak_deployer.shell_script.uninstall",
 			},
 		},
 		IgnoreDestroys: testhelper.Exemptions{ // Ignore for consistency check
