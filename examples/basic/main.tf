@@ -1,31 +1,27 @@
-########################################################################################################################
-# Resource group
-########################################################################################################################
+##############################################################################
+# ROKS Landing zone
+##############################################################################
 
-module "resource_group" {
-  source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.1.6"
-  # if an existing resource group is not set (null) create a new one using prefix
-  resource_group_name          = var.resource_group == null ? "${var.prefix}-resource-group" : null
-  existing_resource_group_name = var.resource_group
+module "roks_landing_zone" {
+  source           = "git::https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone.git//patterns/roks-quickstart?ref=v6.6.1"
+  ibmcloud_api_key = var.ibmcloud_api_key
+  prefix           = var.prefix
+  region           = var.region
+  resource_tags    = var.resource_tags
 }
 
-########################################################################################################################
-# COS
-########################################################################################################################
-
-#
-# Developer tips:
-#   - Call the local module / modules in the example to show how they can be consumed
-#   - include the actual module source as a code comment like below so consumers know how to consume from correct location
-#
-
-module "cos" {
-  source = "../.."
-  # remove the above line and uncomment the below 2 lines to consume the module from the registry
-  # source            = "terraform-ibm-modules/<replace>/ibm"
-  # version           = "X.Y.Z" # Replace "X.Y.Z" with a release version to lock into a specific release
-  name              = "${var.prefix}-cos"
-  resource_group_id = module.resource_group.resource_group_id
-  resource_tags     = var.resource_tags
+##############################################################################
+# Deploy cloudpak_data
+##############################################################################
+module "cloudpak_data" {
+  source                      = "../../solutions/deploy"
+  ibmcloud_api_key            = var.ibmcloud_api_key
+  prefix                      = var.prefix
+  region                      = var.region
+  cluster_name                = module.roks_landing_zone.workload_cluster_id
+  cloud_pak_deployer_image    = "quay.io/cloud-pak-deployer/cloud-pak-deployer"
+  cpd_admin_password          = "Passw0rd" #pragma: allowlist secret
+  cpd_entitlement_key         = "entitlementKey"
+  install_odf_cluster_addon   = var.install_odf_cluster_addon
+  wait_for_cpd_job_completion = false
 }
