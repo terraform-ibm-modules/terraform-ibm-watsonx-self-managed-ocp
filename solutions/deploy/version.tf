@@ -17,9 +17,9 @@ terraform {
       source  = "hashicorp/null"
       version = "3.2.2"
     }
-    restapi = {
-      source  = "Mastercard/restapi"
-      version = "1.18.2"
+    shell = {
+      source  = "scottwinkler/shell"
+      version = "1.7.10"
     }
   }
 }
