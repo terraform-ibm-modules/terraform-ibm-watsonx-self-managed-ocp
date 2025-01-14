@@ -295,7 +295,7 @@ resource "shell_script" "uninstall" {
 
   lifecycle_commands {
     create = ""
-    delete = file("${path.module}/scripts/uninstall.sh.tftpl")
+    delete = file("${path.module}/scripts/uninstall.sh")
   }
 
   environment = {

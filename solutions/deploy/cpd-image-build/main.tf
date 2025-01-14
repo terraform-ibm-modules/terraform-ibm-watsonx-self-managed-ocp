@@ -89,19 +89,15 @@ module "code_engine_build" {
   depends_on = [module.code_engine]
 }
 
-resource "restapi_object" "buildrun" {
-  path = "/v2/projects/${module.code_engine.project_id}/build_runs"
-  data = jsonencode(
-    {
-      build_name = module.code_engine_build.name
-    }
-  )
-}
+resource "shell_script" "build_run" {
+  lifecycle_commands {
+    create = file("${path.module}/scripts/image-build.sh")
+    delete = ""
+    update = ""
+  }
 
-resource "time_sleep" "wait_for_build" {
-  create_duration = "10m"
-
-  depends_on = [
-    restapi_object.buildrun
-  ]
+  environment = {
+    REGION     = var.region
+    PROJECT_ID = module.code_engine.project_id
+  }
 }

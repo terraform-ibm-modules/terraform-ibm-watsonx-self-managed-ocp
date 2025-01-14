@@ -16,11 +16,8 @@ provider "kubernetes" {
 
 data "ibm_iam_auth_token" "tokendata" {}
 
-provider "restapi" {
-  uri                  = "https://api.${var.region}.codeengine.cloud.ibm.com/"
-  debug                = true
-  write_returns_object = true
-  headers = {
-    Authorization = data.ibm_iam_auth_token.tokendata.iam_access_token
+provider "shell" {
+  sensitive_environment = {
+    TOKEN = data.ibm_iam_auth_token.tokendata.iam_access_token
   }
 }
