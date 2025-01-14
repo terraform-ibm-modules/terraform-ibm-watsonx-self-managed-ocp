@@ -13,20 +13,20 @@ failed=false
 i=0
 while [ $i -lt "${number_of_tries}" ]; do
 
-echo "Running job ... $i"
-${OC} get jobs -n "${NAMESPACE_NAME}"
+  echo "Running job ... $i"
+  ${OC} get jobs -n "${NAMESPACE_NAME}"
 
-${OC} wait --for=condition=complete job "${JOB_NAME}" -n "${NAMESPACE_NAME}" --timeout=0 2>/dev/null
-RC=$?
-if [ "${RC}" -eq 0 ]; then complete=true && break; fi
+  ${OC} wait --for=condition=complete job "${JOB_NAME}" -n "${NAMESPACE_NAME}" --timeout=0 2>/dev/null
+  RC=$?
+  if [ "${RC}" -eq 0 ]; then complete=true && break; fi
 
-${OC} wait --for=condition=failed job "${JOB_NAME}" -n "${NAMESPACE_NAME}" --timeout=0 2>/dev/null
-RC=$?
-if [ "${RC}" -eq 0 ]; then failed=true && break; fi
+  ${OC} wait --for=condition=failed job "${JOB_NAME}" -n "${NAMESPACE_NAME}" --timeout=0 2>/dev/null
+  RC=$?
+  if [ "${RC}" -eq 0 ]; then failed=true && break; fi
 
-i=$((i+1))
+  i=$((i+1))
 
-sleep "${sleep_seconds}"
+  sleep "${sleep_seconds}"
 
 done
 
