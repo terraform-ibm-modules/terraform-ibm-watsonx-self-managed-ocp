@@ -19,5 +19,6 @@ data "ibm_iam_auth_token" "tokendata" {}
 provider "shell" {
   sensitive_environment = {
     TOKEN = data.ibm_iam_auth_token.tokendata.iam_access_token
+    OC    = local.oc
   }
 }

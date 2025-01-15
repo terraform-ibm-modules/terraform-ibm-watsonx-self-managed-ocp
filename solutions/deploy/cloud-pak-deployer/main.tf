@@ -302,6 +302,5 @@ resource "shell_script" "uninstall" {
     JOB_NAME                   = yamldecode(local_file.deployer_definitions["job_uninstall_cpd"].content).metadata.name
     JOB_UNINSTALL_CPD_FILENAME = local_file.deployer_definitions["job_uninstall_cpd"].filename
     NAMESPACE_NAME             = local.cloud_pak_deployer.namespace_name
-    OC                         = local.oc
   }
 }
