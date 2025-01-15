@@ -78,7 +78,7 @@ module "code_engine_build" {
   source  = "terraform-ibm-modules/code-engine/ibm//modules/build"
   version = "2.1.5"
 
-  name            = "cpd-build"
+  name            = "cpd-build-test"
   project_id      = module.code_engine.project_id
   output_image    = local.container_registry_output_image
   output_secret   = "registry-secret" # pragma: allowlist secret
