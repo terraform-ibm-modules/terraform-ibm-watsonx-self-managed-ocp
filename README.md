@@ -14,7 +14,7 @@ Update status and "latest release" badges:
 
 
 This repository contains the following deployment an Red Hat OpenShift cluster:
-- [IBM Cloud Pak for Data](./solutions/deploy)
+- [IBM Cloud Pak for Data on Red Hat OpenShift](./solutions/deploy)
 
 **NB:** These solutions are not intended to be called by one or more other modules since they contain a provider configurations, meaning they are not compatible with the `for_each`, `count`, and `depends_on` arguments. For more information see [Providers Within Modules](https://developer.hashicorp.com/terraform/language/modules/develop/providers)
 
