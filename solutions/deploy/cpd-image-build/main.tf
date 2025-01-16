@@ -78,7 +78,7 @@ module "code_engine_build" {
   source  = "terraform-ibm-modules/code-engine/ibm//modules/build"
   version = "2.1.5"
 
-  name            = "cpd-build-test"
+  name            = "cpd-build"
   project_id      = module.code_engine.project_id
   output_image    = local.container_registry_output_image
   output_secret   = "registry-secret" # pragma: allowlist secret
@@ -100,4 +100,6 @@ resource "shell_script" "build_run" {
     REGION     = var.region
     PROJECT_ID = module.code_engine.project_id
   }
+
+  depends_on = [module.code_engine]
 }

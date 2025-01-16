@@ -7,6 +7,7 @@ locals {
     image                            = var.cloud_pak_deployer_image
     job_label                        = "cloud-pak-deployer"
     job_name                         = "cloud-pak-deployer"
+    uninstall_job_name               = "cloud-pak-deployer-uninstall"
     namespace_name                   = "cloud-pak-deployer"
     persistent_volume_claim_name     = "cloud-pak-deployer-status"
     script_accept_license_flag       = var.cpd_accept_license ? "--accept-all-licenses" : ""
@@ -17,14 +18,6 @@ locals {
     entitlement_key_secret_key_name = "cp-entitlement-key"        # data key inside secret # checkov:skip=CKV_SECRET_6:Base64 High Entropy String
     entitlement_key_secret_name     = "cloud-pak-entitlement-key" # kubernetes resource name
   }
-  oc = "oc --kubeconfig ${var.kube_config_path}"
-  paths = {
-    definitions = "${var.schematics_workspace.persistent_dir_exists ? "${var.schematics_workspace.persistent_dir_path}/" : ""}${path.module}/definitions"
-    templates   = "${path.module}/templates"
-  }
-  yaml_files = {
-    job_uninstall_cpd = "job-uninstall-cpd.yaml.tftpl"
-  }
   image_secret_map = var.cloud_pak_deployer_secret != null ? { name = "cpd-docker-cfg" } : {}
 }
 
@@ -33,21 +26,6 @@ locals {
 resource "local_file" "config" {
   content  = replace(yamlencode(var.cloud_pak_deployer_config), "\"", "")
   filename = local.cloud_pak_deployer.config_path
-}
-
-resource "local_file" "deployer_definitions" {
-  for_each = local.yaml_files
-  content = templatefile("${local.paths.templates}/${each.value}", {
-    cloud_pak_deployer_config_map_name              = local.cloud_pak_deployer.config_map_name
-    cloud_pak_deployer_image                        = local.cloud_pak_deployer.image
-    cloud_pak_deployer_job_label                    = local.cloud_pak_deployer.job_label
-    cloud_pak_deployer_job_name                     = local.cloud_pak_deployer.job_name
-    cloud_pak_deployer_namespace_name               = local.cloud_pak_deployer.namespace_name
-    cloud_pak_deployer_persistent_volume_claim_name = local.cloud_pak_deployer.persistent_volume_claim_name
-    cloud_pak_deployer_service_account_name         = local.cloud_pak_deployer.service_account_name
-    cloud_pak_deployer_image_secret                 = local.image_secret_map == null || local.image_secret_map == {} ? "" : join(",", [for key, value in local.image_secret_map : "- ${key}: ${value}"])
-  })
-  filename = "${local.paths.definitions}/${each.value}"
 }
 
 resource "kubernetes_namespace_v1" "cloud_pak_deployer_namespace" {
@@ -83,24 +61,22 @@ resource "kubernetes_service_account_v1" "cloud_pak_deployer_service_account" {
   }
 }
 
-resource "null_resource" "cloud_pak_deployer_security_context_constraint" {
+resource "shell_script" "cloud_pak_deployer_security_context_constraint" {
+
+  lifecycle_commands {
+    create = file("${path.module}/scripts/create-scc.sh")
+    delete = file("${path.module}/scripts/delete-scc.sh")
+  }
+
+  environment = {
+    NAMESPACE_NAME                   = local.cloud_pak_deployer.namespace_name
+    SECURITY_CONTEXT_CONSTRAINT_NAME = local.cloud_pak_deployer.security_context_constraint_name
+    SERVICE_ACCOUNT_NAME             = local.cloud_pak_deployer.service_account_name
+  }
+
   depends_on = [
     kubernetes_service_account_v1.cloud_pak_deployer_service_account
   ]
-
-  triggers = {
-    namespace_name                   = local.cloud_pak_deployer.namespace_name
-    security_context_constraint_name = local.cloud_pak_deployer.security_context_constraint_name
-    service_account_name             = local.cloud_pak_deployer.service_account_name
-    oc                               = local.oc
-  }
-  provisioner "local-exec" {
-    command = "${self.triggers.oc} adm policy add-scc-to-user ${self.triggers.security_context_constraint_name} -z ${self.triggers.service_account_name} -n ${self.triggers.namespace_name}"
-  }
-  provisioner "local-exec" {
-    when    = destroy
-    command = "${self.triggers.oc} adm policy remove-scc-from-user ${self.triggers.security_context_constraint_name} -z ${self.triggers.service_account_name} -n ${self.triggers.namespace_name}"
-  }
 }
 
 resource "kubernetes_cluster_role_binding_v1" "cloud_pak_deployer_cluster_role_binding" {
@@ -190,7 +166,7 @@ resource "kubernetes_job_v1" "cloud_pak_deployer_job" {
     kubernetes_namespace_v1.cloud_pak_deployer_namespace,
     kubernetes_secret.cpd_entitlement_key_secret,
     kubernetes_service_account_v1.cloud_pak_deployer_service_account,
-    null_resource.cloud_pak_deployer_security_context_constraint,
+    shell_script.cloud_pak_deployer_security_context_constraint,
     kubernetes_cluster_role_binding_v1.cloud_pak_deployer_cluster_role_binding,
     kubernetes_secret.docker_cfg_secret,
     kubernetes_config_map_v1.cloud_pak_deployer_configmap,
@@ -299,8 +275,13 @@ resource "shell_script" "uninstall" {
   }
 
   environment = {
-    JOB_NAME                   = yamldecode(local_file.deployer_definitions["job_uninstall_cpd"].content).metadata.name
-    JOB_UNINSTALL_CPD_FILENAME = local_file.deployer_definitions["job_uninstall_cpd"].filename
-    NAMESPACE_NAME             = local.cloud_pak_deployer.namespace_name
+    CLOUD_PAK_DEPLOYER_CONFIG_MAP_NAME              = local.cloud_pak_deployer.config_map_name
+    CLOUD_PAK_DEPLOYER_IMAGE                        = local.cloud_pak_deployer.image
+    CLOUD_PAK_DEPLOYER_JOB_LABEL                    = local.cloud_pak_deployer.job_label
+    CLOUD_PAK_DEPLOYER_UNINSTALL_JOB_NAME           = local.cloud_pak_deployer.uninstall_job_name
+    CLOUD_PAK_DEPLOYER_NAMESPACE_NAME               = local.cloud_pak_deployer.namespace_name
+    CLOUD_PAK_DEPLOYER_PERSISTENT_VOLUME_CLAIM_NAME = local.cloud_pak_deployer.persistent_volume_claim_name
+    CLOUD_PAK_DEPLOYER_SERVICE_ACCOUNT_NAME         = local.cloud_pak_deployer.service_account_name
+    CLOUD_PAK_DEPLOYER_IMAGE_SECRET                 = local.image_secret_map == null || local.image_secret_map == {} ? "" : join(",", [for key, value in local.image_secret_map : "- ${key}: ${value}"])
   }
 }

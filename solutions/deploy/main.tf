@@ -83,7 +83,6 @@ module "cloud_pak_deployer" {
   cpd_accept_license          = var.cpd_accept_license
   cpd_admin_password          = var.cpd_admin_password
   cpd_entitlement_key         = var.cpd_entitlement_key
-  kube_config_path            = local.kube_config_path
   schematics_workspace        = local.schematics_workspace
   wait_for_cpd_job_completion = var.wait_for_cpd_job_completion
 }
