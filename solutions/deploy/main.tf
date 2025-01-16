@@ -108,6 +108,5 @@ resource "null_resource" "oc_login" {
       ${self.triggers.oc} login --token="${data.ibm_container_cluster_config.cluster_config.token}" --server="${data.ibm_container_cluster_config.cluster_config.host}"
       if [[ $? -ne 0 ]]; then exit 1; fi
     EOF
-    # quiet   = true
   }
 }
