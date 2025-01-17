@@ -61,22 +61,21 @@ resource "kubernetes_service_account_v1" "cloud_pak_deployer_service_account" {
   }
 }
 
-resource "shell_script" "cloud_pak_deployer_security_context_constraint" {
-
-  lifecycle_commands {
-    create = file("${path.module}/scripts/create-scc.sh")
-    delete = file("${path.module}/scripts/delete-scc.sh")
+resource "kubernetes_role_binding_v1" "cloud_pak_deployer_security_context_constraint" {
+  metadata {
+    name      = "system:openshift:scc:privileged"
+    namespace = local.cloud_pak_deployer.namespace_name
   }
-
-  environment = {
-    NAMESPACE_NAME                   = local.cloud_pak_deployer.namespace_name
-    SECURITY_CONTEXT_CONSTRAINT_NAME = local.cloud_pak_deployer.security_context_constraint_name
-    SERVICE_ACCOUNT_NAME             = local.cloud_pak_deployer.service_account_name
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "system:openshift:scc:privileged"
   }
-
-  depends_on = [
-    kubernetes_service_account_v1.cloud_pak_deployer_service_account
-  ]
+  subject {
+    kind      = "ServiceAccount"
+    name      = local.cloud_pak_deployer.service_account_name
+    namespace = local.cloud_pak_deployer.namespace_name
+  }
 }
 
 resource "kubernetes_cluster_role_binding_v1" "cloud_pak_deployer_cluster_role_binding" {
@@ -166,7 +165,7 @@ resource "kubernetes_job_v1" "cloud_pak_deployer_job" {
     kubernetes_namespace_v1.cloud_pak_deployer_namespace,
     kubernetes_secret.cpd_entitlement_key_secret,
     kubernetes_service_account_v1.cloud_pak_deployer_service_account,
-    shell_script.cloud_pak_deployer_security_context_constraint,
+    kubernetes_role_binding_v1.cloud_pak_deployer_security_context_constraint,
     kubernetes_cluster_role_binding_v1.cloud_pak_deployer_cluster_role_binding,
     kubernetes_secret.docker_cfg_secret,
     kubernetes_config_map_v1.cloud_pak_deployer_configmap,
