@@ -1,0 +1,90 @@
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: {{ .Values.deployer.prefix }}-{{ .Values.deployer.job_name_suffix }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    App: {{ .Values.deployer.prefix }}
+  annotations:
+    checkov.io/skip1: CKV_K8S_10
+    checkov.io/skip2: CKV_K8S_11
+    checkov.io/skip3: CKV_K8S_12
+    checkov.io/skip4: CKV_K8S_13
+    checkov.io/skip5: CKV_K8S_14
+    checkov.io/skip6: CKV_K8S_35
+    checkov.io/skip7: CKV_K8S_21
+    checkov.io/skip8: CKV_K8S_30
+    checkov.io/skip9: CKV_K8S_28
+    checkov.io/skip10: CKV_K8S_22
+    checkov.io/skip11: CKV_K8S_20
+    checkov.io/skip12: CKV_K8S_37
+    checkov.io/skip13: CKV_K8S_23
+    checkov.io/skip14: CKV_K8S_38
+    checkov.io/skip15: CKV_K8S_29
+    checkov.io/skip16: CKV_K8S_40
+    checkov.io/skip17: CKV_K8S_31
+    checkov.io/skip18: CKV_K8S_9
+    checkov.io/skip19: CKV_K8S_16
+    checkov.io/skip20: CKV_K8S_8
+    checkov.io/skip21: CKV_K8S_43
+spec:
+  backoffLimit: 0
+  completions: 1
+  template:
+    metadata:
+      name: {{ .Values.deployer.prefix }}
+      labels:
+        App: {{ .Values.deployer.prefix }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ .Values.deployer.prefix }}-sa
+      securityContext:
+        runAsUser: 0
+        readOnlyRootFilesystem: true
+      {{ if eq (default .Values.createImagePullSecret false) true }}
+      imagePullSecrets:
+      - name: {{ .Values.imagePullSecName }}
+      {{ end }}
+      containers:
+        - terminationMessagePath: /dev/termination-log
+          name: {{ .Values.deployer.prefix }}
+          command:
+            - /bin/sh
+            - '-xc'
+          env:
+            - name: CONFIG_DIR
+              value: /Data/cpd-config
+            - name: STATUS_DIR
+              value: /Data/cpd-status
+            - name: CP_ENTITLEMENT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cloud-pak-entitlement-key
+                  key: cp-entitlement-key
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: config-volume
+              mountPath: /Data/cpd-config/config
+            - name: status-volume
+              mountPath: /Data/cpd-status
+          terminationMessagePolicy: File
+          image: {{ .Values.deployer.image }}
+          args:
+            - '/cloud-pak-deployer/cp-deploy.sh vault set -vs cp4d_admin_cpd_{{ .Values.cluster_name }} -vsv {{ .Values.deployer.admin_password }} && /cloud-pak-deployer/cp-deploy.sh env apply -vvvv {{ .Values.deployer.accept_license_flag }}'
+          resources:
+            limits:
+              cpu: 200m
+              memory: 512Mi
+            requests:
+              cpu: 10m
+              memory: 64Mi
+      serviceAccount: {{ .Values.deployer.prefix }}-sa
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Values.deployer.prefix }}-config
+        - name: status-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.deployer.prefix }}-status
+      dnsPolicy: ClusterFirst
+  parallelism: 1

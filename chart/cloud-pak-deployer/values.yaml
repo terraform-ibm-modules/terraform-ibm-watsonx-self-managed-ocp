@@ -1,0 +1,30 @@
+# Default values for cloud-pak-deployer.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+namespace: cloud-pak-deployer
+
+cluster_name: ""
+
+deployer:
+  prefix: "cloud-pak-deployer"
+  configuration: ""
+  cluster_role_name: "cluster-admin"
+  accept_license_flag: ""
+  admin_password: ""
+  scc_name: "priveleged"
+  image: "quay.io/cloud-pak-deployer/cloud-pak-deployer"
+  job_name_suffix: ""
+  entitlement_key: ""
+
+createImagePullSecret: false
+imagePullSecName: "cpd-docker-cfg"
+
+imageCredentials:
+  registry: ""
+  username: ""
+  password: ""
+  email: ""
+
+clusterRoleBinding:
+  roleRefName: "cluster-admin"

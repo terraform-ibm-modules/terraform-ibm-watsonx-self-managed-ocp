@@ -61,7 +61,7 @@ variable "cloud_pak_deployer_secret" {
     username = string
     password = string
     server   = string
-    email    = optional(string)
+    email    = string
   })
 
   default = null
@@ -178,10 +178,4 @@ variable "watson_assistant_install" {
   description = "If watsonx.ai is being installed, also install watson assistant"
   type        = bool
   default     = false
-}
-
-variable "wait_for_cpd_job_completion" {
-  description = "Wait for the cloud-pak-deployer to complete before continuing"
-  type        = bool
-  default     = true
 }

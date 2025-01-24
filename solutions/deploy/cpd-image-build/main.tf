@@ -100,4 +100,6 @@ resource "shell_script" "build_run" {
     REGION     = var.region
     PROJECT_ID = module.code_engine.project_id
   }
+
+  depends_on = [module.code_engine_build]
 }
