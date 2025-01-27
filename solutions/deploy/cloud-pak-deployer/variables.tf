@@ -15,7 +15,7 @@ variable "cloud_pak_deployer_secret" {
     username = string
     password = string
     server   = string
-    email    = optional(string)
+    email    = string
   })
 
   default = null
@@ -43,20 +43,4 @@ variable "cpd_entitlement_key" {
   description = "Cloud Pak for Data entitlement key for access to the IBM Entitled Registry. Can be fetched from https://myibm.ibm.com/products-services/containerlibrary."
   sensitive   = true
   type        = string
-}
-
-variable "kube_config_path" {
-  description = "Path to the kube config file being used"
-  type        = string
-}
-
-variable "schematics_workspace" {
-  description = "Object containing general information on the IBM Cloud Schematics Workspace this automation may be running on"
-  type        = any
-}
-
-variable "wait_for_cpd_job_completion" {
-  description = "Wait for the cloud-pak-deployer to complete before continuing"
-  type        = bool
-  default     = true
 }

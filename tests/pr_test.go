@@ -17,21 +17,15 @@ func setupOptions(t *testing.T, prefix string, dir string) *testhelper.TestOptio
 		TerraformDir: dir,
 		Prefix:       prefix,
 		IgnoreAdds: testhelper.Exemptions{ // Ignore for consistency check
-			List: []string{
-				"module.cloudpak_data.null_resource.oc_login",
-			},
+			List: []string{},
 		},
 		IgnoreUpdates: testhelper.Exemptions{ // Ignore for consistency check
 			List: []string{
-				"module.cloudpak_data.module.cloud_pak_deployer.kubernetes_namespace_v1.cloud_pak_deployer_namespace",
-				"module.cloudpak_data.module.cloud_pak_deployer.kubernetes_service_account_v1.cloud_pak_deployer_service_account",
-				"module.cloudpak_data.module.cloud_pak_deployer.shell_script.uninstall",
+				"module.cloudpak_data.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
 			},
 		},
 		IgnoreDestroys: testhelper.Exemptions{ // Ignore for consistency check
-			List: []string{
-				"module.cloudpak_data.null_resource.oc_login",
-			},
+			List: []string{},
 		},
 	})
 	return options

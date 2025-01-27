@@ -9,17 +9,9 @@ terraform {
       source  = "hashicorp/external"
       version = ">= 2.3.4"
     }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "2.35.1"
-    }
-    null = {
-      source  = "hashicorp/null"
-      version = "3.2.2"
-    }
-    shell = {
-      source  = "scottwinkler/shell"
-      version = "1.7.10"
+    helm = {
+      source  = "hashicorp/helm"
+      version = ">= 2.8.0, <3.0.0"
     }
   }
 }

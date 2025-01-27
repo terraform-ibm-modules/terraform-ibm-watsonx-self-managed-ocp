@@ -1,0 +1,24 @@
+
+KSV014 # "Use read-only filesystem for containers where possible"
+
+KSV020 # "Force the container to run with user ID > 10000"
+
+KSV021 # "Force the container to run with group ID > 10000"
+
+KSV111 # "Cluster admin role only used where required"
+
+KSV001 # "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node."
+
+KSV003 # "The container should drop all default capabilities and add only those that are needed for its execution."
+
+KSV012 # "Force the running image to run as a non-root user to ensure least privileges."
+
+KSV013 # "It is best to avoid using the ':latest' image tag when deploying containers in production. Doing so makes it hard to track which version of the image is running, and hard to roll back the version."
+
+KSV030 # "According to pod security standard 'Seccomp', the RuntimeDefault seccomp profile must be required, or allow specific additional profiles."
+
+KSV104 # "A program inside the container can bypass Seccomp protection policies."
+
+KSV105 # "Containers should be forbidden from running with a root UID."
+
+KSV106 # "Containers must drop ALL capabilities, and are only permitted to add back the NET_BIND_SERVICE capability."
