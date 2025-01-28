@@ -52,7 +52,7 @@ variable "cloud_pak_deployer_image" {
 variable "cloud_pak_deployer_release" {
   description = "Release of Cloud Pak Deployer version to use. View releases at: https://github.com/IBM/cloud-pak-deployer/releases."
   type        = string
-  default     = "v3.1.2"
+  default     = "v3.1.3"
 }
 
 variable "cloud_pak_deployer_secret" {

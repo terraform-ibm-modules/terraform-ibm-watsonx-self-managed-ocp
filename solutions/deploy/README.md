@@ -105,6 +105,7 @@ You need the following permissions to run this module:
 | <a name="requirement_external"></a> [external](#requirement\_external) | >= 2.3.4 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.8.0, <3.0.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.66.0, < 2.0.0 |
+| <a name="requirement_shell"></a> [shell](#requirement\_shell) | 1.7.10 |
 
 ### Modules
 
@@ -124,13 +125,14 @@ You need the following permissions to run this module:
 | [external_external.schematics](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external) | data source |
 | [ibm_container_cluster_config.cluster_config](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/data-sources/container_cluster_config) | data source |
 | [ibm_container_vpc_cluster.cluster_info](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/data-sources/container_vpc_cluster) | data source |
+| [ibm_iam_auth_token.tokendata](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/data-sources/iam_auth_token) | data source |
 
 ### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cloud_pak_deployer_image"></a> [cloud\_pak\_deployer\_image](#input\_cloud\_pak\_deployer\_image) | Cloud Pak Deployer image location. If not defined, it will build the image via code engine | `string` | `null` | no |
-| <a name="input_cloud_pak_deployer_release"></a> [cloud\_pak\_deployer\_release](#input\_cloud\_pak\_deployer\_release) | Release of Cloud Pak Deployer version to use. View releases at: https://github.com/IBM/cloud-pak-deployer/releases. | `string` | `"v3.1.2"` | no |
+| <a name="input_cloud_pak_deployer_release"></a> [cloud\_pak\_deployer\_release](#input\_cloud\_pak\_deployer\_release) | Release of Cloud Pak Deployer version to use. View releases at: https://github.com/IBM/cloud-pak-deployer/releases. | `string` | `"v3.1.3"` | no |
 | <a name="input_cloud_pak_deployer_secret"></a> [cloud\_pak\_deployer\_secret](#input\_cloud\_pak\_deployer\_secret) | Image pull secret for the cloud pak deployer image | <pre>object({<br/>    username = string<br/>    password = string<br/>    server   = string<br/>    email    = string<br/>  })</pre> | `null` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of Red Hat OpenShift cluster to install watsonx onto | `string` | n/a | yes |
 | <a name="input_code_engine_project_id"></a> [code\_engine\_project\_id](#input\_code\_engine\_project\_id) | If you want to use an existing project, you can pass the code engine project id and the cloud pak deployer build will be built within the existing project vs a new one being created. | `string` | `null` | no |
