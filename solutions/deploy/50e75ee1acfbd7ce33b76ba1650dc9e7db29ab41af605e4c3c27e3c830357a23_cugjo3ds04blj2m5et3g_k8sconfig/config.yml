@@ -1,0 +1,26 @@
+apiVersion: v1
+clusters:
+- cluster:
+    server: https://c100-e.au-syd.containers.cloud.ibm.com:31108
+  name: lz-roks-cp4d-workload-cluster/cugjo3ds04blj2m5et3g
+- cluster:
+    server: https://c100-e.au-syd.containers.cloud.ibm.com:31108
+  name: c100-e-au-syd-containers-cloud-ibm-com:31108
+contexts:
+- context:
+    cluster: lz-roks-cp4d-workload-cluster/cugjo3ds04blj2m5et3g
+    namespace: default
+    user: ""
+  name: lz-roks-cp4d-workload-cluster/cugjo3ds04blj2m5et3g
+- context:
+    cluster: c100-e-au-syd-containers-cloud-ibm-com:31108
+    namespace: default
+    user: IAM#jordan.williams2@ibm.com/c100-e-au-syd-containers-cloud-ibm-com:31108
+  name: default/c100-e-au-syd-containers-cloud-ibm-com:31108/IAM#jordan.williams2@ibm.com
+current-context: default/c100-e-au-syd-containers-cloud-ibm-com:31108/IAM#jordan.williams2@ibm.com
+kind: Config
+preferences: {}
+users:
+- name: IAM#jordan.williams2@ibm.com/c100-e-au-syd-containers-cloud-ibm-com:31108
+  user:
+    token: sha256~n8ssk0YQPgnSjdzMy2gfOH14MCTBqy7CHZgUtPgdYGw

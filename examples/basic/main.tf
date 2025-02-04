@@ -10,6 +10,12 @@ module "roks_landing_zone" {
   resource_tags    = var.resource_tags
 }
 
+resource "time_sleep" "wait_5_minutes" {
+  depends_on = [module.roks_landing_zone]
+
+  destroy_duration = "300s"
+}
+
 ##############################################################################
 # Deploy cloudpak_data
 ##############################################################################
