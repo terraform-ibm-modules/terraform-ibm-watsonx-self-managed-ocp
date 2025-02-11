@@ -10,7 +10,7 @@ locals {
   }
 }
 
-# Retrieve the openshift cluster info
+# Retrieve the OpenShift cluster info
 data "ibm_container_vpc_cluster" "cluster_info" {
   name = var.cluster_name
 }
@@ -55,8 +55,12 @@ module "watsonx_data" {
 }
 
 module "cloud_pak_deployer" {
-  depends_on = [module.watsonx_ai, module.watsonx_data, module.build_cpd_image]
-  source     = "./cloud-pak-deployer"
+  depends_on = [
+    module.watsonx_ai,
+    module.watsonx_data,
+    module.build_cpd_image
+  ]
+  source = "./cloud-pak-deployer"
   cloud_pak_deployer_config = merge(
     module.config.cloud_pak_deployer_config_base,
     {
