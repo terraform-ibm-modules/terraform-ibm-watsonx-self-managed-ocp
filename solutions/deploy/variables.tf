@@ -58,8 +58,13 @@ variable "cloud_pak_deployer_release" {
 
 variable "cloud_pak_deployer_secret" {
   description = "Secret for accessing the Cloud Pak Deployer image. If `null`, a default secret will be created."
-  type        = map(string)
-  default     = null
+  type = object({
+    username = string
+    password = string
+    server   = string
+    email    = string
+  })
+  default = null
 }
 
 variable "cluster_name" {
