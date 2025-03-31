@@ -9,6 +9,7 @@ metadata:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook-weight": "4"
+    # https://github.com/terraform-ibm-modules/terraform-ibm-cloudpak-data/issues/14
     checkov.io/skip1: CKV_K8S_21
     checkov.io/skip2: CKV_K8S_30
     checkov.io/skip3: CKV_K8S_28
@@ -29,6 +30,7 @@ metadata:
     checkov.io/skip18: CKV_K8S_12
     checkov.io/skip19: CKV_K8S_13
     checkov.io/skip20: CKV_K8S_14
+    checkov.io/skip21: CKV2_K8S_6
 spec:
   parallelism: 1
   completions: 1
