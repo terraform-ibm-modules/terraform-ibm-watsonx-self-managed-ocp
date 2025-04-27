@@ -40,7 +40,7 @@ variable "install_odf_cluster_addon" {
 variable "existing_cluster_name" {
   description = "Existing cluster name"
   type        = string
-  default     = "ocp-cp4d-v2"
+  default     = null
   validation {
     condition     = can(regex("^[a-z][a-z0-9-]{0,12}[a-z0-9]$", var.existing_cluster_name))
     error_message = "Existing cluster name must begin with a letter and contain only lowercase letters, numbers, and - characters. Existing cluster names must end with a lowercase letter or number and be 13 or fewer characters."
