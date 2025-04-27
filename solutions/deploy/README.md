@@ -103,10 +103,8 @@ You need the following permissions to run this module:
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_external"></a> [external](#requirement\_external) | >= 2.3.4 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.8.0, <3.0.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.66.0, < 2.0.0 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.35.1 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | 3.2.2 |
-| <a name="requirement_shell"></a> [shell](#requirement\_shell) | 1.7.10 |
 
 ### Modules
 
@@ -123,11 +121,9 @@ You need the following permissions to run this module:
 | Name | Type |
 |------|------|
 | [ibm_container_addons.odf_cluster_addon](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/container_addons) | resource |
-| [null_resource.oc_login](https://registry.terraform.io/providers/hashicorp/null/3.2.2/docs/resources/resource) | resource |
 | [external_external.schematics](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external) | data source |
 | [ibm_container_cluster_config.cluster_config](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/data-sources/container_cluster_config) | data source |
 | [ibm_container_vpc_cluster.cluster_info](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/data-sources/container_vpc_cluster) | data source |
-| [ibm_iam_auth_token.tokendata](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/data-sources/iam_auth_token) | data source |
 
 ### Inputs
 
@@ -135,7 +131,7 @@ You need the following permissions to run this module:
 |------|-------------|------|---------|:--------:|
 | <a name="input_cloud_pak_deployer_image"></a> [cloud\_pak\_deployer\_image](#input\_cloud\_pak\_deployer\_image) | Cloud Pak Deployer image location. If not defined, it will build the image via code engine | `string` | `null` | no |
 | <a name="input_cloud_pak_deployer_release"></a> [cloud\_pak\_deployer\_release](#input\_cloud\_pak\_deployer\_release) | Release of Cloud Pak Deployer version to use. View releases at: https://github.com/IBM/cloud-pak-deployer/releases. | `string` | `"v3.1.2"` | no |
-| <a name="input_cloud_pak_deployer_secret"></a> [cloud\_pak\_deployer\_secret](#input\_cloud\_pak\_deployer\_secret) | Image pull secret for the cloud pak deployer image | <pre>object({<br/>    username = string<br/>    password = string<br/>    server   = string<br/>    email    = optional(string)<br/>  })</pre> | `null` | no |
+| <a name="input_cloud_pak_deployer_secret"></a> [cloud\_pak\_deployer\_secret](#input\_cloud\_pak\_deployer\_secret) | Image pull secret for the cloud pak deployer image | <pre>object({<br/>    username = string<br/>    password = string<br/>    server   = string<br/>    email    = string<br/>  })</pre> | `null` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of Red Hat OpenShift cluster to install watsonx onto | `string` | n/a | yes |
 | <a name="input_code_engine_project_id"></a> [code\_engine\_project\_id](#input\_code\_engine\_project\_id) | If you want to use an existing project, you can pass the code engine project id and the cloud pak deployer build will be built within the existing project vs a new one being created. | `string` | `null` | no |
 | <a name="input_code_engine_project_name"></a> [code\_engine\_project\_name](#input\_code\_engine\_project\_name) | If the variable cloud\_pak\_deployer\_image is null, it will build the image with code engine and store it within a private icr registry.  Provide a name if you want to set the name.  If not defined, default will be {prefix}-cpd-{random-suffix} | `string` | `null` | no |
@@ -151,7 +147,6 @@ You need the following permissions to run this module:
 | <a name="input_region"></a> [region](#input\_region) | Region where resources wills be created. To find your VPC region, use `ibmcloud is regions` command to find available regions. | `string` | n/a | yes |
 | <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | Resource group to provision services within.  If not defined, a resource group called {prefix}-cpd will be created | `string` | `null` | no |
 | <a name="input_resource_group_exists"></a> [resource\_group\_exists](#input\_resource\_group\_exists) | Resource group exists or not within the account. | `bool` | `false` | no |
-| <a name="input_wait_for_cpd_job_completion"></a> [wait\_for\_cpd\_job\_completion](#input\_wait\_for\_cpd\_job\_completion) | Wait for the cloud-pak-deployer to complete before continuing | `bool` | `true` | no |
 | <a name="input_watson_assistant_install"></a> [watson\_assistant\_install](#input\_watson\_assistant\_install) | If watsonx.ai is being installed, also install watson assistant | `bool` | `false` | no |
 | <a name="input_watson_discovery_install"></a> [watson\_discovery\_install](#input\_watson\_discovery\_install) | If watsonx.ai is being installed, also install watson discovery | `bool` | `false` | no |
 | <a name="input_watsonx_ai_install"></a> [watsonx\_ai\_install](#input\_watsonx\_ai\_install) | Determine whether the watsonx.ai cartridge for the deployer will be installed | `bool` | `false` | no |
@@ -160,10 +155,7 @@ You need the following permissions to run this module:
 
 ### Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_cloud_pak_deployer_config_path"></a> [cloud\_pak\_deployer\_config\_path](#output\_cloud\_pak\_deployer\_config\_path) | Path to the required config for the Cloud Pak Deployer |
-| <a name="output_kube_config_path"></a> [kube\_config\_path](#output\_kube\_config\_path) | Path to the kube config file being used |
+No outputs.
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 <!-- Leave this section as is so that your module has a link to local development environment set-up steps for contributors to follow -->

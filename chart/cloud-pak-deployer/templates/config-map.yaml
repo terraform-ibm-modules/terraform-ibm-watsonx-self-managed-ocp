@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  cpd-config.yaml: |
+{{ .Values.deployer.configuration | indent 4 }}
+kind: ConfigMap
+metadata:
+  name: {{ .Values.deployer.prefix }}-config
+  namespace: {{ .Values.namespace }}
