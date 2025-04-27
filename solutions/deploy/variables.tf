@@ -53,11 +53,11 @@ variable "cloud_pak_deployer_image" {
 variable "cloud_pak_deployer_release" {
   description = "Release of Cloud Pak Deployer version to use. View releases at: https://github.com/IBM/cloud-pak-deployer/releases."
   type        = string
-  default     = "v3.1.2"
+  default     = "v3.1.3"
 }
 
 variable "cloud_pak_deployer_secret" {
-  description = "Secret for accessing the Cloud Pak Deployer image. If `null`, a default secret will be created."
+  description = "Secret for accessing the Cloud Pak Deployer image. If `null`, a default secret will be created # pragma: allowlist secret."
   type = object({
     username = string
     password = string
@@ -68,7 +68,12 @@ variable "cloud_pak_deployer_secret" {
 }
 
 variable "cluster_name" {
-  description = "Name of the OpenShift cluster."
+  description = "Name of Red Hat OpenShift cluster to install watsonx onto"
+  type        = string
+}
+
+variable "cluster_rg_id" {
+  description = "Resource group id of the cluster"
   type        = string
 }
 
@@ -119,7 +124,7 @@ variable "odf_config" {
 variable "cpd_accept_license" {
   description = "When set to 'true', it is understood that the user has read the terms of the Cloud Pak license(s) and agrees to the terms outlined."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "cpd_admin_password" {

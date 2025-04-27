@@ -1,0 +1,26 @@
+apiVersion: v1
+clusters:
+- cluster:
+    server: https://c106-e.us-south.containers.cloud.ibm.com:31203
+  name: ocp-cp4d-v2/d04fmmsd0trb3gtjs3k0
+- cluster:
+    server: https://c106-e.us-south.containers.cloud.ibm.com:31203
+  name: c106-e-us-south-containers-cloud-ibm-com:31203
+contexts:
+- context:
+    cluster: ocp-cp4d-v2/d04fmmsd0trb3gtjs3k0
+    namespace: default
+    user: ""
+  name: ocp-cp4d-v2/d04fmmsd0trb3gtjs3k0
+- context:
+    cluster: c106-e-us-south-containers-cloud-ibm-com:31203
+    namespace: default
+    user: IAM#jordan.williams2@ibm.com/c106-e-us-south-containers-cloud-ibm-com:31203
+  name: default/c106-e-us-south-containers-cloud-ibm-com:31203/IAM#jordan.williams2@ibm.com
+current-context: default/c106-e-us-south-containers-cloud-ibm-com:31203/IAM#jordan.williams2@ibm.com
+kind: Config
+preferences: {}
+users:
+- name: IAM#jordan.williams2@ibm.com/c106-e-us-south-containers-cloud-ibm-com:31203
+  user:
+    token: sha256~3zsiX1Et5jdtmk0kycFC_j52OcuYi0hMDLz66vGlyqo

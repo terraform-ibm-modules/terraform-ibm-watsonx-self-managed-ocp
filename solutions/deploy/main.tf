@@ -10,9 +10,10 @@ locals {
   }
 }
 
-# Retrieve the OpenShift cluster info
+# Retrieve the openshift cluster info
 data "ibm_container_vpc_cluster" "cluster_info" {
-  name = var.cluster_name
+  name              = var.cluster_name
+  resource_group_id = var.cluster_rg_id
 }
 
 module "build_cpd_image" {
