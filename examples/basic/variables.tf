@@ -3,7 +3,7 @@
 ##############################################################################
 
 variable "ibmcloud_api_key" {
-  description = "The IBM Cloud platform API key needed to deploy IAM enabled resources."
+  description = "The IBM Cloud API key to deploy resources."
   type        = string
   sensitive   = true
 }
@@ -14,8 +14,8 @@ variable "prefix" {
   default     = "lz-roks-cp4d"
 
   validation {
-    error_message = "Prefix must begin with a letter and contain only lowercase letters, numbers, and - characters. Prefixes must end with a lowercase letter or number and be 13 or fewer characters."
-    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.prefix)) && length(var.prefix) <= 13
+    error_message = "Prefix must begin with a letter and contain only lowercase letters, numbers, and - characters. Prefixes must end with a lowercase letter or number and be 16 or fewer characters."
+    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.prefix)) && length(var.prefix) <= 16
   }
 }
 
@@ -35,4 +35,20 @@ variable "install_odf_cluster_addon" {
   description = "Install the odf cluster addon"
   type        = bool
   default     = false
+}
+
+variable "existing_cluster_name" {
+  description = "Existing cluster name"
+  type        = string
+  default     = null
+  validation {
+    condition     = can(regex("^[a-z][a-z0-9-]{0,12}[a-z0-9]$", var.existing_cluster_name))
+    error_message = "Existing cluster name must begin with a letter and contain only lowercase letters, numbers, and - characters. Existing cluster names must end with a lowercase letter or number and be 13 or fewer characters."
+  }
+}
+
+variable "existing_cluster_rg_id" {
+  description = "Existing resource group id"
+  type        = string
+  default     = null
 }
