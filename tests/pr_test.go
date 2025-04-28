@@ -169,7 +169,7 @@ func TestRunStandardUpgradeSolution(t *testing.T) {
 
 		options.IgnoreUpdates = testhelper.Exemptions{
 			List: []string{
-				"module.cloudpak_data.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+				"module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
 			},
 		}
 
