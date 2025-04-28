@@ -17,7 +17,6 @@ variable "cloud_pak_deployer_secret" {
     server   = string
     email    = string
   })
-
   default = null
 }
 

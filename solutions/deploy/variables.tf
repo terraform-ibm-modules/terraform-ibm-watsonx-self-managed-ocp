@@ -1,5 +1,5 @@
 variable "ibmcloud_api_key" {
-  description = "APIkey that's associated with the account to use"
+  description = "The IBM Cloud API key to deploy resources."
   type        = string
   sensitive   = true
 }
@@ -7,20 +7,21 @@ variable "ibmcloud_api_key" {
 variable "prefix" {
   description = "A unique identifier for resources that is prepended to resources that are provisioned. Must begin with a lowercase letter and end with a lowercase letter or number. Must be 16 or fewer characters."
   type        = string
+  default     = null
 
   validation {
-    error_message = "Prefix must begin and end with a letter and contain only letters, numbers, and - characters."
-    condition     = can(regex("^([A-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.prefix))
+    error_message = "Prefix must begin with a letter and contain only lowercase letters, numbers, and - characters. Prefixes must end with a lowercase letter or number and be 16 or fewer characters."
+    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.prefix)) && length(var.prefix) <= 16
   }
 }
 
 variable "region" {
-  description = "Region where resources wills be created. To find your VPC region, use `ibmcloud is regions` command to find available regions."
+  description = "Region where resources will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions."
   type        = string
 }
 
 variable "resource_group" {
-  description = "Resource group to provision services within.  If not defined, a resource group called {prefix}-cpd will be created"
+  description = "Resource group to provision services within. If not defined, a resource group called `{prefix}-cpd` will be created."
   type        = string
   default     = null
 }
@@ -32,19 +33,19 @@ variable "resource_group_exists" {
 }
 
 variable "code_engine_project_name" {
-  description = "If the variable cloud_pak_deployer_image is null, it will build the image with code engine and store it within a private icr registry.  Provide a name if you want to set the name.  If not defined, default will be {prefix}-cpd-{random-suffix}"
+  description = "If the variable cloud_pak_deployer_image is null, it will build the image with code engine and store it within a private ICR registry. Provide a name if you want to set the name. If not defined, default will be `{prefix}-cpd-{random-suffix}`."
   type        = string
   default     = null
 }
 
 variable "code_engine_project_id" {
-  description = "If you want to use an existing project, you can pass the code engine project id and the cloud pak deployer build will be built within the existing project vs a new one being created."
+  description = "If you want to use an existing project, you can pass the code engine project ID and the Cloud Pak Deployer build will be built within the existing project instead of creating a new one."
   type        = string
   default     = null
 }
 
 variable "cloud_pak_deployer_image" {
-  description = "Cloud Pak Deployer image location. If not defined, it will build the image via code engine"
+  description = "Cloud Pak Deployer image to use. If `null`, the image will be built using Code Engine."
   type        = string
   default     = null
 }
@@ -56,14 +57,13 @@ variable "cloud_pak_deployer_release" {
 }
 
 variable "cloud_pak_deployer_secret" {
-  description = "Image pull secret for the cloud pak deployer image"
+  description = "Secret for accessing the Cloud Pak Deployer image. If `null`, a default secret will be created # pragma: allowlist secret."
   type = object({
     username = string
     password = string
     server   = string
     email    = string
   })
-
   default = null
 }
 
@@ -72,20 +72,25 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "cluster_rg_id" {
+  description = "Resource group id of the cluster"
+  type        = string
+}
+
 variable "install_odf_cluster_addon" {
-  description = "Install the odf cluster addon"
+  description = "Install the ODF cluster addon."
   type        = bool
   default     = true
 }
 
 variable "odf_version" {
-  description = "Version of ODF to install"
+  description = "Version of ODF to install."
   type        = string
   default     = "4.16.0"
 }
 
 variable "odf_config" {
-  description = "Version of ODF to install"
+  description = "Configuration for the ODF addon."
   type        = map(string)
   default = {
     "odfDeploy"                       = "true"
@@ -116,15 +121,14 @@ variable "odf_config" {
   }
 }
 
-
 variable "cpd_accept_license" {
-  default     = false
-  description = "When set to 'true', it is understood that the user has read the terms of the Cloud Pak license(s) and agrees to the terms outlined"
+  description = "When set to 'true', it is understood that the user has read the terms of the Cloud Pak license(s) and agrees to the terms outlined."
   type        = bool
+  default     = true
 }
 
 variable "cpd_admin_password" {
-  description = "Password to be used by the admin user to access the Cloud Pak for Data UI."
+  description = "Password for the Cloud Pak for Data admin user."
   sensitive   = true
   type        = string
 }
