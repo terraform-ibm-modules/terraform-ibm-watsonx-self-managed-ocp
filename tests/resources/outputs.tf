@@ -16,3 +16,8 @@ output "workload_cluster_id" {
   value       = module.landing_zone.workload_cluster_id
   description = "workload cluster ID."
 }
+
+output "workload_rg_id" {
+  value       = module.landing_zone.workload_rg_id
+  description = "workload resource group ID."
+}

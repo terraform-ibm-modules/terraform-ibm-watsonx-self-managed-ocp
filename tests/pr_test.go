@@ -88,6 +88,7 @@ func TestRunStandardSolution(t *testing.T) {
 				"prefix":                    prefix,
 				"region":                    region,
 				"cluster_name":              terraform.Output(t, existingTerraformOptions, "workload_cluster_id"),
+				"cluster_rg_id":             terraform.Output(t, existingTerraformOptions, "workload_rg_id"),
 				"cloud_pak_deployer_image":  "quay.io/cloud-pak-deployer/cloud-pak-deployer",
 				"cpd_admin_password":        GetRandomAdminPassword(t),
 				"cpd_entitlement_key":       "entitlementKey",
@@ -116,7 +117,7 @@ func TestRunStandardSolution(t *testing.T) {
 func TestRunStandardUpgradeSolution(t *testing.T) {
 	t.Parallel()
 
-	prefix := fmt.Sprintf("rag-da-upgr-%s", strings.ToLower(random.UniqueId()))
+	prefix := fmt.Sprintf("cp-up-%s", strings.ToLower(random.UniqueId()))
 	realTerraformDir := "./resources"
 	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())))
 	tags := common.GetTagsFromTravis()
@@ -158,6 +159,7 @@ func TestRunStandardUpgradeSolution(t *testing.T) {
 				"prefix":                    prefix,
 				"region":                    region,
 				"cluster_name":              terraform.Output(t, existingTerraformOptions, "workload_cluster_id"),
+				"cluster_rg_id":             terraform.Output(t, existingTerraformOptions, "workload_rg_id"),
 				"cloud_pak_deployer_image":  "quay.io/cloud-pak-deployer/cloud-pak-deployer",
 				"cpd_admin_password":        GetRandomAdminPassword(t),
 				"cpd_entitlement_key":       "entitlementKey",
