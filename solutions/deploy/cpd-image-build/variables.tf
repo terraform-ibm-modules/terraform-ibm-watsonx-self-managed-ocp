@@ -1,5 +1,5 @@
 variable "ibmcloud_api_key" {
-  description = "APIkey that's associated with the account to use"
+  description = "The IBM Cloud API key to deploy resources."
   type        = string
   sensitive   = true
 }
