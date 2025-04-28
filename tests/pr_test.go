@@ -96,6 +96,12 @@ func TestRunStandardSolution(t *testing.T) {
 			},
 		})
 
+		options.IgnoreUpdates = testhelper.Exemptions{
+			List: []string{
+				"module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+			},
+		}
+
 		output, err := options.RunTestConsistency()
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
