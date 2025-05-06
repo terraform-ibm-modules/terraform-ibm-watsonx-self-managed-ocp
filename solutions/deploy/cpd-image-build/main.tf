@@ -39,7 +39,7 @@ data "ibm_code_engine_project" "code_engine_project" {
 module "resource_group" {
   count   = var.code_engine_project_id == null ? 1 : 0
   source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.1.6"
+  version = "1.2.0"
 
   resource_group_name          = var.resource_group_exists ? null : local.resource_group_name
   existing_resource_group_name = var.resource_group_exists ? var.resource_group : null

@@ -12,7 +12,7 @@ locals {
 module "resource_group" {
   count   = var.existing_cluster_rg_id == null ? 1 : 0
   source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.1.6"
+  version = "1.2.0"
   # if an existing resource group is not set (null) create a new one using prefix
   resource_group_name = "${var.prefix}-resource-group"
 }
@@ -78,7 +78,7 @@ locals {
 module "ocp_base" {
   count                               = var.existing_cluster_name == null ? 1 : 0
   source                              = "terraform-ibm-modules/base-ocp-vpc/ibm"
-  version                             = "3.41.7"
+  version                             = "3.46.14"
   resource_group_id                   = local.cluster_rg_id
   region                              = var.region
   tags                                = var.resource_tags
