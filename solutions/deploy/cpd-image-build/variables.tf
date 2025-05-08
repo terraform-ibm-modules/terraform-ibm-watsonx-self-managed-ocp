@@ -18,29 +18,25 @@ variable "region" {
 variable "resource_group" {
   description = "Resource groups to create or reference"
   type        = string
-
-  default = null
+  default     = null
 }
 
 variable "resource_group_exists" {
   description = "Boolean value representing if the resource groups exists or not"
   type        = bool
-
-  default = false
+  default     = false
 }
 
 variable "container_registry_namespace" {
   description = "The name of the container registry namespace"
   type        = string
-
-  default = null
+  default     = null
 }
 
 variable "code_engine_project_name" {
   description = "The name of the code engine project to be created for the image build"
   type        = string
-
-  default = null
+  default     = null
 }
 
 variable "code_engine_project_id" {
