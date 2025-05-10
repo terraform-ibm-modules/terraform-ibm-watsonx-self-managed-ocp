@@ -58,7 +58,7 @@ resource "ibm_cr_namespace" "cr_namespace" {
 ##############################################################################
 module "code_engine" {
   source              = "terraform-ibm-modules/code-engine/ibm"
-  version             = "4.2.2"
+  version             = "4.2.3"
   project_name        = var.code_engine_project_id == null ? local.code_engine_project_name : null
   existing_project_id = var.code_engine_project_id
   resource_group_id   = local.resource_group_id
@@ -76,7 +76,7 @@ module "code_engine" {
 
 module "code_engine_build" {
   source  = "terraform-ibm-modules/code-engine/ibm//modules/build"
-  version = "4.2.2"
+  version = "4.2.3"
 
   name            = "cpd-build"
   project_id      = module.code_engine.project_id

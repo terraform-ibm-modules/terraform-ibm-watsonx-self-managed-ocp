@@ -78,7 +78,7 @@ locals {
 module "ocp_base" {
   count                               = var.existing_cluster_name == null ? 1 : 0
   source                              = "terraform-ibm-modules/base-ocp-vpc/ibm"
-  version                             = "3.46.14"
+  version                             = "3.46.15"
   resource_group_id                   = local.cluster_rg_id
   region                              = var.region
   tags                                = var.resource_tags
