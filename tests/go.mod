@@ -1,4 +1,4 @@
-module github.com/terraform-ibm-modules/terraform-ibm-cloudpak-data
+module github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp
 
 go 1.23.0
 
