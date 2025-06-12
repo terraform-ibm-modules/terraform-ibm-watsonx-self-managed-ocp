@@ -48,7 +48,7 @@
       ],
       "flavors": [
         {
-          "label": "Fully Configurable",
+          "label": "Fully configurable",
           "name": "fully-configurable",
           "working_directory": "solutions/fully-configurable",
           "iam_permissions": [
