@@ -113,7 +113,7 @@ func TestRunStandardSolution(t *testing.T) {
 
 		options.IgnoreUpdates = testhelper.Exemptions{
 			List: []string{
-				"module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+				"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
 			},
 		}
 
@@ -201,7 +201,7 @@ func TestRunStandardUpgradeSolution(t *testing.T) {
 
 		options.IgnoreUpdates = testhelper.Exemptions{
 			List: []string{
-				"module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+				"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
 			},
 		}
 
