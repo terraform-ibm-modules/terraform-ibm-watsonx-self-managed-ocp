@@ -20,9 +20,9 @@ resource "helm_release" "cloud_pak_deployer_helm_release" {
 
   namespace         = local.cloud_pak_deployer.namespace_name
   create_namespace  = true
-  timeout           = 600
+  timeout           = 1200
   dependency_update = true
-  force_update      = false
+  force_update      = true
   cleanup_on_fail   = false
   wait              = true
 
