@@ -16,7 +16,7 @@ locals {
 
 resource "helm_release" "cloud_pak_deployer_helm_release" {
   name  = "cloud-pak-deployer"
-  chart = "${path.module}/../../../chart/cloud-pak-deployer"
+  chart = "${path.module}/../../chart/cloud-pak-deployer"
 
   namespace         = local.cloud_pak_deployer.namespace_name
   create_namespace  = true

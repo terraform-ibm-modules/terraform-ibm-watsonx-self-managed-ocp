@@ -1,23 +1,19 @@
-##############################################################################
-# Outputs
-##############################################################################
-
-output "prefix" {
-  value       = module.landing_zone.prefix
-  description = "prefix"
+output "cluster_name" {
+  description = "The name of the OpenShift cluster."
+  value       = module.ocp_base.cluster_name
 }
 
-output "region" {
-  value       = var.region
-  description = "Region where SLZ ROKS Cluster is deployed."
+output "cluster_id" {
+  value       = module.ocp_base.cluster_id
+  description = "Cluster ID."
 }
 
-output "workload_cluster_id" {
-  value       = module.landing_zone.workload_cluster_id
-  description = "workload cluster ID."
+output "cluster_resource_group_id" {
+  value       = module.ocp_base.resource_group_id
+  description = "Cluster resource group ID."
 }
 
-output "workload_rg_id" {
-  value       = module.landing_zone.workload_rg_id
-  description = "workload resource group ID."
+output "cluster_resource_group_name" {
+  value       = module.resource_group.resource_group_name
+  description = "Cluster resource group name."
 }

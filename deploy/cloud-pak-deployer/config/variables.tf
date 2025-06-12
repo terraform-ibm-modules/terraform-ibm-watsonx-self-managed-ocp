@@ -4,8 +4,8 @@ variable "cluster_name" {
 }
 
 variable "cpd_version" {
-  default     = "5.0.2"
-  description = "Cloud Pak for Data version to install"
+  default     = "5.1.1"
+  description = "Cloud Pak for Data version to install.  Only version 5.x.x is supported, latest versions can be found [here](https://www.ibm.com/docs/en/cloud-paks/cp-data?topic=versions-cloud-pak-data)."
   type        = string
 }
 
