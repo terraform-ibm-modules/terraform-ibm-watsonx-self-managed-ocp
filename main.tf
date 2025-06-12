@@ -10,7 +10,7 @@ data "ibm_container_vpc_cluster" "cluster_info" {
 
 module "build_cpd_image" {
   count                      = var.cloud_pak_deployer_image == null ? 1 : 0
-  source                     = "./deploy/cpd-image-build"
+  source                     = "./modules/cpd-image-build"
   prefix                     = var.prefix
   ibmcloud_api_key           = var.ibmcloud_api_key
   region                     = var.region
@@ -32,7 +32,7 @@ resource "ibm_container_addons" "odf_cluster_addon" {
 }
 
 module "watsonx_ai" {
-  source                   = "./deploy/watsonx-ai"
+  source                   = "./modules/watsonx-ai"
   depends_on               = [ibm_container_addons.odf_cluster_addon]
   watson_assistant_install = var.watson_assistant_install
   watson_discovery_install = var.watson_discovery_install
@@ -41,7 +41,7 @@ module "watsonx_ai" {
 }
 
 module "watsonx_data" {
-  source               = "./deploy/watsonx-data"
+  source               = "./modules/watsonx-data"
   depends_on           = [ibm_container_addons.odf_cluster_addon]
   watsonx_data_install = var.watsonx_data_install
 }
@@ -52,7 +52,7 @@ module "cloud_pak_deployer" {
     module.watsonx_data,
     module.build_cpd_image
   ]
-  source = "./deploy/cloud-pak-deployer"
+  source = "./modules/cloud-pak-deployer"
   cloud_pak_deployer_config = merge(
     module.config.cloud_pak_deployer_config_base,
     {
@@ -79,9 +79,19 @@ module "cloud_pak_deployer" {
   cpd_entitlement_key = var.cpd_entitlement_key
 }
 
+resource "null_resource" "wait_for_cloud_pak_deployer_complete" {
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/wait_for_cpd_pod.sh"
+  }
+  triggers = {
+    always_run = timestamp()
+  }
+  depends_on = [module.cloud_pak_deployer]
+}
+
 # Cloud Pak Deployer configuration file local variable(s) only
 module "config" {
-  source            = "./deploy/cloud-pak-deployer/config"
+  source            = "./modules/cloud-pak-deployer/config"
   cluster_name      = var.cluster_name
   cpd_version       = var.cpd_version
   openshift_version = local.openshift_version
