@@ -117,6 +117,18 @@ func TestRunStandardSolution(t *testing.T) {
 			},
 		}
 
+		options.IgnoreAdds = testhelper.Exemptions{
+			List: []string{
+				"null_resource.wait_for_cloud_pak_deployer_complete",
+			},
+		}
+
+		options.IgnoreDestroys = testhelper.Exemptions{
+			List: []string{
+				"null_resource.wait_for_cloud_pak_deployer_complete",
+			},
+		}
+
 		output, err := options.RunTestConsistency()
 		assert.Nil(t, err, "This should not have errored")
 		assert.NotNil(t, output, "Expected some output")
@@ -202,6 +214,18 @@ func TestRunStandardUpgradeSolution(t *testing.T) {
 		options.IgnoreUpdates = testhelper.Exemptions{
 			List: []string{
 				"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+			},
+		}
+
+		options.IgnoreAdds = testhelper.Exemptions{
+			List: []string{
+				"null_resource.wait_for_cloud_pak_deployer_complete",
+			},
+		}
+
+		options.IgnoreDestroys = testhelper.Exemptions{
+			List: []string{
+				"null_resource.wait_for_cloud_pak_deployer_complete",
 			},
 		}
 
