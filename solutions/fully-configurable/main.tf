@@ -39,3 +39,18 @@ module "watsonx_self_managed_ocp" {
   watson_discovery_install   = var.watson_discovery_install
   watson_assistant_install   = var.watson_assistant_install
 }
+
+resource "null_resource" "wait_for_cloud_pak_deployer_complete" {
+  provisioner "local-exec" {
+    command = "${path.module}/../../scripts/wait_for_cpd_pod.sh"
+
+    environment = {
+      KUBECONFIG = data.ibm_container_cluster_config.cluster_config[0].config_file_path
+    }
+  }
+  triggers = {
+    always_run = timestamp()
+  }
+
+  depends_on = [module.watsonx_self_managed_ocp]
+}
