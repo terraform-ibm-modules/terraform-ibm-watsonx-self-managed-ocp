@@ -79,7 +79,6 @@ For more information on access and permissions, see [IBM Cloud IAM service roles
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >=1.79.1 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.2.1, < 4.0.0 |
 
 ### Modules
 
@@ -96,7 +95,6 @@ For more information on access and permissions, see [IBM Cloud IAM service roles
 | Name | Type |
 |------|------|
 | [ibm_container_addons.odf_cluster_addon](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/resources/container_addons) | resource |
-| [null_resource.wait_for_cloud_pak_deployer_complete](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [ibm_container_vpc_cluster.cluster_info](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/data-sources/container_vpc_cluster) | data source |
 
 ### Inputs

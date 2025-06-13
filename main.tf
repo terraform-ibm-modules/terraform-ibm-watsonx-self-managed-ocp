@@ -79,16 +79,6 @@ module "cloud_pak_deployer" {
   cpd_entitlement_key = var.cpd_entitlement_key
 }
 
-resource "null_resource" "wait_for_cloud_pak_deployer_complete" {
-  provisioner "local-exec" {
-    command = "${path.module}/scripts/wait_for_cpd_pod.sh"
-  }
-  triggers = {
-    always_run = timestamp()
-  }
-  depends_on = [module.cloud_pak_deployer]
-}
-
 # Cloud Pak Deployer configuration file local variable(s) only
 module "config" {
   source            = "./modules/cloud-pak-deployer/config"
