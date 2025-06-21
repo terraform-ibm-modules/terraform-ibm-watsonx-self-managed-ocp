@@ -103,7 +103,7 @@ You need the following permissions to run this module:
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_external"></a> [external](#requirement\_external) | >= 2.3.4 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.8.0, <3.0.0 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.0.1, < 4.0.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | 1.78.0 |
 | <a name="requirement_shell"></a> [shell](#requirement\_shell) | 1.7.10 |
 
