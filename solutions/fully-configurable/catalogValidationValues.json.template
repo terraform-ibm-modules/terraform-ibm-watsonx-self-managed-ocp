@@ -1,0 +1,6 @@
+{
+  "ibmcloud_api_key": $VALIDATION_APIKEY,
+  "cpd_entitlement_key": $SOFTWARE_ENTITLEMENT_KEY,
+  "prefix": $PREFIX,
+  "region": "us-south"
+}

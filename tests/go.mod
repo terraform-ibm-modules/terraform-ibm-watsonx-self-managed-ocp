@@ -19,6 +19,7 @@ require (
 	github.com/IBM/platform-services-go-sdk v0.82.0 // indirect
 	github.com/IBM/project-go-sdk v0.3.6 // indirect
 	github.com/IBM/schematics-go-sdk v0.4.0 // indirect
+	github.com/IBM/secrets-manager-go-sdk v1.2.0
 	github.com/IBM/vpc-go-sdk v1.0.2 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.1.6 // indirect

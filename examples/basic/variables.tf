@@ -11,7 +11,7 @@ variable "ibmcloud_api_key" {
 variable "prefix" {
   description = "A unique identifier for resources that is prepended to resources that are provisioned. Must begin with a lowercase letter and end with a lowercase letter or number. Must be 13 or fewer characters."
   type        = string
-  default     = "lz-roks-cp4d"
+  default     = "ocp-cp4d"
 
   validation {
     error_message = "Prefix must begin with a letter and contain only lowercase letters, numbers, and - characters. Prefixes must end with a lowercase letter or number and be 16 or fewer characters."
@@ -41,14 +41,10 @@ variable "existing_cluster_name" {
   description = "Existing cluster name"
   type        = string
   default     = null
-  validation {
-    condition     = can(regex("^[a-z][a-z0-9-]{0,12}[a-z0-9]$", var.existing_cluster_name))
-    error_message = "Existing cluster name must begin with a letter and contain only lowercase letters, numbers, and - characters. Existing cluster names must end with a lowercase letter or number and be 13 or fewer characters."
-  }
 }
 
-variable "existing_cluster_rg_id" {
-  description = "Existing resource group id"
+variable "resource_group" {
+  description = "Existing resource group name"
   type        = string
   default     = null
 }

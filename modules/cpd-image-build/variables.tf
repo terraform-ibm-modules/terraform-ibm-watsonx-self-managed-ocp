@@ -22,13 +22,6 @@ variable "resource_group" {
   default = null
 }
 
-variable "resource_group_exists" {
-  description = "Boolean value representing if the resource groups exists or not"
-  type        = bool
-
-  default = false
-}
-
 variable "container_registry_namespace" {
   description = "The name of the container registry namespace"
   type        = string

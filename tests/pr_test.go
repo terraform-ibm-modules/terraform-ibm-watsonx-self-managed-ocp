@@ -10,6 +10,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/IBM/go-sdk-core/v5/core"
+	"github.com/IBM/secrets-manager-go-sdk/secretsmanagerv2"
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -21,9 +23,11 @@ import (
 )
 
 // Ensure every example directory has a corresponding test
-const instanceFlavorDir = "solutions/deploy"
+const instanceFlavorDir = "solutions/fully-configurable"
 
-var permanentResources map[string]interface{}
+const cpdEntitlementKeySecretId = "a4292c24-f093-2b8b-9016-37132b7b8788"
+
+var permanentResources map[string]any
 
 // Define a struct with fields that match the structure of the YAML data
 const yamlLocation = "../common-dev-assets/common-go-assets/common-permanent-resources.yaml"
@@ -39,7 +43,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-// A test to pass existing resources to the CloudPak DA
+// A test to pass existing resources to the WatsonX Self Managed OCP DA
 func TestRunStandardSolution(t *testing.T) {
 	t.Parallel()
 	// ------------------------------------------------------------------------------------
@@ -61,7 +65,7 @@ func TestRunStandardSolution(t *testing.T) {
 	logger.Log(t, "Tempdir: ", tempTerraformDir)
 	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: tempTerraformDir,
-		Vars: map[string]interface{}{
+		Vars: map[string]any{
 			"prefix":        prefix,
 			"region":        region,
 			"resource_tags": tags,
@@ -77,28 +81,51 @@ func TestRunStandardSolution(t *testing.T) {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
 	} else {
 		// ------------------------------------------------------------------------------------
-		// Deploy Cloudpak DA passing using existing ROKS instance
+		// Deploy WatsonX Self Managed OCP DA passing using existing OCP instance
 		// ------------------------------------------------------------------------------------
+		cpdEntitlementKey, cpdEntitlementKeyErr := GetSecretsManagerKey(
+			permanentResources["secretsManagerGuid"].(string),
+			permanentResources["secretsManagerRegion"].(string),
+			cpdEntitlementKeySecretId,
+		)
+
+		if !assert.NoError(t, cpdEntitlementKeyErr) {
+			t.Error("TestRunStandardUpgradeSolution Failed - geretain-software-entitlement-key not found in secrets manager")
+			panic(cpdEntitlementKeyErr)
+		}
+
 		options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
 			Testing:      t,
 			TerraformDir: instanceFlavorDir,
 			// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
 			ImplicitRequired: false,
-			TerraformVars: map[string]interface{}{
-				"prefix":                    prefix,
-				"region":                    region,
-				"cluster_name":              terraform.Output(t, existingTerraformOptions, "workload_cluster_id"),
-				"cluster_rg_id":             terraform.Output(t, existingTerraformOptions, "workload_rg_id"),
-				"cloud_pak_deployer_image":  "quay.io/cloud-pak-deployer/cloud-pak-deployer",
-				"cpd_admin_password":        GetRandomAdminPassword(t),
-				"cpd_entitlement_key":       "entitlementKey",
-				"install_odf_cluster_addon": false,
+			TerraformVars: map[string]any{
+				"prefix":                       prefix,
+				"region":                       region,
+				"existing_cluster_name":        terraform.Output(t, existingTerraformOptions, "cluster_name"),
+				"existing_resource_group_name": terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"),
+				"cloud_pak_deployer_image":     "quay.io/cloud-pak-deployer/cloud-pak-deployer",
+				"cpd_admin_password":           GetRandomAdminPassword(t),
+				"cpd_entitlement_key":          *cpdEntitlementKey,
+				"install_odf_cluster_addon":    true,
 			},
 		})
 
 		options.IgnoreUpdates = testhelper.Exemptions{
 			List: []string{
-				"module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+				"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+			},
+		}
+
+		options.IgnoreAdds = testhelper.Exemptions{
+			List: []string{
+				"null_resource.wait_for_cloud_pak_deployer_complete",
+			},
+		}
+
+		options.IgnoreDestroys = testhelper.Exemptions{
+			List: []string{
+				"null_resource.wait_for_cloud_pak_deployer_complete",
 			},
 		}
 
@@ -154,28 +181,51 @@ func TestRunStandardUpgradeSolution(t *testing.T) {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
 	} else {
 		// ------------------------------------------------------------------------------------
-		// Deploy Cloudpak DA passing using existing ROKS instance
+		// Deploy WatsonX Self Managed OCP DA passing using existing OCP instance
 		// ------------------------------------------------------------------------------------
+		cpdEntitlementKey, cpdEntitlementKeyErr := GetSecretsManagerKey(
+			permanentResources["secretsManagerGuid"].(string),
+			permanentResources["secretsManagerRegion"].(string),
+			cpdEntitlementKeySecretId,
+		)
+
+		if !assert.NoError(t, cpdEntitlementKeyErr) {
+			t.Error("TestRunStandardUpgradeSolution Failed - geretain-software-entitlement-key not found in secrets manager")
+			panic(cpdEntitlementKeyErr)
+		}
+
 		options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
 			Testing:      t,
 			TerraformDir: instanceFlavorDir,
 			// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
 			ImplicitRequired: false,
-			TerraformVars: map[string]interface{}{
-				"prefix":                    prefix,
-				"region":                    region,
-				"cluster_name":              terraform.Output(t, existingTerraformOptions, "workload_cluster_id"),
-				"cluster_rg_id":             terraform.Output(t, existingTerraformOptions, "workload_rg_id"),
-				"cloud_pak_deployer_image":  "quay.io/cloud-pak-deployer/cloud-pak-deployer",
-				"cpd_admin_password":        GetRandomAdminPassword(t),
-				"cpd_entitlement_key":       "entitlementKey",
-				"install_odf_cluster_addon": false,
+			TerraformVars: map[string]any{
+				"prefix":                       prefix,
+				"region":                       region,
+				"existing_cluster_name":        terraform.Output(t, existingTerraformOptions, "cluster_name"),
+				"existing_resource_group_name": terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"),
+				"cloud_pak_deployer_image":     "quay.io/cloud-pak-deployer/cloud-pak-deployer",
+				"cpd_admin_password":           GetRandomAdminPassword(t),
+				"cpd_entitlement_key":          *cpdEntitlementKey,
+				"install_odf_cluster_addon":    true,
 			},
 		})
 
 		options.IgnoreUpdates = testhelper.Exemptions{
 			List: []string{
-				"module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+				"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+			},
+		}
+
+		options.IgnoreAdds = testhelper.Exemptions{
+			List: []string{
+				"null_resource.wait_for_cloud_pak_deployer_complete",
+			},
+		}
+
+		options.IgnoreDestroys = testhelper.Exemptions{
+			List: []string{
+				"null_resource.wait_for_cloud_pak_deployer_complete",
 			},
 		}
 
@@ -208,4 +258,27 @@ func GetRandomAdminPassword(t *testing.T) string {
 	randomPass := "A1" + base64.URLEncoding.EncodeToString(randomBytes)[:13]
 
 	return randomPass
+}
+
+// GetSecretsManagerKey retrieves a secret from Secrets Manager
+func GetSecretsManagerKey(smId string, smRegion string, smKeyId string) (*string, error) {
+	secretsManagerService, err := secretsmanagerv2.NewSecretsManagerV2(&secretsmanagerv2.SecretsManagerV2Options{
+		URL: fmt.Sprintf("https://%s.%s.secrets-manager.appdomain.cloud", smId, smRegion),
+		Authenticator: &core.IamAuthenticator{
+			ApiKey: os.Getenv("TF_VAR_ibmcloud_api_key"),
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	getSecretOptions := secretsManagerService.NewGetSecretOptions(
+		smKeyId,
+	)
+
+	secret, _, err := secretsManagerService.GetSecret(getSecretOptions)
+	if err != nil {
+		return nil, err
+	}
+	return secret.(*secretsmanagerv2.ArbitrarySecret).Payload, nil
 }

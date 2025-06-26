@@ -18,13 +18,3 @@ output "code_engine_project_name" {
   description = "The name of the code engine project that was created"
   value       = module.watsonx_self_managed_ocp.code_engine_project_name
 }
-
-output "cluster_id" {
-  value       = module.ocp_base[0].cluster_id
-  description = "Cluster ID."
-}
-
-output "cluster_resource_group_id" {
-  value       = module.ocp_base[0].resource_group_id
-  description = "Cluster resource group ID."
-}

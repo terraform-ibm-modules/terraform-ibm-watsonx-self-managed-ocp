@@ -16,5 +16,5 @@ output "cluster_name" {
 
 output "code_engine_project_name" {
   description = "The name of the code engine project that was created"
-  value       = var.cloud_pak_deployer_image == null ? module.build_cpd_image.code_engine_project_name : null
+  value       = var.cloud_pak_deployer_image == null ? module.build_cpd_image[0].code_engine_project_name : null
 }

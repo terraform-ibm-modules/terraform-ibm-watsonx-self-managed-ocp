@@ -1,0 +1,178 @@
+{
+  "products": [
+    {
+      "label": "Watsonx (Self-Managed) on Red Hat OpenShift",
+      "name": "deploy-arch-ibm-watsonx-self-managed",
+      "product_kind": "solution",
+      "tags": [
+        "ibm_created",
+        "terraform",
+        "target_terraform",
+        "solution",
+        "watson",
+        "ai"
+      ],
+      "keywords": [
+        "IaC",
+        "infrastructure as code",
+        "terraform",
+        "solution",
+        "watson",
+        "ai",
+        "watsonx",
+        "cloudpak",
+        "self-managed"
+      ],
+      "provider_name": "IBM",
+      "short_description": "Deploys IBM Watsonx services to a Red Hat OpenShift cluster",
+      "long_description": "Solution that deploys Watsonx services (watsonx.ai, watsonx.data, Watson Assistant, Watson Discovery) on an existing Red Hat OpenShift cluster.",
+      "offering_docs_url": "https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/blob/main/solutions/fully-configurable/README.md",
+      "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/main/images/watsonx-self-managed-ocp.svg",
+      "features": [
+        {
+          "title": "Flexible Cluster Deployment",
+          "description": "Deploys IBM Watsonx services on either an existing Red Hat OpenShift cluster."
+        },
+        {
+          "title": "Modular watsonx Services",
+          "description": "Supports installation of watsonx.ai, watsonx.data, Watson Assistant, and Watson Discovery as optional services."
+        },
+        {
+          "title": "Automated Infrastructure Provisioning",
+          "description": "Automates creation of required IBM Cloud infrastructure, including VPC, subnets, gateways, and worker pools."
+        },
+        {
+          "title": "Customizable Resource Configuration",
+          "description": "Allows customization of machine types, worker pools, and storage options to fit workload requirements."
+        }
+      ],
+      "flavors": [
+        {
+          "label": "Fully configurable",
+          "name": "fully-configurable",
+          "working_directory": "solutions/fully-configurable",
+          "iam_permissions": [
+            {
+              "service_name": "containers-kubernetes",
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::serviceRole:Manager",
+                "crn:v1:bluemix:public:iam::::role:Viewer"
+              ]
+            }
+          ],
+          "architecture": {
+            "features": [
+              {
+                "title": "Cluster must meet minimum requirements to install any Watson services you wish to add.",
+                "description": "Yes"
+              },
+              {
+                "title": "Deploys Watsonx services on an existing cluster.",
+                "description": "Yes"
+              }
+            ],
+            "diagrams": [
+              {
+                "diagram": {
+                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/refs/heads/main/reference-architecture/deployable-architecture-cp4d.svg",
+                  "caption": "Watsonx (Self-Managed) on Red Hat OpenShift",
+                  "type": "image/svg+xml"
+                },
+                "description": "This diagram illustrates the architecture for deploying Watsonx Cloud Pak for Data on Red Hat OpenShift, including the optional watsonx services."
+              }
+            ]
+          },
+          "configuration": [
+            {
+              "key": "ibmcloud_api_key",
+              "required": true
+            },
+            {
+              "key": "prefix",
+              "required": true
+            },
+            {
+              "key": "region",
+              "required": true
+            },
+            {
+              "key": "existing_cluster_name",
+              "required": true
+            },
+            {
+              "key": "existing_resource_group_name",
+              "custom_config": {
+                "type": "resource_group",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "identifier": "rg_id"
+                }
+              },
+              "required": true
+            },
+            {
+              "key": "install_odf_cluster_addon",
+              "required": true
+            },
+            {
+              "key": "cpd_entitlement_key",
+              "required": true
+            },
+            {
+              "key": "watsonx_ai_install",
+              "required": true
+            },
+            {
+              "key": "watsonx_ai_models",
+              "required": true
+            },
+            {
+              "key": "watsonx_data_install",
+              "required": true
+            },
+            {
+              "key": "watson_discovery_install",
+              "required": true
+            },
+            {
+              "key": "watson_assistant_install",
+              "required": true
+            },
+            {
+              "key": "code_engine_project_name"
+            },
+            {
+              "key": "code_engine_project_id"
+            },
+            {
+              "key": "cloud_pak_deployer_image"
+            },
+            {
+              "key": "cloud_pak_deployer_release"
+            },
+            {
+              "key": "cloud_pak_deployer_secret"
+            },
+            {
+              "key": "odf_version"
+            },
+            {
+              "key": "odf_config"
+            },
+            {
+              "key": "cpd_accept_license"
+            },
+            {
+              "key": "cpd_admin_password"
+            },
+            {
+              "key": "cpd_version"
+            }
+          ],
+          "install_type": "fullstack"
+        }
+      ]
+    }
+  ]
+}

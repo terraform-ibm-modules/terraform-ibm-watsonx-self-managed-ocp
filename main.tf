@@ -1,13 +1,5 @@
 locals {
-  kube_config_dir   = local.schematics_workspace.persistent_dir_exists ? local.schematics_workspace.persistent_dir_path : path.module
   openshift_version = join(".", slice(split(".", data.ibm_container_vpc_cluster.cluster_info.kube_version), 0, 2)) # Only use major and minor — no patch
-  paths = {
-    scripts = "${path.module}/scripts"
-  }
-  schematics_workspace = {
-    persistent_dir_exists = data.external.schematics.result.schematics_tmp_dir_exists ? true : false
-    persistent_dir_path   = "/tmp/.schematics"
-  }
 }
 
 # Retrieve the openshift cluster info
@@ -18,14 +10,13 @@ data "ibm_container_vpc_cluster" "cluster_info" {
 
 module "build_cpd_image" {
   count                      = var.cloud_pak_deployer_image == null ? 1 : 0
-  source                     = "./cpd-image-build"
-  ibmcloud_api_key           = var.ibmcloud_api_key
+  source                     = "./modules/cpd-image-build"
   prefix                     = var.prefix
+  ibmcloud_api_key           = var.ibmcloud_api_key
   region                     = var.region
   code_engine_project_name   = var.code_engine_project_name
   code_engine_project_id     = var.code_engine_project_id
   resource_group             = var.resource_group
-  resource_group_exists      = var.resource_group_exists
   cloud_pak_deployer_release = var.cloud_pak_deployer_release
 }
 
@@ -41,7 +32,7 @@ resource "ibm_container_addons" "odf_cluster_addon" {
 }
 
 module "watsonx_ai" {
-  source                   = "./watsonx-ai"
+  source                   = "./modules/watsonx-ai"
   depends_on               = [ibm_container_addons.odf_cluster_addon]
   watson_assistant_install = var.watson_assistant_install
   watson_discovery_install = var.watson_discovery_install
@@ -50,7 +41,7 @@ module "watsonx_ai" {
 }
 
 module "watsonx_data" {
-  source               = "./watsonx-data"
+  source               = "./modules/watsonx-data"
   depends_on           = [ibm_container_addons.odf_cluster_addon]
   watsonx_data_install = var.watsonx_data_install
 }
@@ -61,7 +52,7 @@ module "cloud_pak_deployer" {
     module.watsonx_data,
     module.build_cpd_image
   ]
-  source = "./cloud-pak-deployer"
+  source = "./modules/cloud-pak-deployer"
   cloud_pak_deployer_config = merge(
     module.config.cloud_pak_deployer_config_base,
     {
@@ -90,7 +81,7 @@ module "cloud_pak_deployer" {
 
 # Cloud Pak Deployer configuration file local variable(s) only
 module "config" {
-  source            = "./cloud-pak-deployer/config"
+  source            = "./modules/cloud-pak-deployer/config"
   cluster_name      = var.cluster_name
   cpd_version       = var.cpd_version
   openshift_version = local.openshift_version

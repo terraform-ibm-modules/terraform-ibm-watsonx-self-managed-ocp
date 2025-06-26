@@ -6,7 +6,7 @@ metadata:
   labels:
     App: {{ .Values.deployer.prefix }}
   annotations:
-    # https://github.com/terraform-ibm-modules/terraform-ibm-cloudpak-data/issues/14
+    # https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/14
     checkov.io/skip1: CKV_K8S_10
     checkov.io/skip2: CKV_K8S_11
     checkov.io/skip3: CKV_K8S_12

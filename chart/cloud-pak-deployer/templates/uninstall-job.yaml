@@ -9,7 +9,7 @@ metadata:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook-weight": "4"
-    # https://github.com/terraform-ibm-modules/terraform-ibm-cloudpak-data/issues/14
+    # https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/14
     checkov.io/skip1: CKV_K8S_21
     checkov.io/skip2: CKV_K8S_30
     checkov.io/skip3: CKV_K8S_28
