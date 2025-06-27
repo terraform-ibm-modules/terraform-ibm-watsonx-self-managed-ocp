@@ -18,3 +18,9 @@ output "code_engine_project_name" {
   description = "The name of the code engine project that was created"
   value       = module.watsonx_self_managed_ocp.code_engine_project_name
 }
+
+output "cpd_admin_password" {
+  description = "The Cloud Pak Data admin password"
+  sensitive   = true
+  value       = local.cpd_admin_password
+}

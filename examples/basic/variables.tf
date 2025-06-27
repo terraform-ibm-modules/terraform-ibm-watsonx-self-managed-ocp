@@ -31,12 +31,6 @@ variable "resource_tags" {
   default     = []
 }
 
-variable "install_odf_cluster_addon" {
-  description = "Install the odf cluster addon"
-  type        = bool
-  default     = false
-}
-
 variable "existing_cluster_name" {
   description = "Existing cluster name"
   type        = string
@@ -44,7 +38,19 @@ variable "existing_cluster_name" {
 }
 
 variable "resource_group" {
-  description = "Existing resource group name"
   type        = string
+  description = "The name of an existing resource group to provision resources in to. If not set a new resource group will be created using the prefix variable."
   default     = null
+}
+
+variable "cpd_admin_password" {
+  description = "Password for the Cloud Pak for Data admin user."
+  sensitive   = true
+  type        = string
+}
+
+variable "cpd_entitlement_key" {
+  description = "Cloud Pak for Data entitlement key for access to the IBM Entitled Registry. Can be fetched from https://myibm.ibm.com/products-services/containerlibrary."
+  sensitive   = true
+  type        = string
 }

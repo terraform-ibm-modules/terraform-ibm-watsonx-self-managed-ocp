@@ -44,7 +44,7 @@ func TestMain(m *testing.M) {
 }
 
 // A test to pass existing resources to the WatsonX Self Managed OCP DA
-func TestRunStandardSolution(t *testing.T) {
+func TestRunFullyConfigurableSolution(t *testing.T) {
 	t.Parallel()
 	// ------------------------------------------------------------------------------------
 	// Provision ROK's first
@@ -90,7 +90,7 @@ func TestRunStandardSolution(t *testing.T) {
 		)
 
 		if !assert.NoError(t, cpdEntitlementKeyErr) {
-			t.Error("TestRunStandardUpgradeSolution Failed - geretain-software-entitlement-key not found in secrets manager")
+			t.Error("TestRunFullyConfigurableSolution Failed - geretain-software-entitlement-key not found in secrets manager")
 			panic(cpdEntitlementKeyErr)
 		}
 
@@ -100,14 +100,12 @@ func TestRunStandardSolution(t *testing.T) {
 			// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
 			ImplicitRequired: false,
 			TerraformVars: map[string]any{
-				"prefix":                       prefix,
-				"region":                       region,
-				"existing_cluster_name":        terraform.Output(t, existingTerraformOptions, "cluster_name"),
-				"existing_resource_group_name": terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"),
-				"cloud_pak_deployer_image":     "quay.io/cloud-pak-deployer/cloud-pak-deployer",
-				"cpd_admin_password":           GetRandomAdminPassword(t),
-				"cpd_entitlement_key":          *cpdEntitlementKey,
-				"install_odf_cluster_addon":    true,
+				"prefix":                      prefix,
+				"region":                      region,
+				"existing_cluster_name":       terraform.Output(t, existingTerraformOptions, "cluster_name"),
+				"cluster_resource_group_name": terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"),
+				"cpd_entitlement_key":         *cpdEntitlementKey,
+				"provider_visibility":         "public", // TODO: use schematics test wrapper and default to private
 			},
 		})
 
@@ -147,7 +145,7 @@ func TestRunStandardSolution(t *testing.T) {
 	}
 }
 
-func TestRunStandardUpgradeSolution(t *testing.T) {
+func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
 	t.Parallel()
 
 	prefix := fmt.Sprintf("cp-up-%s", strings.ToLower(random.UniqueId()))
@@ -190,7 +188,7 @@ func TestRunStandardUpgradeSolution(t *testing.T) {
 		)
 
 		if !assert.NoError(t, cpdEntitlementKeyErr) {
-			t.Error("TestRunStandardUpgradeSolution Failed - geretain-software-entitlement-key not found in secrets manager")
+			t.Error("TestRunFullyConfigurableUpgradeSolution Failed - geretain-software-entitlement-key not found in secrets manager")
 			panic(cpdEntitlementKeyErr)
 		}
 
@@ -200,14 +198,12 @@ func TestRunStandardUpgradeSolution(t *testing.T) {
 			// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
 			ImplicitRequired: false,
 			TerraformVars: map[string]any{
-				"prefix":                       prefix,
-				"region":                       region,
-				"existing_cluster_name":        terraform.Output(t, existingTerraformOptions, "cluster_name"),
-				"existing_resource_group_name": terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"),
-				"cloud_pak_deployer_image":     "quay.io/cloud-pak-deployer/cloud-pak-deployer",
-				"cpd_admin_password":           GetRandomAdminPassword(t),
-				"cpd_entitlement_key":          *cpdEntitlementKey,
-				"install_odf_cluster_addon":    true,
+				"prefix":                      prefix,
+				"region":                      region,
+				"existing_cluster_name":       terraform.Output(t, existingTerraformOptions, "cluster_name"),
+				"cluster_resource_group_name": terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"),
+				"cpd_entitlement_key":         *cpdEntitlementKey,
+				"provider_visibility":         "public", // TODO: use schematics test wrapper and default to private
 			},
 		})
 
@@ -249,17 +245,6 @@ func TestRunStandardUpgradeSolution(t *testing.T) {
 	}
 }
 
-func GetRandomAdminPassword(t *testing.T) string {
-	// Generate a 15 char long random string for the admin_pass
-	randomBytes := make([]byte, 13)
-	_, randErr := rand.Read(randomBytes)
-	require.Nil(t, randErr) // do not proceed if we can't gen a random password
-
-	randomPass := "A1" + base64.URLEncoding.EncodeToString(randomBytes)[:13]
-
-	return randomPass
-}
-
 // GetSecretsManagerKey retrieves a secret from Secrets Manager
 func GetSecretsManagerKey(smId string, smRegion string, smKeyId string) (*string, error) {
 	secretsManagerService, err := secretsmanagerv2.NewSecretsManagerV2(&secretsmanagerv2.SecretsManagerV2Options{
@@ -281,4 +266,15 @@ func GetSecretsManagerKey(smId string, smRegion string, smKeyId string) (*string
 		return nil, err
 	}
 	return secret.(*secretsmanagerv2.ArbitrarySecret).Payload, nil
+}
+
+func GetRandomAdminPassword(t *testing.T) string {
+	// Generate a 15 char long random string for the admin_pass
+	randomBytes := make([]byte, 13)
+	_, randErr := rand.Read(randomBytes)
+	require.Nil(t, randErr) // do not proceed if we can't gen a random password
+
+	randomPass := "A1" + base64.URLEncoding.EncodeToString(randomBytes)[:13]
+
+	return randomPass
 }

@@ -1,7 +1,7 @@
 {
   "products": [
     {
-      "label": "Watsonx (Self-Managed) on Red Hat OpenShift",
+      "label": "watsonx self-managed on Red Hat OpenShift",
       "name": "deploy-arch-ibm-watsonx-self-managed",
       "product_kind": "solution",
       "tags": [
@@ -28,6 +28,7 @@
       "long_description": "Solution that deploys Watsonx services (watsonx.ai, watsonx.data, Watson Assistant, Watson Discovery) on an existing Red Hat OpenShift cluster.",
       "offering_docs_url": "https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/blob/main/solutions/fully-configurable/README.md",
       "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/main/images/watsonx-self-managed-ocp.svg",
+      "support_details": "This product is in the community registry, as such support is handled through the originated repo. If you experience issues please open an issue in the following [issues repository](https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues). Please note this product is not supported via the IBM Cloud Support Center.",
       "features": [
         {
           "title": "Flexible Cluster Deployment",
@@ -53,22 +54,47 @@
           "working_directory": "solutions/fully-configurable",
           "iam_permissions": [
             {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Viewer"
+              ],
+              "service_name": "Resource group only",
+              "notes": "Viewer access is required in the resource group you want to provision in."
+            },
+            {
               "service_name": "containers-kubernetes",
               "role_crns": [
                 "crn:v1:bluemix:public:iam::::serviceRole:Manager",
                 "crn:v1:bluemix:public:iam::::role:Viewer"
               ]
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ],
+              "service_name": "codeengine",
+              "notes": "[Optional] Required if building image."
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Editor"
+              ],
+              "service_name": "codeengine",
+              "notes": "[Optional] Required if building image."
+            },
+            {
+              "role_crns": [
+                "crn:v1:bluemix:public:iam::::role:Writer",
+                "crn:v1:bluemix:public:iam::::role:Manager"
+              ],
+              "service_name": "container-registry",
+              "notes": "[Optional] Required if building image."
             }
           ],
           "architecture": {
             "features": [
               {
-                "title": "Cluster must meet minimum requirements to install any Watson services you wish to add.",
-                "description": "Yes"
-              },
-              {
-                "title": "Deploys Watsonx services on an existing cluster.",
-                "description": "Yes"
+                "title": " ",
+                "description": "Configured to use IBM secure by default standards, but can be edited to fit your use case."
               }
             ],
             "diagrams": [
@@ -92,73 +118,24 @@
               "required": true
             },
             {
-              "key": "region",
-              "required": true
-            },
-            {
               "key": "existing_cluster_name",
               "required": true
             },
             {
-              "key": "existing_resource_group_name",
+              "key": "existing_cluster_resource_group_name",
               "custom_config": {
                 "type": "resource_group",
                 "grouping": "deployment",
                 "original_grouping": "deployment",
                 "config_constraints": {
-                  "identifier": "rg_id"
+                  "identifier": "rg_name"
                 }
               },
               "required": true
             },
             {
-              "key": "install_odf_cluster_addon",
-              "required": true
-            },
-            {
               "key": "cpd_entitlement_key",
               "required": true
-            },
-            {
-              "key": "watsonx_ai_install",
-              "required": true
-            },
-            {
-              "key": "watsonx_ai_models",
-              "required": true
-            },
-            {
-              "key": "watsonx_data_install",
-              "required": true
-            },
-            {
-              "key": "watson_discovery_install",
-              "required": true
-            },
-            {
-              "key": "watson_assistant_install",
-              "required": true
-            },
-            {
-              "key": "code_engine_project_name"
-            },
-            {
-              "key": "code_engine_project_id"
-            },
-            {
-              "key": "cloud_pak_deployer_image"
-            },
-            {
-              "key": "cloud_pak_deployer_release"
-            },
-            {
-              "key": "cloud_pak_deployer_secret"
-            },
-            {
-              "key": "odf_version"
-            },
-            {
-              "key": "odf_config"
             },
             {
               "key": "cpd_accept_license"
@@ -168,6 +145,61 @@
             },
             {
               "key": "cpd_version"
+            },
+            {
+              "key": "watsonx_ai_install"
+            },
+            {
+              "key": "watsonx_ai_models"
+            },
+            {
+              "key": "watsonx_data_install"
+            },
+            {
+              "key": "watson_discovery_install"
+            },
+            {
+              "key": "watson_assistant_install"
+            },
+            {
+              "key": "cloud_pak_deployer_image"
+            },
+            {
+              "key": "code_engine_project_name"
+            },
+            {
+              "key": "code_engine_project_id"
+            },
+            {
+              "key": "existing_resource_group_name"
+            },
+            {
+              "key": "container_registry_namespace"
+            },
+            {
+              "key": "region"
+            },
+            {
+              "key": "use_global_container_registry_location"
+            },
+            {
+              "key": "cloud_pak_deployer_release"
+            },
+            {
+              "key": "cloud_pak_deployer_secret"
+            },
+            {
+              "key": "install_odf_cluster_addon"
+            },
+            {
+              "key": "odf_version"
+            },
+            {
+              "key": "odf_config"
+            },
+            {
+              "key": "provider_visibility",
+              "hidden": true
             }
           ],
           "install_type": "fullstack"
