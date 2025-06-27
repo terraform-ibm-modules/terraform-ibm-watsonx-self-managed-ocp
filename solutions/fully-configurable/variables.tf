@@ -52,8 +52,8 @@ variable "cloud_pak_deployer_image" {
   default     = "quay.io/cloud-pak-deployer/cloud-pak-deployer:v3.1.8@sha256:e9cde204359a3014a3cee6a43c1e945a7dcb31d5fa92439326d4e5ab2191b48f"
 }
 
-variable "existing_cluster_name" {
-  description = "Name of an existing Red Hat OpenShift cluster to create and install watsonx onto."
+variable "existing_cluster_id" {
+  description = "ID of an existing Red Hat OpenShift cluster to create and install watsonx onto."
   type        = string
   nullable    = false
 }

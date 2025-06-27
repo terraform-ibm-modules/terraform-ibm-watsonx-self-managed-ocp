@@ -37,6 +37,10 @@ locals {
   prefix             = var.prefix != null ? trimspace(var.prefix) != "" ? "${var.prefix}-" : "" : ""
 }
 
+data "ibm_container_vpc_cluster" "cluster" {
+  name              = var.existing_cluster_id
+  resource_group_id = module.cluster_resource_group.resource_group_id
+}
 
 module "watsonx_self_managed_ocp" {
   source                                 = "../.."
@@ -48,7 +52,7 @@ module "watsonx_self_managed_ocp" {
   cloud_pak_deployer_image               = var.cloud_pak_deployer_image
   cloud_pak_deployer_release             = var.cloud_pak_deployer_release
   cloud_pak_deployer_secret              = var.cloud_pak_deployer_secret
-  cluster_name                           = var.existing_cluster_name
+  cluster_name                           = data.ibm_container_vpc_cluster.cluster.name
   cluster_resource_group_id              = module.cluster_resource_group.resource_group_id
   install_odf_cluster_addon              = var.install_odf_cluster_addon
   odf_version                            = var.odf_version

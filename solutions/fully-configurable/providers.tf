@@ -23,7 +23,7 @@ locals {
 }
 
 data "ibm_container_cluster_config" "cluster_config" {
-  cluster_name_id = var.existing_cluster_name
+  cluster_name_id = var.existing_cluster_id
   config_dir      = local.kube_config_dir
 }
 

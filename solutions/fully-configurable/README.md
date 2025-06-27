@@ -136,6 +136,7 @@ You need the following permissions to run this module:
 | [random_password.admin_password](https://registry.terraform.io/providers/hashicorp/random/3.7.2/docs/resources/password) | resource |
 | [external_external.schematics](https://registry.terraform.io/providers/hashicorp/external/2.3.5/docs/data-sources/external) | data source |
 | [ibm_container_cluster_config.cluster_config](https://registry.terraform.io/providers/ibm-cloud/ibm/1.79.2/docs/data-sources/container_cluster_config) | data source |
+| [ibm_container_vpc_cluster.cluster](https://registry.terraform.io/providers/ibm-cloud/ibm/1.79.2/docs/data-sources/container_vpc_cluster) | data source |
 | [ibm_iam_auth_token.tokendata](https://registry.terraform.io/providers/ibm-cloud/ibm/1.79.2/docs/data-sources/iam_auth_token) | data source |
 
 ### Inputs
@@ -152,7 +153,7 @@ You need the following permissions to run this module:
 | <a name="input_cpd_admin_password"></a> [cpd\_admin\_password](#input\_cpd\_admin\_password) | Password for the Cloud Pak for Data admin user. If no value passed, a random password is generated and can be access using the 'cpd\_admin\_password' output. | `string` | `null` | no |
 | <a name="input_cpd_entitlement_key"></a> [cpd\_entitlement\_key](#input\_cpd\_entitlement\_key) | Cloud Pak for Data entitlement key for access to the IBM Entitled Registry. Can be fetched from https://myibm.ibm.com/products-services/containerlibrary. | `string` | n/a | yes |
 | <a name="input_cpd_version"></a> [cpd\_version](#input\_cpd\_version) | Cloud Pak for Data version to install.  Only version 5.x.x is supported, latest versions can be found [here](https://www.ibm.com/docs/en/cloud-paks/cp-data?topic=versions-cloud-pak-data). | `string` | `"5.0.3"` | no |
-| <a name="input_existing_cluster_name"></a> [existing\_cluster\_name](#input\_existing\_cluster\_name) | Name of an existing Red Hat OpenShift cluster to create and install watsonx onto. | `string` | n/a | yes |
+| <a name="input_existing_cluster_id"></a> [existing\_cluster\_id](#input\_existing\_cluster\_id) | ID of an existing Red Hat OpenShift cluster to create and install watsonx onto. | `string` | n/a | yes |
 | <a name="input_existing_cluster_resource_group_name"></a> [existing\_cluster\_resource\_group\_name](#input\_existing\_cluster\_resource\_group\_name) | The name of the resource group that the cluster provided in `cluster_name` exists in. | `string` | n/a | yes |
 | <a name="input_existing_resource_group_name"></a> [existing\_resource\_group\_name](#input\_existing\_resource\_group\_name) | The name of the resource group where Code Engine and Container Registry resources will be provisioned. Only applies if `cloud_pak_deployer_image` is `null`. | `string` | `"Default"` | no |
 | <a name="input_ibmcloud_api_key"></a> [ibmcloud\_api\_key](#input\_ibmcloud\_api\_key) | The IBM Cloud API key to deploy resources. | `string` | n/a | yes |

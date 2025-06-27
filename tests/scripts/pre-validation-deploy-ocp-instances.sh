@@ -33,7 +33,7 @@ TF_VARS_FILE="terraform.tfvars"
   cpd_entitlement_key_value="${SOFTWARE_ENTITLEMENT_KEY}"
   existing_cluster_name_var_name="existing_cluster_name"
   existing_cluster_name_value=$(terraform output -state=terraform.tfstate -raw cluster_name)
-  existing_resource_group_name_var_name="existing_resource_group_name"
+  existing_resource_group_name_var_name="existing_cluster_resource_group_name"
   existing_resource_group_name_value=$(terraform output -state=terraform.tfstate -raw cluster_resource_group_name)
 
   echo "Appending '${existing_cluster_name_var_name}', '${existing_resource_group_name_var_name}', '${cpd_entitlement_key_var_name}', and '${region_var_name}' input variable values to ${JSON_FILE}.."

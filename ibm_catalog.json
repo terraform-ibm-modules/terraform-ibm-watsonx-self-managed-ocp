@@ -76,15 +76,8 @@
             },
             {
               "role_crns": [
+                "crn:v1:bluemix:public:iam::::serviceRole:Manager",
                 "crn:v1:bluemix:public:iam::::role:Editor"
-              ],
-              "service_name": "codeengine",
-              "notes": "[Optional] Required if building image."
-            },
-            {
-              "role_crns": [
-                "crn:v1:bluemix:public:iam::::role:Writer",
-                "crn:v1:bluemix:public:iam::::role:Manager"
               ],
               "service_name": "container-registry",
               "notes": "[Optional] Required if building image."
@@ -118,8 +111,14 @@
               "required": true
             },
             {
-              "key": "existing_cluster_name",
-              "required": true
+              "key": "existing_cluster_id",
+              "display_name": "existing_cluster",
+              "required": true,
+              "custom_config": {
+                "type": "cluster_var",
+                "grouping": "deployment",
+                "original_grouping": "deployment"
+              }
             },
             {
               "key": "existing_cluster_resource_group_name",
@@ -171,7 +170,15 @@
               "key": "code_engine_project_id"
             },
             {
-              "key": "existing_resource_group_name"
+              "key": "existing_resource_group_name",
+              "custom_config": {
+                "type": "resource_group",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "identifier": "rg_name"
+                }
+              }
             },
             {
               "key": "container_registry_namespace"
