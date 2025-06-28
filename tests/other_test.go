@@ -18,7 +18,7 @@ func TestRunBasicExample(t *testing.T) {
 		cpdEntitlementKeySecretId,
 	)
 	if !assert.NoError(t, cpdEntitlementKeyErr) {
-		t.Error("TestRunStandardUpgradeSolution Failed - geretain-software-entitlement-key not found in secrets manager")
+		t.Error("TestRunBasicExample Failed - geretain-software-entitlement-key not found in secrets manager")
 		panic(cpdEntitlementKeyErr)
 	}
 

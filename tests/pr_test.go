@@ -100,12 +100,12 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 			// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
 			ImplicitRequired: false,
 			TerraformVars: map[string]any{
-				"prefix":                      prefix,
-				"region":                      region,
-				"existing_cluster_name":       terraform.Output(t, existingTerraformOptions, "cluster_name"),
-				"cluster_resource_group_name": terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"),
-				"cpd_entitlement_key":         *cpdEntitlementKey,
-				"provider_visibility":         "public", // TODO: use schematics test wrapper and default to private
+				"prefix":                               prefix,
+				"region":                               region,
+				"existing_cluster_id":                  terraform.Output(t, existingTerraformOptions, "cluster_id"),
+				"existing_cluster_resource_group_name": terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"),
+				"cpd_entitlement_key":                  *cpdEntitlementKey,
+				"provider_visibility":                  "public", // TODO: use schematics test wrapper and default to private (https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/42)
 			},
 		})
 
@@ -198,12 +198,12 @@ func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
 			// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
 			ImplicitRequired: false,
 			TerraformVars: map[string]any{
-				"prefix":                      prefix,
-				"region":                      region,
-				"existing_cluster_name":       terraform.Output(t, existingTerraformOptions, "cluster_name"),
-				"cluster_resource_group_name": terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"),
-				"cpd_entitlement_key":         *cpdEntitlementKey,
-				"provider_visibility":         "public", // TODO: use schematics test wrapper and default to private
+				"prefix":                               prefix,
+				"region":                               region,
+				"existing_cluster_id":                  terraform.Output(t, existingTerraformOptions, "cluster_id"),
+				"existing_cluster_resource_group_name": terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"),
+				"cpd_entitlement_key":                  *cpdEntitlementKey,
+				"provider_visibility":                  "public", // TODO: use schematics test wrapper and default to private (https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/42)
 			},
 		})
 
