@@ -31,12 +31,12 @@ TF_VARS_FILE="terraform.tfvars"
   prefix_value="ocp-$(openssl rand -hex 2)"
   cpd_entitlement_key_var_name="cpd_entitlement_key"
   cpd_entitlement_key_value="${SOFTWARE_ENTITLEMENT_KEY}"
-  existing_cluster_name_var_name="existing_cluster_name"
-  existing_cluster_name_value=$(terraform output -state=terraform.tfstate -raw cluster_name)
+  existing_cluster_id_var_name="existing_cluster_id"
+  existing_cluster_id_value=$(terraform output -state=terraform.tfstate -raw cluster_id)
   existing_resource_group_name_var_name="existing_cluster_resource_group_name"
   existing_resource_group_name_value=$(terraform output -state=terraform.tfstate -raw cluster_resource_group_name)
 
-  echo "Appending '${existing_cluster_name_var_name}', '${existing_resource_group_name_var_name}', '${cpd_entitlement_key_var_name}', and '${region_var_name}' input variable values to ${JSON_FILE}.."
+  echo "Appending '${existing_cluster_id_var_name}', '${existing_resource_group_name_var_name}', '${cpd_entitlement_key_var_name}', and '${region_var_name}' input variable values to ${JSON_FILE}.."
 
   cd "${cwd}"
   jq -r --arg region_var_name "${region_var_name}" \
@@ -45,8 +45,8 @@ TF_VARS_FILE="terraform.tfvars"
         --arg prefix_value "${prefix_value}" \
         --arg cpd_entitlement_key_var_name "${cpd_entitlement_key_var_name}" \
         --arg cpd_entitlement_key_value "${cpd_entitlement_key_value}" \
-        --arg existing_cluster_name_var_name "${existing_cluster_name_var_name}" \
-        --arg existing_cluster_name_value "${existing_cluster_name_value}" \
+        --arg existing_cluster_name_var_name "${existing_cluster_id_var_name}" \
+        --arg existing_cluster_name_value "${existing_cluster_id_value}" \
         --arg existing_resource_group_name_var_name "${existing_resource_group_name_var_name}" \
         --arg existing_resource_group_name_value "${existing_resource_group_name_value}" \
         '. + {($region_var_name): $region_var_value, ($prefix_var_name): $prefix_value, ($cpd_entitlement_key_var_name): $cpd_entitlement_key_value, ($existing_cluster_name_var_name): $existing_cluster_name_value, ($existing_resource_group_name_var_name): $existing_resource_group_name_value}' "${JSON_FILE}" > tmpfile && mv tmpfile "${JSON_FILE}" || exit 1
