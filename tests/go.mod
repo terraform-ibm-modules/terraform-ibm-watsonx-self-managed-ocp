@@ -1,6 +1,6 @@
 module github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp
 
-go 1.23.0
+go 1.24.2
 
 toolchain go1.24.3
 
@@ -15,11 +15,11 @@ require (
 	github.com/IBM-Cloud/bluemix-go v0.0.0-20240719075425-078fcb3a55be // indirect
 	github.com/IBM-Cloud/power-go-client v1.11.0 // indirect
 	github.com/IBM/cloud-databases-go-sdk v0.7.1 // indirect
-	github.com/IBM/go-sdk-core/v5 v5.19.1 // indirect
+	github.com/IBM/go-sdk-core/v5 v5.19.1
 	github.com/IBM/platform-services-go-sdk v0.82.0 // indirect
 	github.com/IBM/project-go-sdk v0.3.6 // indirect
 	github.com/IBM/schematics-go-sdk v0.4.0 // indirect
-	github.com/IBM/secrets-manager-go-sdk v1.2.0
+	github.com/IBM/secrets-manager-go-sdk/v2 v2.0.11
 	github.com/IBM/vpc-go-sdk v1.0.2 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.1.6 // indirect
@@ -85,7 +85,7 @@ require (
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/zclconf/go-cty v1.16.2 // indirect
-	go.mongodb.org/mongo-driver v1.17.2 // indirect
+	go.mongodb.org/mongo-driver v1.17.3 // indirect
 	go.opentelemetry.io/otel v1.29.0 // indirect
 	go.opentelemetry.io/otel/metric v1.29.0 // indirect
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
