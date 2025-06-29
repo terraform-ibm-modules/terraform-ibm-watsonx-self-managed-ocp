@@ -39,7 +39,7 @@ data "ibm_code_engine_project" "code_engine_project" {
 module "resource_group" {
   count   = var.code_engine_project_id == null ? 1 : 0
   source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.2.0"
+  version = "1.2.1"
 
   # if an existing resource group is not set (null) create a new one using prefix
   resource_group_name          = var.resource_group == null ? "${var.prefix}-resource-group" : null
@@ -59,7 +59,7 @@ resource "ibm_cr_namespace" "cr_namespace" {
 ##############################################################################
 module "code_engine" {
   source              = "terraform-ibm-modules/code-engine/ibm"
-  version             = "4.2.2"
+  version             = "4.4.1"
   project_name        = var.code_engine_project_id == null ? local.code_engine_project_name : null
   existing_project_id = var.code_engine_project_id
   resource_group_id   = local.resource_group_id
@@ -77,7 +77,7 @@ module "code_engine" {
 
 module "code_engine_build" {
   source  = "terraform-ibm-modules/code-engine/ibm//modules/build"
-  version = "4.2.2"
+  version = "4.4.1"
 
   name            = "cpd-build"
   project_id      = module.code_engine.project_id

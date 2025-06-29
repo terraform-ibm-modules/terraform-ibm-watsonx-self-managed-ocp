@@ -113,17 +113,17 @@ You need the following permissions to run this module:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
-| <a name="requirement_external"></a> [external](#requirement\_external) | >= 2.3.4 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.8.0, <3.0.0 |
-| <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | 1.79.1 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.2.1, < 4.0.0 |
+| <a name="requirement_external"></a> [external](#requirement\_external) | >= 2.3.5 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.17.0, < 3.0.0 |
+| <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | 1.79.2 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.2.4, < 4.0.0 |
 | <a name="requirement_shell"></a> [shell](#requirement\_shell) | 1.7.10 |
 
 ### Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform-ibm-modules/resource-group/ibm | 1.2.0 |
+| <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform-ibm-modules/resource-group/ibm | 1.2.1 |
 | <a name="module_watsonx_self_managed_ocp"></a> [watsonx\_self\_managed\_ocp](#module\_watsonx\_self\_managed\_ocp) | ../.. | n/a |
 
 ### Resources
@@ -132,8 +132,8 @@ You need the following permissions to run this module:
 |------|------|
 | [null_resource.wait_for_cloud_pak_deployer_complete](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [external_external.schematics](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external) | data source |
-| [ibm_container_cluster_config.cluster_config](https://registry.terraform.io/providers/ibm-cloud/ibm/1.79.1/docs/data-sources/container_cluster_config) | data source |
-| [ibm_iam_auth_token.tokendata](https://registry.terraform.io/providers/ibm-cloud/ibm/1.79.1/docs/data-sources/iam_auth_token) | data source |
+| [ibm_container_cluster_config.cluster_config](https://registry.terraform.io/providers/ibm-cloud/ibm/1.79.2/docs/data-sources/container_cluster_config) | data source |
+| [ibm_iam_auth_token.tokendata](https://registry.terraform.io/providers/ibm-cloud/ibm/1.79.2/docs/data-sources/iam_auth_token) | data source |
 
 ### Inputs
 
