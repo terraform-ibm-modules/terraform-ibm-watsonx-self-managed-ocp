@@ -137,19 +137,24 @@
               "required": true
             },
             {
-              "key": "watsonx_ai_install"
+              "key": "watsonx_ai_install",
+              "required": true
             },
             {
-              "key": "watsonx_ai_models"
+              "key": "watsonx_ai_models",
+              "required": true
             },
             {
-              "key": "watsonx_data_install"
+              "key": "watsonx_data_install",
+              "required": true
             },
             {
-              "key": "watson_discovery_install"
+              "key": "watson_discovery_install",
+              "required": true
             },
             {
-              "key": "watson_assistant_install"
+              "key": "watson_assistant_install",
+              "required": true
             },
             {
               "key": "cpd_accept_license"
