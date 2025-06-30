@@ -11,7 +11,7 @@ terraform {
     }
     helm = {
       source  = "hashicorp/helm"
-      version = ">= 2.17.0, < 3.0.0"
+      version = ">= 3.0.2, < 4.0.0"
     }
     shell = {
       source  = "scottwinkler/shell"
