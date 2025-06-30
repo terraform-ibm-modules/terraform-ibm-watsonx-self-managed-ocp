@@ -137,15 +137,6 @@
               "required": true
             },
             {
-              "key": "cpd_accept_license"
-            },
-            {
-              "key": "cpd_admin_password"
-            },
-            {
-              "key": "cpd_version"
-            },
-            {
               "key": "watsonx_ai_install"
             },
             {
@@ -159,6 +150,15 @@
             },
             {
               "key": "watson_assistant_install"
+            },
+            {
+              "key": "cpd_accept_license"
+            },
+            {
+              "key": "cpd_admin_password"
+            },
+            {
+              "key": "cpd_version"
             },
             {
               "key": "cloud_pak_deployer_image"

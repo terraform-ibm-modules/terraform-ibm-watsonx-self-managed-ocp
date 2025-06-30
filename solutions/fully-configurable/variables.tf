@@ -109,7 +109,7 @@ variable "cpd_version" {
 variable "watsonx_ai_install" {
   description = "Determine whether the watsonx.ai cartridge for the deployer will be installed"
   type        = bool
-  default     = true
+  default     = false
 }
 
 #  Only used in the watsonx.ai offering flavour
@@ -123,19 +123,19 @@ variable "watsonx_ai_models" {
 variable "watsonx_data_install" {
   description = "Determine whether the watsonx.data cartridge for the deployer will be installed"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "watson_discovery_install" {
   description = "If watsonx.ai is being installed, also install watson discovery"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "watson_assistant_install" {
   description = "If watsonx.ai is being installed, also install watson assistant"
   type        = bool
-  default     = true
+  default     = false
 }
 
 ###############################################################################################
