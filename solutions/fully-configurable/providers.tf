@@ -1,7 +1,7 @@
 provider "ibm" {
   ibmcloud_api_key = var.ibmcloud_api_key
-
-  region = var.region
+  region           = var.region
+  visibility       = var.provider_visibility
 }
 
 locals {
@@ -23,7 +23,7 @@ locals {
 }
 
 data "ibm_container_cluster_config" "cluster_config" {
-  cluster_name_id = var.existing_cluster_name
+  cluster_name_id = var.existing_cluster_id
   config_dir      = local.kube_config_dir
 }
 

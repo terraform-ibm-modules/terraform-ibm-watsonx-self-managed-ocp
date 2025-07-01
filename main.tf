@@ -1,35 +1,41 @@
-locals {
-  openshift_version = join(".", slice(split(".", data.ibm_container_vpc_cluster.cluster_info.kube_version), 0, 2)) # Only use major and minor — no patch
-}
-
-# Retrieve the openshift cluster info
-data "ibm_container_vpc_cluster" "cluster_info" {
-  name              = var.cluster_name
-  resource_group_id = var.cluster_rg_id
-}
+##############################################################################
+# Build the image in Code Engine if one is not passed and publish to ICR
+##############################################################################
 
 module "build_cpd_image" {
-  count                      = var.cloud_pak_deployer_image == null ? 1 : 0
-  source                     = "./modules/cpd-image-build"
-  prefix                     = var.prefix
-  ibmcloud_api_key           = var.ibmcloud_api_key
-  region                     = var.region
-  code_engine_project_name   = var.code_engine_project_name
-  code_engine_project_id     = var.code_engine_project_id
-  resource_group             = var.resource_group
-  cloud_pak_deployer_release = var.cloud_pak_deployer_release
+  count                                  = var.cloud_pak_deployer_image == null ? 1 : 0
+  source                                 = "./modules/cpd-image-build"
+  ibmcloud_api_key                       = var.ibmcloud_api_key
+  region                                 = var.region
+  code_engine_project_name               = var.code_engine_project_name
+  code_engine_project_id                 = var.code_engine_project_id
+  resource_group_id                      = var.resource_group_id
+  use_global_container_registry_location = var.use_global_container_registry_location
+  cloud_pak_deployer_release             = var.cloud_pak_deployer_release
+  container_registry_namespace           = var.container_registry_namespace
+  add_random_suffix_icr_namespace        = var.add_random_suffix_icr_namespace
+  add_random_suffix_code_engine_project  = var.add_random_suffix_code_engine_project
 }
+
+##############################################################################
+# Install OCP ODF cluster addon
+##############################################################################
 
 resource "ibm_container_addons" "odf_cluster_addon" {
   count             = var.install_odf_cluster_addon ? 1 : 0
   cluster           = var.cluster_name
   manage_all_addons = false
+  resource_group_id = var.cluster_resource_group_id
   addons {
     name            = "openshift-data-foundation"
     version         = var.odf_version
     parameters_json = jsonencode(var.odf_config)
   }
 }
+
+##############################################################################
+# watsonx-ai
+##############################################################################
 
 module "watsonx_ai" {
   source                   = "./modules/watsonx-ai"
@@ -40,11 +46,19 @@ module "watsonx_ai" {
   watsonx_ai_models        = var.watsonx_ai_models
 }
 
+##############################################################################
+# watsonx-data
+##############################################################################
+
 module "watsonx_data" {
   source               = "./modules/watsonx-data"
   depends_on           = [ibm_container_addons.odf_cluster_addon]
   watsonx_data_install = var.watsonx_data_install
 }
+
+##############################################################################
+# Cloud Pak deployer
+##############################################################################
 
 module "cloud_pak_deployer" {
   depends_on = [
@@ -77,6 +91,15 @@ module "cloud_pak_deployer" {
   cpd_accept_license  = var.cpd_accept_license
   cpd_admin_password  = var.cpd_admin_password
   cpd_entitlement_key = var.cpd_entitlement_key
+}
+
+# Retrieve the openshift cluster info
+data "ibm_container_vpc_cluster" "cluster_info" {
+  name              = var.cluster_name
+  resource_group_id = var.cluster_resource_group_id
+}
+locals {
+  openshift_version = join(".", slice(split(".", data.ibm_container_vpc_cluster.cluster_info.kube_version), 0, 2)) # Only use major and minor — no patch
 }
 
 # Cloud Pak Deployer configuration file local variable(s) only

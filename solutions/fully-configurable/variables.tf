@@ -1,48 +1,67 @@
+###############################################################################################
+# Common inputs
+###############################################################################################
+
 variable "ibmcloud_api_key" {
   description = "The IBM Cloud API key to deploy resources."
   type        = string
   sensitive   = true
 }
 
-variable "prefix" {
-  description = "A unique identifier for resources that is prepended to resources that are provisioned. Must begin with a lowercase letter and end with a lowercase letter or number. Must be 16 or fewer characters."
+variable "provider_visibility" {
+  description = "Set the visibility value for the IBM terraform provider. Supported values are `public`, `private`, `public-and-private`. [Learn more](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/guides/custom-service-endpoints)."
   type        = string
-  default     = "cp4d"
+  default     = "private"
+
   validation {
-    error_message = "Prefix must begin with a letter and contain only lowercase letters, numbers, and - characters. Prefixes must end with a lowercase letter or number and be 16 or fewer characters."
-    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.prefix)) && length(var.prefix) <= 16
+    condition     = contains(["public", "private", "public-and-private"], var.provider_visibility)
+    error_message = "Invalid visibility option. Allowed values are 'public', 'private', or 'public-and-private'."
   }
 }
 
-variable "region" {
-  description = "Region where resources will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions."
+variable "prefix" {
   type        = string
-  nullable    = false
-  default     = "us-south"
-}
+  nullable    = true
+  description = "The prefix to be added to all resources created by this solution. To skip using a prefix, set this value to null or an empty string. The prefix must begin with a lowercase letter and may contain only lowercase letters, digits, and hyphens '-'. It should not exceed 16 characters, must not end with a hyphen('-'), and can not contain consecutive hyphens ('--'). Example: prod-wx-cp4d. [Learn more](https://terraform-ibm-modules.github.io/documentation/#/prefix.md)."
 
-variable "code_engine_project_name" {
-  description = "If `cloud_pak_deployer_image` is `null`, it will build the image with code engine and store it within a private ICR registry. Provide a name if you want to set the name. If not defined, default will be `{prefix}-cpd-{random-suffix}`."
-  type        = string
-  default     = null
-}
+  validation {
+    # - null and empty string is allowed
+    # - Must not contain consecutive hyphens (--): length(regexall("--", var.prefix)) == 0
+    # - Starts with a lowercase letter: [a-z]
+    # - Contains only lowercase letters (a–z), digits (0–9), and hyphens (-)
+    # - Must not end with a hyphen (-): [a-z0-9]
+    condition = (var.prefix == null || var.prefix == "" ? true :
+      alltrue([
+        can(regex("^[a-z][-a-z0-9]*[a-z0-9]$", var.prefix)),
+        length(regexall("--", var.prefix)) == 0
+      ])
+    )
+    error_message = "Prefix must begin with a lowercase letter and may contain only lowercase letters, digits, and hyphens '-'. It must not end with a hyphen('-'), and cannot contain consecutive hyphens ('--')."
+  }
 
-variable "code_engine_project_id" {
-  description = "If you want to use an existing project, you can pass the code engine project ID and the Cloud Pak Deployer build will be built within the existing project instead of creating a new one."
-  type        = string
-  default     = null
+  validation {
+    # must not exceed 16 characters in length
+    condition     = length(var.prefix) <= 16
+    error_message = "Prefix must not exceed 16 characters."
+  }
 }
 
 variable "cloud_pak_deployer_image" {
-  description = "Cloud Pak Deployer image to use. If `null`, the image will be built using Code Engine."
+  description = "Cloud Pak Deployer image to use. If `null`, the image will be built using Code Engine and publish to a private Container Registry namespace."
   type        = string
-  default     = "quay.io/cloud-pak-deployer/cloud-pak-deployer"
+  default     = "quay.io/cloud-pak-deployer/cloud-pak-deployer:v3.1.8@sha256:e9cde204359a3014a3cee6a43c1e945a7dcb31d5fa92439326d4e5ab2191b48f"
 }
 
-variable "cloud_pak_deployer_release" {
-  description = "Release of Cloud Pak Deployer version to use. View releases at: https://github.com/IBM/cloud-pak-deployer/releases."
+variable "existing_cluster_id" {
+  description = "ID of an existing Red Hat OpenShift cluster to create and install watsonx onto."
   type        = string
-  default     = "v3.1.8"
+  nullable    = false
+}
+
+variable "existing_cluster_resource_group_name" {
+  description = "The name of the resource group that the cluster provided in `cluster_name` exists in."
+  type        = string
+  nullable    = false
 }
 
 variable "cloud_pak_deployer_secret" {
@@ -56,19 +75,72 @@ variable "cloud_pak_deployer_secret" {
   default = null
 }
 
-variable "existing_cluster_name" {
-  description = "Name of an existing Red Hat OpenShift cluster to create and install watsonx onto."
+variable "cpd_accept_license" {
+  description = "When set to 'true', it is understood that the user has read the terms of the Cloud Pak license(s) and agrees to the terms outlined."
+  type        = bool
+  default     = true
+}
+
+variable "cpd_admin_password" {
+  description = "Password for the Cloud Pak for Data admin user. If no value passed, a random password is generated and can be access using the 'cpd_admin_password' output."
+  sensitive   = true
+  type        = string
+  default     = null
+}
+
+variable "cpd_entitlement_key" {
+  description = "Cloud Pak for Data entitlement key for access to the IBM Entitled Registry. Can be fetched from https://myibm.ibm.com/products-services/containerlibrary."
+  sensitive   = true
   type        = string
 }
 
-variable "existing_resource_group_name" {
-  description = "Resource group id of the cluster"
+variable "cpd_version" {
+  description = "Cloud Pak for Data version to install.  Only version 5.x.x is supported, latest versions can be found [here](https://www.ibm.com/docs/en/cloud-paks/cp-data?topic=versions-cloud-pak-data)."
   type        = string
+  default     = "5.0.3"
+
   validation {
-    error_message = "`existing_resource_group_name` cannot be null if `existing_cluster_name` is not null."
-    condition     = var.existing_cluster_name == null || var.existing_resource_group_name != null
+    error_message = "Cloud pak for data major version 5 is supported."
+    condition     = split(".", var.cpd_version)[0] == "5"
   }
 }
+
+#  Only used in the watsonx.ai offering flavour
+variable "watsonx_ai_install" {
+  description = "Determine whether the watsonx.ai cartridge for the deployer will be installed"
+  type        = bool
+  default     = false
+}
+
+#  Only used in the watsonx.ai offering flavour
+variable "watsonx_ai_models" {
+  description = "List of watsonx.ai models to install. Information on the foundation models including pre-reqs can be found here - https://www.ibm.com/docs/en/cloud-paks/cp-data/5.0.x?topic=install-foundation-models. Use the ModelID as input"
+  type        = list(string)
+  default     = ["ibm-granite-13b-instruct-v2"]
+}
+
+#  Only used in the watsonx.data offering flavour
+variable "watsonx_data_install" {
+  description = "Determine whether the watsonx.data cartridge for the deployer will be installed"
+  type        = bool
+  default     = false
+}
+
+variable "watson_discovery_install" {
+  description = "If watsonx.ai is being installed, also install watson discovery"
+  type        = bool
+  default     = false
+}
+
+variable "watson_assistant_install" {
+  description = "If watsonx.ai is being installed, also install watson assistant"
+  type        = bool
+  default     = false
+}
+
+###############################################################################################
+# ODF inputs
+###############################################################################################
 
 variable "install_odf_cluster_addon" {
   description = "Install the ODF cluster addon."
@@ -120,73 +192,52 @@ variable "odf_config" {
   }
 }
 
-variable "cpd_accept_license" {
-  description = "When set to `true`, it is understood that the user has read the terms of the Cloud Pak license(s) and agrees to the terms outlined."
+###############################################################################################
+# Below inputs are only used if building image (aka setting "cloud_pak_deployer_image" to null)
+###############################################################################################
+
+variable "existing_resource_group_name" {
+  type        = string
+  description = "The name of the resource group where Code Engine and Container Registry resources will be provisioned. Only applies if `cloud_pak_deployer_image` is `null`."
+  default     = "Default"
+}
+
+variable "region" {
+  description = "Region where Code Engine and Container Registry resources will be provisioned. Only applies if `cloud_pak_deployer_image` is `null`. To use the 'Global' Container Registry location set `use_global_container_registry_location` to true."
+  type        = string
+  default     = "us-south"
+}
+
+variable "use_global_container_registry_location" {
+  description = "Set to true to create the Container Registry namespace in the 'Global' location. If set to false, the namespace will be created in the region provided in the `region` input value. Only applies if `cloud_pak_deployer_image` is `null`."
   type        = bool
-  default     = true
-  nullable    = false
+  default     = false
 }
 
-variable "cpd_admin_password" {
-  description = "Password for the Cloud Pak for Data admin user."
-  sensitive   = true
+variable "container_registry_namespace" {
+  description = "The name of the Container Registry namespace to create. Only applies if `cloud_pak_deployer_image` is `null`. If a prefix input variable is specified, the prefix is added to the name in the `<prefix>-<name>` format."
   type        = string
-  nullable    = false
-  default     = "passw0rd" # pragma: allowlist secret
+  default     = "cpd"
 }
 
-variable "cpd_entitlement_key" {
-  description = "Cloud Pak for Data entitlement key for access to the IBM Entitled Registry. Can be fetched from https://myibm.ibm.com/products-services/containerlibrary."
-  sensitive   = true
+variable "code_engine_project_name" {
+  description = "The name of the Code Engine project to be created for the image build. Alternatively use `code_engine_project_id` to use existing project. Only applies if `cloud_pak_deployer_image` is `null`. If a prefix input variable is specified, the prefix is added to the name in the `<prefix>-<name>` format."
   type        = string
-  nullable    = false
-}
-
-variable "cpd_version" {
-  description = "Cloud Pak for Data version to install.  Only version 5.x.x is supported, latest versions can be found [here](https://www.ibm.com/docs/en/cloud-paks/cp-data?topic=versions-cloud-pak-data)."
-  type        = string
+  default     = "cpd"
   validation {
-    error_message = "Cloud pak for data major version 5 is supported."
-    condition     = split(".", var.cpd_version)[0] == "5"
+    condition     = var.code_engine_project_name == null ? var.code_engine_project_id != null : true
+    error_message = "A value must be passed for either 'code_engine_project_name' (to create new project) or 'code_engine_project_id' (to use existing project)."
   }
-  default  = "5.0.3"
-  nullable = false
 }
 
-#  Only used in the watsonx.ai offering flavour
-variable "watsonx_ai_install" {
-  description = "Determine whether the watsonx.ai cartridge for the deployer will be installed"
-  type        = bool
-  default     = false
-  nullable    = false
+variable "code_engine_project_id" {
+  description = "If you want to use an existing project, you can pass the Code Engine project ID. Alternatively use `code_engine_project_name` to create a new project. Only applies if `cloud_pak_deployer_image` is `null`."
+  type        = string
+  default     = null
 }
 
-#  Only used in the watsonx.ai offering flavour
-variable "watsonx_ai_models" {
-  description = "List of watsonx.ai models to install.  Information on the foundation models including pre-reqs can be found here - https://www.ibm.com/docs/en/cloud-paks/cp-data/5.0.x?topic=install-foundation-models.  Use the ModelID as input"
-  type        = list(string)
-  default     = ["ibm-granite-13b-instruct-v2"]
-  nullable    = false
-}
-
-#  Only used in the watsonx.data offering flavour
-variable "watsonx_data_install" {
-  description = "Determine whether the watsonx.data cartridge for the deployer will be installed"
-  type        = bool
-  default     = false
-  nullable    = false
-}
-
-variable "watson_discovery_install" {
-  description = "If watsonx.ai is being installed, also install watson discovery"
-  type        = bool
-  default     = false
-  nullable    = false
-}
-
-variable "watson_assistant_install" {
-  description = "If watsonx.ai is being installed, also install watson assistant"
-  type        = bool
-  default     = false
-  nullable    = false
+variable "cloud_pak_deployer_release" {
+  description = "The GIT release of Cloud Pak Deployer version to build from. Only applies if `cloud_pak_deployer_image` is `null`. View releases at: https://github.com/IBM/cloud-pak-deployer/releases."
+  type        = string
+  default     = "v3.1.8" # TODO: manage this version with renovate - https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/36
 }

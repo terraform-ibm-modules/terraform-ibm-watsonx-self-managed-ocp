@@ -1,8 +1,10 @@
 ##############################################################################
+# Locals
+##############################################################################
+
 locals {
   cluster_name = var.existing_cluster_name != null ? var.existing_cluster_name : module.ocp_base[0].cluster_name
 }
-###############################################################################
 
 ##############################################################################
 # Resource Group
@@ -93,7 +95,7 @@ module "ocp_base" {
   vpc_id                              = ibm_is_vpc.vpc.id
   vpc_subnets                         = local.cluster_vpc_subnets
   worker_pools                        = local.worker_pools
-  disable_outbound_traffic_protection = true # set as True to enable outbound traffic
+  disable_outbound_traffic_protection = true # set as True to enable outbound traffic to allow image to be pulled from quay.io
 }
 
 ##############################################################################
@@ -103,13 +105,9 @@ module "ocp_base" {
 module "watsonx_self_managed_ocp" {
   source                    = "../.."
   ibmcloud_api_key          = var.ibmcloud_api_key
-  prefix                    = var.prefix
   region                    = var.region
   cluster_name              = local.cluster_name
-  cluster_rg_id             = module.resource_group.resource_group_id
-  cloud_pak_deployer_image  = "quay.io/cloud-pak-deployer/cloud-pak-deployer"
-  cpd_admin_password        = "Passw0rd" #pragma: allowlist secret
-  cpd_entitlement_key       = "entitlementKey"
-  install_odf_cluster_addon = var.install_odf_cluster_addon
-  watsonx_ai_install        = false
+  cluster_resource_group_id = module.resource_group.resource_group_id
+  cpd_admin_password        = var.cpd_admin_password
+  cpd_entitlement_key       = var.cpd_entitlement_key
 }

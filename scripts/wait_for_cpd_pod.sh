@@ -3,14 +3,16 @@
 
 set -e
 NAMESPACE="cloud-pak-deployer"
-POD_NAME=$(kubectl get pods -n $NAMESPACE -o jsonpath='{.items[0].metadata.name}')
+POD_NAME=$(kubectl get pods -n "${NAMESPACE}" -o jsonpath='{.items[0].metadata.name}')
 STATUS=""
 while true; do
-  # shellcheck disable=SC2086
-  STATUS=$(kubectl get pod $POD_NAME -n $NAMESPACE -o jsonpath='{.status.phase}')
-  echo "Pod status: $STATUS"
-  if [[ "$STATUS" == "Succeeded" || "$STATUS" == "Failed" ]]; then
+  STATUS=$(kubectl get pod "${POD_NAME}" -n "${NAMESPACE}" -o jsonpath='{.status.phase}')
+  echo "Pod status: ${STATUS}"
+  if [[ "${STATUS}" == "Succeeded" ]]; then
     break
+  elif [[ "${STATUS}" == "Failed" ]]; then
+    echo "Exiting due to 'Failed' status. Check pod logs for more info."
+    exit 1
   fi
-  sleep 300
+  sleep 60
 done
