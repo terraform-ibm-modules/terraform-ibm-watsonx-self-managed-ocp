@@ -20,7 +20,6 @@ variable "cloud_pak_deployer_secret" {
   default = null
 }
 
-
 variable "cluster_name" {
   description = "Name of Red Hat OpenShift cluster to install watsonx onto"
   type        = string

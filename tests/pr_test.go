@@ -196,7 +196,8 @@ func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
 			Testing:      t,
 			TerraformDir: instanceFlavorDir,
 			// Do not hard fail the test if the implicit destroy steps fail to allow a full destroy of resource to occur
-			ImplicitRequired: false,
+			ImplicitRequired:           false,
+			CheckApplyResultForUpgrade: true,
 			TerraformVars: map[string]any{
 				"prefix":                               prefix,
 				"region":                               region,

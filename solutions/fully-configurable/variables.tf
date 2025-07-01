@@ -49,7 +49,8 @@ variable "prefix" {
 variable "cloud_pak_deployer_image" {
   description = "Cloud Pak Deployer image to use. If `null`, the image will be built using Code Engine and publish to a private Container Registry namespace."
   type        = string
-  default     = "quay.io/cloud-pak-deployer/cloud-pak-deployer:v3.1.8@sha256:e9cde204359a3014a3cee6a43c1e945a7dcb31d5fa92439326d4e5ab2191b48f"
+  # TODO: update renovate to manage this version
+  default = "quay.io/cloud-pak-deployer/cloud-pak-deployer:v3.2.1@sha256:311952546b0cbec425435269e9a1e7d8a4230dbcde6f257d1bd80461cb82f284"
 }
 
 variable "existing_cluster_id" {
@@ -239,5 +240,5 @@ variable "code_engine_project_id" {
 variable "cloud_pak_deployer_release" {
   description = "The GIT release of Cloud Pak Deployer version to build from. Only applies if `cloud_pak_deployer_image` is `null`. View releases at: https://github.com/IBM/cloud-pak-deployer/releases."
   type        = string
-  default     = "v3.1.8" # TODO: manage this version with renovate - https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/36
+  default     = "v3.2.1" # TODO: manage this version with renovate - https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/36
 }
