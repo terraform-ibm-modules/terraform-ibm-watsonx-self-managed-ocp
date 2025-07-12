@@ -1,7 +1,8 @@
+{{ $pvcName := printf "%s-%s" .Values.deployer.prefix "status" }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.deployer.prefix }}-status
+  name: {{ $pvcName }}
   namespace: {{ .Values.namespace }}
 spec:
   accessModes:
@@ -9,6 +10,8 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  volumeName: {{ .Values.deployer.prefix }}-status
   storageClassName: ibmc-vpc-block-10iops-tier
   volumeMode: Filesystem
+  {{- if (lookup "v1" "PersistentVolumeClaim" .Values.namespace $pvcName) }}
+  volumeName: {{ (lookup "v1" "PersistentVolumeClaim" .Values.namespace $pvcName).spec.volumeName }}
+  {{- end }}

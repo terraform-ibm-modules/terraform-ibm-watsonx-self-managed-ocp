@@ -57,7 +57,7 @@ variable "cpd_entitlement_key" {
 variable "cpd_version" {
   description = "Cloud Pak for Data version to install.  Only version 5.x.x is supported, latest versions can be found [here](https://www.ibm.com/docs/en/cloud-paks/cp-data?topic=versions-cloud-pak-data)."
   type        = string
-  default     = "5.0.3"
+  default     = "5.1.3"
 
   validation {
     error_message = "Cloud pak for data major version 5 is supported."

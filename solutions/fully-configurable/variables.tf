@@ -98,7 +98,7 @@ variable "cpd_entitlement_key" {
 variable "cpd_version" {
   description = "Cloud Pak for Data version to install.  Only version 5.x.x is supported, latest versions can be found [here](https://www.ibm.com/docs/en/cloud-paks/cp-data?topic=versions-cloud-pak-data)."
   type        = string
-  default     = "5.0.3"
+  default     = "5.1.3"
 
   validation {
     error_message = "Cloud pak for data major version 5 is supported."
@@ -153,7 +153,7 @@ variable "install_odf_cluster_addon" {
 variable "odf_version" {
   description = "Version of ODF to install."
   type        = string
-  default     = "4.16.0"
+  default     = "4.18.0"
   validation {
     error_message = "ODF version must be in the format 'x.y.z'."
     condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+$", var.odf_version))
@@ -186,7 +186,6 @@ variable "odf_config" {
     "addSingleReplicaPool"            = "false"
     "ignoreNoobaa"                    = "true"
     "disableNoobaaLB"                 = "false"
-    "prepareForDisasterRecovery"      = "false"
     "useCephRBDAsDefaultStorageClass" = "false"
     "osdDevicePaths"                  = ""
     "taintNodes"                      = "false"
