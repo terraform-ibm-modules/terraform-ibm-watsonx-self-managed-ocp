@@ -139,7 +139,6 @@ variable "odf_config" {
     "addSingleReplicaPool"            = "false"
     "ignoreNoobaa"                    = "true"
     "disableNoobaaLB"                 = "false"
-    "prepareForDisasterRecovery"      = "false"
     "useCephRBDAsDefaultStorageClass" = "false"
     "osdDevicePaths"                  = ""
     "taintNodes"                      = "false"
