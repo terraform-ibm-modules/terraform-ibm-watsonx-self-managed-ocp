@@ -63,14 +63,14 @@ locals {
       pool_name        = "default" # ibm_container_vpc_cluster automatically names default pool "default" (See https://github.com/IBM-Cloud/terraform-provider-ibm/issues/2849)
       machine_type     = "bx2.16x64"
       workers_per_zone = 3 # Minimum 3 workers to install ODF and ensure high availability
-      operating_system = "REDHAT_8_64"
+      operating_system = "RHCOS"
     }
   ]
 }
 
 module "ocp_base" {
   source                              = "terraform-ibm-modules/base-ocp-vpc/ibm"
-  version                             = "3.50.3"
+  version                             = "3.51.2"
   resource_group_id                   = module.resource_group.resource_group_id
   region                              = var.region
   tags                                = var.resource_tags
@@ -81,4 +81,5 @@ module "ocp_base" {
   worker_pools                        = local.worker_pools
   access_tags                         = []
   disable_outbound_traffic_protection = true
+  ocp_version                         = "4.18"
 }
