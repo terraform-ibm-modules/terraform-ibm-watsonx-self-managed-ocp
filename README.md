@@ -39,7 +39,7 @@ module "watsonx_self_managed_ocp" {
   version                   = "X.X.X" # Replace "X.X.X" with a release version to lock into a specific release
   ibmcloud_api_key          = "xxxxxxxxxxxxxxxxx"   # pragma: allowlist secret
   cluster_name              = "my-ocp-cluster"
-  cluster_resource_group_id = "xxxxxxxxxxxxxxxxx"
+  cluster_resource_group_id = "xxxxxxxxxxxxxxxxxx"
   cpd_admin_password        = "XXXXXXXX"
   cpd_entitlement_key       = "XXXXXXXX"
 }
