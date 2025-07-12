@@ -111,7 +111,7 @@ variable "install_odf_cluster_addon" {
 variable "odf_version" {
   description = "Version of OpenShift Data Foundation (ODF) add-on to install. Only applies if `install_odf_cluster_addon` is true."
   type        = string
-  default     = "4.16.0"
+  default     = "4.18.0"
 }
 
 variable "odf_config" {
