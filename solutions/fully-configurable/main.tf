@@ -4,7 +4,7 @@
 
 module "cluster_resource_group" {
   source                       = "terraform-ibm-modules/resource-group/ibm"
-  version                      = "1.2.0"
+  version                      = "1.2.1"
   existing_resource_group_name = var.existing_cluster_resource_group_name
 }
 
