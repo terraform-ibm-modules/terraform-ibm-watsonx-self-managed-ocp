@@ -6,11 +6,12 @@
       "product_kind": "solution",
       "tags": [
         "ibm_created",
-        "terraform",
         "target_terraform",
+        "terraform",
         "solution",
         "watson",
-        "ai"
+        "ai",
+        "converged_infra"
       ],
       "keywords": [
         "IaC",
