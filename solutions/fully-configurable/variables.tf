@@ -198,8 +198,8 @@ variable "odf_config" {
 
 variable "existing_resource_group_name" {
   type        = string
-  description = "The name of the resource group where Code Engine and Container Registry resources will be provisioned. Only applies if `cloud_pak_deployer_image` is `null`."
-  default     = "Default"
+  description = "The name of an existing resource group where Code Engine and Container Registry resources will be provisioned. Only applies if `cloud_pak_deployer_image` is `null`. If not provided the default resource group will be used."
+  default     = null
 }
 
 variable "region" {
