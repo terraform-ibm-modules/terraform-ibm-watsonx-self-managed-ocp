@@ -197,6 +197,10 @@
                   "value": "au-syd"
                 },
                 {
+                  "displayname": "Osaka (jp-osa)",
+                  "value": "jp-osa"
+                },
+                {
                   "displayname": "Tokyo (jp-tok)",
                   "value": "jp-tok"
                 },
@@ -215,6 +219,14 @@
                 {
                   "displayname": "Dallas (us-south)",
                   "value": "us-south"
+                },
+                {
+                  "displayname": "Washington (us-east)",
+                  "value": "us-east"
+                },
+                {
+                  "displayname": "Montreal (ca-mon)",
+                  "value": "ca-mon"
                 },
                 {
                   "displayname": "Toronto (ca-tor)",
