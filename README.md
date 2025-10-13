@@ -16,7 +16,7 @@ The following services are currently supported:
 - Watson Discovery
 - Watson Data
 
-![Architecture diagram](../../reference-architecture/deployable-architecture-cp4d.svg)
+![Architecture diagram](../../reference-architectures/deployable-architecture-cp4d.svg)
 
 <!-- Below content is automatically populated via pre-commit hook -->
 <!-- BEGIN OVERVIEW HOOK -->
