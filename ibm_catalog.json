@@ -94,7 +94,7 @@
             "diagrams": [
               {
                 "diagram": {
-                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/refs/heads/main/reference-architecture/deployable-architecture-cp4d.svg",
+                  "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/refs/heads/main/reference-architectures/deployable-architecture-cp4d.svg",
                   "caption": "Watsonx (Self-Managed) on Red Hat OpenShift",
                   "type": "image/svg+xml"
                 },
