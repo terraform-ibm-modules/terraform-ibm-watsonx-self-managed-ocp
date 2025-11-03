@@ -4,7 +4,7 @@ terraform {
   required_providers {
     ibm = {
       source  = "ibm-cloud/ibm"
-      version = "1.80.4"
+      version = "1.84.3"
     }
     external = {
       source  = "hashicorp/external"
@@ -12,7 +12,7 @@ terraform {
     }
     helm = {
       source  = "hashicorp/helm"
-      version = "2.17.0"
+      version = "3.1.0"
     }
     shell = {
       source  = "scottwinkler/shell"
