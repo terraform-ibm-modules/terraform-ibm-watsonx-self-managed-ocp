@@ -57,7 +57,7 @@ data "ibm_code_engine_project" "code_engine_project" {
 
 module "code_engine" {
   source              = "terraform-ibm-modules/code-engine/ibm"
-  version             = "4.4.4"
+  version             = "4.6.10"
   project_name        = var.code_engine_project_id == null ? var.code_engine_project_name : null
   existing_project_id = var.code_engine_project_id
   resource_group_id   = var.code_engine_project_id != null ? data.ibm_code_engine_project.code_engine_project[0].resource_group_id : local.resource_group_id
@@ -75,15 +75,17 @@ module "code_engine" {
 
 module "code_engine_build" {
   source  = "terraform-ibm-modules/code-engine/ibm//modules/build"
-  version = "4.4.4"
+  version = "4.6.10"
 
-  name            = "cpd-build"
-  project_id      = module.code_engine.project_id
-  output_image    = local.container_registry_output_image
-  output_secret   = "registry-secret" # pragma: allowlist secret
-  source_url      = "https://github.com/IBM/cloud-pak-deployer"
-  source_revision = var.cloud_pak_deployer_release
-  strategy_type   = "dockerfile"
+  ibmcloud_api_key           = var.ibmcloud_api_key
+  existing_resource_group_id = local.resource_group_id
+  name                       = "cpd-build"
+  project_id                 = module.code_engine.project_id
+  output_image               = local.container_registry_output_image
+  output_secret              = "registry-secret" # pragma: allowlist secret
+  source_url                 = "https://github.com/IBM/cloud-pak-deployer"
+  source_revision            = var.cloud_pak_deployer_release
+  strategy_type              = "dockerfile"
 
   depends_on = [module.code_engine]
 }
