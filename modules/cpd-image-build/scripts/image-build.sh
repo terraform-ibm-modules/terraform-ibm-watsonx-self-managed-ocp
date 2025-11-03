@@ -31,7 +31,7 @@ while [ "${i}" -lt "${NUMBER_OF_RETRIES}" ]; do
 done
 
 if [ "${COMPLETE}" = false ]; then
-  echo "The build run did not complete in the alloted time.  Output = ${BUILD_RUN_OUTPUT}"
+  echo "The build run did not complete in the allotted time.  Output = ${BUILD_RUN_OUTPUT}"
   exit 1;
 fi
 

@@ -26,80 +26,73 @@ resource "helm_release" "cloud_pak_deployer_helm_release" {
   cleanup_on_fail   = false
   wait              = true
 
-  set {
-    name  = "namespace"
-    type  = "string"
-    value = local.cloud_pak_deployer.namespace_name
-  }
+  set = [
+    {
+      name  = "namespace"
+      type  = "string"
+      value = local.cloud_pak_deployer.namespace_name
+    },
+    {
+      name  = "cluster_name"
+      type  = "string"
+      value = replace(var.cluster_name, "-", "_")
+    },
+    {
+      name  = "deployer.configuration"
+      type  = "string"
+      value = replace(yamlencode(var.cloud_pak_deployer_config), "\"", "")
+    },
+    {
+      name  = "deployer.job_name_suffix"
+      type  = "string"
+      value = formatdate("hhmmss", timestamp())
+    },
+    {
+      name  = "deployer.accept_license_flag"
+      type  = "string"
+      value = local.cloud_pak_deployer.script_accept_license_flag
+    },
+    {
+      name  = "deployer.image"
+      type  = "string"
+      value = local.cloud_pak_deployer.image
+    },
+    {
+      name  = "createImagePullSecret"
+      value = var.cloud_pak_deployer_secret != null ? true : false
+    },
+    {
+      name  = "imageCredentials.registry"
+      type  = "string"
+      value = var.cloud_pak_deployer_secret != null ? lookup(var.cloud_pak_deployer_secret, "server", "") : ""
+    },
+    {
+      name  = "imageCredentials.username"
+      type  = "string"
+      value = var.cloud_pak_deployer_secret != null ? lookup(var.cloud_pak_deployer_secret, "username", "") : ""
+    },
+    {
+      name  = "imageCredentials.email"
+      type  = "string"
+      value = var.cloud_pak_deployer_secret != null ? lookup(var.cloud_pak_deployer_secret, "email", "") : ""
+    }
+  ]
 
-  set {
-    name  = "cluster_name"
-    type  = "string"
-    value = replace(var.cluster_name, "-", "_")
-  }
-
-  set {
-    name  = "deployer.configuration"
-    type  = "string"
-    value = replace(yamlencode(var.cloud_pak_deployer_config), "\"", "")
-  }
-
-  set {
-    name  = "deployer.job_name_suffix"
-    type  = "string"
-    value = formatdate("hhmmss", timestamp())
-  }
-
-  set {
-    name  = "deployer.accept_license_flag"
-    type  = "string"
-    value = local.cloud_pak_deployer.script_accept_license_flag
-  }
-
-  set {
-    name  = "deployer.image"
-    type  = "string"
-    value = local.cloud_pak_deployer.image
-  }
-
-  set {
-    name  = "createImagePullSecret"
-    value = var.cloud_pak_deployer_secret != null ? true : false
-  }
-
-  set {
-    name  = "imageCredentials.registry"
-    type  = "string"
-    value = var.cloud_pak_deployer_secret != null ? lookup(var.cloud_pak_deployer_secret, "server", "") : ""
-  }
-
-  set {
-    name  = "imageCredentials.username"
-    type  = "string"
-    value = var.cloud_pak_deployer_secret != null ? lookup(var.cloud_pak_deployer_secret, "username", "") : ""
-  }
-
-  set {
-    name  = "imageCredentials.email"
-    type  = "string"
-    value = var.cloud_pak_deployer_secret != null ? lookup(var.cloud_pak_deployer_secret, "email", "") : ""
-  }
-
-  set_sensitive {
-    name  = "deployer.entitlement_key"
-    type  = "string"
-    value = var.cpd_entitlement_key
-  }
-
-  set_sensitive {
-    name  = "deployer.admin_password"
-    type  = "string"
-    value = var.cpd_admin_password
-  }
-
-  set_sensitive {
-    name  = "imageCredentials.password"
-    type  = "string"
-    value = var.cloud_pak_deployer_secret != null ? lookup(var.cloud_pak_deployer_secret, "password", "") : ""
-  }
+  set_sensitive = [
+    {
+      name  = "deployer.entitlement_key"
+      type  = "string"
+      value = var.cpd_entitlement_key
+    },
+    {
+      name  = "deployer.admin_password"
+      type  = "string"
+      value = var.cpd_admin_password
+    },
+    {
+      name  = "imageCredentials.password"
+      type  = "string"
+      value = var.cloud_pak_deployer_secret != null ? lookup(var.cloud_pak_deployer_secret, "password", "") : ""
+    }
+  ]
 }

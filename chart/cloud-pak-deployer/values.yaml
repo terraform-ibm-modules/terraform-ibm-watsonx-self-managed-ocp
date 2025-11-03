@@ -12,7 +12,7 @@ deployer:
   cluster_role_name: "cluster-admin"
   accept_license_flag: ""
   admin_password: ""
-  scc_name: "priveleged"
+  scc_name: "privileged"
   image: "quay.io/cloud-pak-deployer/cloud-pak-deployer"
   job_name_suffix: ""
   entitlement_key: ""
