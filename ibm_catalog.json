@@ -56,6 +56,7 @@
         {
           "label": "Fully configurable",
           "name": "fully-configurable",
+          "short_description": "Fully configurable Watsonx deployment on Red Hat OpenShift",
           "working_directory": "solutions/fully-configurable",
           "iam_permissions": [
             {
@@ -279,7 +280,17 @@
               ]
             },
             {
-              "key": "odf_config"
+              "key": "odf_config",
+              "custom_config": {
+                "type": "code_editor",
+                "grouping": "deployment",
+                "original_grouping": "deployment",
+                "config_constraints": {
+                  "supportedLanguages": [
+                    "hcl"
+                  ]
+                }
+              }
             },
             {
               "key": "provider_visibility",
