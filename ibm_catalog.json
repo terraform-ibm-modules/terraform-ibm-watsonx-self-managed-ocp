@@ -56,7 +56,7 @@
         {
           "label": "Fully configurable",
           "name": "fully-configurable",
-          "short_description": "Ideal for users who want full control and customization of their Watsonx deployment on Red Hat OpenShift",
+          "short_description": "Ideal for users who want flexibility with a reliable starting point.",
           "working_directory": "solutions/fully-configurable",
           "iam_permissions": [
             {
