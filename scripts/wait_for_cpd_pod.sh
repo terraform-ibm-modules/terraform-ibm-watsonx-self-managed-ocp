@@ -6,7 +6,6 @@ NAMESPACE="cloud-pak-deployer"
 POD_NAME=$(kubectl get pods --sort-by=.metadata.creationTimestamp -n "${NAMESPACE}" -o jsonpath='{.items[-1].metadata.name}')
 STATUS=""
 while true; do
-  kubectl get pod "${POD_NAME}" -n "${NAMESPACE}" -o jsonpath='{.status.phase}'
   STATUS=$(kubectl get pod "${POD_NAME}" -n "${NAMESPACE}" -o jsonpath='{.status.phase}')
   echo "Pod status: ${STATUS}"
   if [[ "${STATUS}" == "Succeeded" ]]; then
