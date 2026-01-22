@@ -28,7 +28,6 @@
       "short_description": "Deploys IBM Watsonx services to a Red Hat OpenShift cluster",
       "long_description": "Solution that deploys Watsonx services (watsonx.ai, watsonx.data, Watson Assistant, Watson Discovery) on an existing Red Hat OpenShift cluster. \n\nLeverage [Terraform IBM Modules](https://github.com/terraform-ibm-modules) to shape and scale your solutions. You can integrate Terraform IBM Modules (TIM) to extend functionality and design a solution tailored to your environment and operations needs. These modules offer reusable, customizable elements that follow IBM Cloud's recommended practices. You can access the [source code and documentation](https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp) and use it to extend your current architecture or create new solutions.\n\n## Prerequisites\n- Red Hat OpenShift on IBM Cloud version 4.18 or higher\n- [Cloud Pak for Data entitlement key](https://myibm.ibm.com/products-services/containerlibrary)\n- GPU worker nodes that meet [IBM Cloud Pak for Data](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=requirements-hardware) requirements for watsonx software\n- [OpenShift AI in Red Hat OpenShift](https://cloud.ibm.com/docs/openshift?topic=openshift-ai-addon-about) installed\n- [OpenShift Data Foundation](https://cloud.ibm.com/docs/openshift?topic=openshift-ocs-storage-prep) installed. You can install this via the deployable architecture",
       "offering_docs_url": "https://cloud.ibm.com/docs/ibm-cloud-provider-for-terraform?topic=ibm-cloud-provider-for-terraform-about-tim",
-      "release_notes_url": "https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/releases",
       "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/main/images/watsonx-self-managed-ocp.svg",
       "support_details": "This product is in the community registry, as such support is handled through the originated repo. If you experience issues please open an issue in the following [issues repository](https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues). Please note this product is not supported via the IBM Cloud Support Center.",
       "features": [
@@ -59,6 +58,7 @@
           "name": "fully-configurable",
           "short_description": "Ideal for users who want flexibility with a reliable starting point.",
           "working_directory": "solutions/fully-configurable",
+          "release_notes_url": "https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/releases",
           "iam_permissions": [
             {
               "role_crns": [
