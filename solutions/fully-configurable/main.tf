@@ -80,7 +80,7 @@ resource "terraform_data" "install_required_binaries" {
     KUBECONFIG = data.ibm_container_cluster_config.cluster_config.config_file_path
   }
   provisioner "local-exec" {
-    command     = "${path.root}/modules/cpd-image-build/scripts/install-binaries.sh ${local.binaries_path}"
+    command     = "${path.module}/modules/cpd-image-build/scripts/install-binaries.sh ${local.binaries_path}"
     interpreter = ["/bin/bash", "-c"]
   }
 }

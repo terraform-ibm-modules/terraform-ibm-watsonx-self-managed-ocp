@@ -21,7 +21,7 @@ resource "terraform_data" "install_required_binaries" {
   count = var.install_required_binaries ? 1 : 0
 
   provisioner "local-exec" {
-    command     = "${path.root}/modules/cpd-image-build/scripts/install-binaries.sh ${local.binaries_path}"
+    command     = "${path.module}/modules/cpd-image-build/scripts/install-binaries.sh ${local.binaries_path}"
     interpreter = ["/bin/bash", "-c"]
   }
 }

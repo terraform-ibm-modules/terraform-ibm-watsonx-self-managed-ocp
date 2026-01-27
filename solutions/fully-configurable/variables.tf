@@ -242,8 +242,9 @@ variable "cloud_pak_deployer_release" {
   default     = "v3.2.1" # TODO: manage this version with renovate - https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/36
 }
 
-variable "required_install_binaries" {
-  description = "When true, run the module-level install-binaries script to ensure required CLI binaries are available in the runtime environment. Set to true when running in environments (e.g. Waypoint) that don't provide kubectl/oc/jq." 
+variable "install_required_binaries" {
   type        = bool
-  default     = false
+  default     = true
+  description = "When set to true, a script will run to check if `kubectl` and `jq` exist on the runtime and if not attempt to download them from the public internet and install them to /tmp. Set to false to skip running this script."
+  nullable    = false
 }
