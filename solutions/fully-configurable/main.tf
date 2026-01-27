@@ -93,5 +93,8 @@ resource "null_resource" "wait_for_cloud_pak_deployer_complete" {
       KUBECONFIG = data.ibm_container_cluster_config.cluster_config.config_file_path
     }
   }
+  triggers = {
+    always_run = timestamp()
+  }
   depends_on = [module.watsonx_self_managed_ocp, terraform_data.install_required_binaries]
 }
