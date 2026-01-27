@@ -103,7 +103,7 @@ module "ocp_base" {
 ##############################################################################
 
 module "watsonx_self_managed_ocp" {
-  source                    = "git::https://github.com/terraform-ibm-modules/terraform-ibm-ocp-virtualization.git?ref="update-binaries-watsonx"
+  source                    = "git::https://github.com/terraform-ibm-modules/terraform-ibm-ocp-virtualization.git?ref=update-binaries-watsonx"
   ibmcloud_api_key          = var.ibmcloud_api_key
   region                    = var.region
   cluster_name              = local.cluster_name
