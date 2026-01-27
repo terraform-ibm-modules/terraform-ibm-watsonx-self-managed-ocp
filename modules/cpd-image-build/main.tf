@@ -106,7 +106,7 @@ resource "terraform_data" "install_required_binaries" {
 
 resource "shell_script" "build_run" {
   lifecycle_commands {
-    create = file("${path.module}/scripts/image-build.sh ${local.binaries_path}")
+    create = file("${path.module}/scripts/image-build.sh")
     delete = ""
     update = ""
   }
@@ -114,6 +114,7 @@ resource "shell_script" "build_run" {
   environment = {
     REGION     = var.region
     PROJECT_ID = module.code_engine.project_id
+    BINARIES_PATH = local.binaries_path
   }
 
   depends_on = [module.code_engine_build, terraform_data.install_required_binaries]
