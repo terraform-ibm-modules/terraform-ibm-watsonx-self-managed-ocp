@@ -17,6 +17,15 @@ module "build_cpd_image" {
   add_random_suffix_code_engine_project  = var.add_random_suffix_code_engine_project
 }
 
+resource "terraform_data" "install_required_binaries" {
+  count = var.install_required_binaries ? 1 : 0
+
+  provisioner "local-exec" {
+    command     = "${path.module}/scripts/install-binaries.sh /tmp"
+    interpreter = ["/bin/bash", "-c"]
+  }
+}
+
 ##############################################################################
 # Install OCP ODF cluster addon
 ##############################################################################
@@ -39,7 +48,7 @@ resource "ibm_container_addons" "odf_cluster_addon" {
 
 module "watsonx_ai" {
   source                   = "./modules/watsonx-ai"
-  depends_on               = [ibm_container_addons.odf_cluster_addon]
+  depends_on               = [ibm_container_addons.odf_cluster_addon, terraform_data.install_required_binaries]
   watson_assistant_install = var.watson_assistant_install
   watson_discovery_install = var.watson_discovery_install
   watsonx_ai_install       = var.watsonx_ai_install
@@ -52,7 +61,7 @@ module "watsonx_ai" {
 
 module "watsonx_data" {
   source               = "./modules/watsonx-data"
-  depends_on           = [ibm_container_addons.odf_cluster_addon]
+  depends_on           = [ibm_container_addons.odf_cluster_addon, terraform_data.install_required_binaries]
   watsonx_data_install = var.watsonx_data_install
 }
 
@@ -64,7 +73,8 @@ module "cloud_pak_deployer" {
   depends_on = [
     module.watsonx_ai,
     module.watsonx_data,
-    module.build_cpd_image
+    module.build_cpd_image,
+    terraform_data.install_required_binaries,
   ]
   source = "./modules/cloud-pak-deployer"
   cloud_pak_deployer_config = merge(

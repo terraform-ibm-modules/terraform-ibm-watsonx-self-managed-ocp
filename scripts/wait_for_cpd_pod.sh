@@ -3,6 +3,9 @@
 
 set -e
 NAMESPACE="cloud-pak-deployer"
+# allow passing a binaries path where install-binaries.sh places CLIs (defaults to /tmp)
+export PATH=$PATH:${1:-"/tmp"}
+
 POD_NAME=$(kubectl get pods --sort-by=.metadata.creationTimestamp -n "${NAMESPACE}" -o jsonpath='{.items[-1].metadata.name}')
 STATUS=""
 while true; do

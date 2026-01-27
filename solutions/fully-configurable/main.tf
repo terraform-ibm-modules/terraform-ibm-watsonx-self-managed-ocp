@@ -35,6 +35,7 @@ locals {
   # admin password to use
   cpd_admin_password = var.cpd_admin_password == null ? local.generated_admin_password : var.cpd_admin_password
   prefix             = var.prefix != null ? trimspace(var.prefix) != "" ? "${var.prefix}-" : "" : ""
+  binaries_path      = "/tmp"
 }
 
 data "ibm_container_vpc_cluster" "cluster" {
@@ -73,17 +74,24 @@ module "watsonx_self_managed_ocp" {
   add_random_suffix_code_engine_project = false
 }
 
+resource "terraform_data" "install_required_binaries" {
+  count = var.install_required_binaries ? 1 : 0
+  triggers_replace    = {
+    KUBECONFIG = data.ibm_container_cluster_config.cluster_config.config_file_path
+  }
+  provisioner "local-exec" {
+    command     = "${path.module}/scripts/install-binaries.sh ${local.binaries_path}"
+    interpreter = ["/bin/bash", "-c"]
+  }
+}
+    
 resource "null_resource" "wait_for_cloud_pak_deployer_complete" {
   provisioner "local-exec" {
-    command = "${path.module}/../../scripts/wait_for_cpd_pod.sh"
+    command = "${path.module}/../../scripts/wait_for_cpd_pod.sh ${local.binaries_path}"
 
     environment = {
       KUBECONFIG = data.ibm_container_cluster_config.cluster_config.config_file_path
     }
   }
-  triggers = {
-    always_run = timestamp()
-  }
-
-  depends_on = [module.watsonx_self_managed_ocp]
+  depends_on = [module.watsonx_self_managed_ocp, terraform_data.install_required_binaries]
 }
