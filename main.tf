@@ -110,6 +110,7 @@ data "ibm_container_vpc_cluster" "cluster_info" {
 }
 locals {
   openshift_version = join(".", slice(split(".", data.ibm_container_vpc_cluster.cluster_info.kube_version), 0, 2)) # Only use major and minor — no patch
+  binaries_path = "/tmp"
 }
 
 # Cloud Pak Deployer configuration file local variable(s) only
