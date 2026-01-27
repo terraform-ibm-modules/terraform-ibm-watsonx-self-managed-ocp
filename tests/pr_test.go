@@ -279,3 +279,23 @@ func GetRandomAdminPassword(t *testing.T) string {
 
 	return randomPass
 }
+
+// Helper test to print the CPD entitlement key and a random admin password.
+func TestPrintCPDKeyAndRandomPass(t *testing.T) {
+	// Retrieve CPD entitlement key from Secrets Manager
+	cpdEntitlementKey, err := GetSecretsManagerKey(
+		permanentResources["secretsManagerGuid"].(string),
+		permanentResources["secretsManagerRegion"].(string),
+		cpdEntitlementKeySecretId,
+	)
+	if err != nil {
+		t.Fatalf("failed to get CPD entitlement key: %v", err)
+	}
+
+	// Generate a random admin password
+	randomPass := GetRandomAdminPassword(t)
+
+	// Print values
+	fmt.Println("cpd_entitlement_key:", *cpdEntitlementKey)
+	fmt.Println("randomPass:", randomPass)
+}
