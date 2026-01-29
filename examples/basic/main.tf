@@ -70,14 +70,14 @@ locals {
       subnet_prefix    = "default"
       pool_name        = "default"     # Unique name for the general-purpose worker pool
       machine_type     = "bx3d.64x320" # CPU-based machine type
-      operating_system = "REDHAT_8_64"
+      operating_system = "RHEL_9_64"
       workers_per_zone = 3 # Minimum 3 workers to install ODF and ensure high availability
     },
     {
       subnet_prefix    = "default"
       pool_name        = "gpu-pool"       # Unique name for the GPU-enabled worker pool
       machine_type     = "gx3.64x320.4l4" # GPU-based machine type
-      operating_system = "REDHAT_8_64"
+      operating_system = "RHEL_9_64"
       workers_per_zone = 2 # Minimum 2 workers per zone for high availability
     }
   ]
@@ -103,7 +103,7 @@ module "ocp_base" {
 ##############################################################################
 
 module "watsonx_self_managed_ocp" {
-  source                    = "../.."
+  source                    = "git::https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp?ref=update-binaries-watsonx"
   ibmcloud_api_key          = var.ibmcloud_api_key
   region                    = var.region
   cluster_name              = local.cluster_name

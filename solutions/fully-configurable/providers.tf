@@ -7,11 +7,12 @@ provider "ibm" {
 locals {
   paths = {
     scripts = "${path.module}/scripts"
+    binaries_path = "/tmp"
   }
 }
 
 data "external" "schematics" {
-  program = ["bash", "${local.paths.scripts}/get-schematics-tmp-dir.sh"]
+  program = ["bash", "${local.paths.scripts}/get-schematics-tmp-dir.sh ${local.binaries_path}"]
 }
 
 locals {

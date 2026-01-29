@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Prefer BINARIES_PATH env var, otherwise use first arg, default /tmp
+export PATH=$PATH:${BINARIES_PATH:-${1:-"/tmp"}}
+
 BUILD_OUTPUT=$(curl -X POST "https://api.${REGION}.codeengine.cloud.ibm.com/v2/projects/${PROJECT_ID}/build_runs" -H "Authorization: ${TOKEN}" -H "Content-Type: application/json" -d '{ "build_name": "cpd-build" }')
 RC=$?
 

@@ -23,6 +23,7 @@ locals {
     us-south = "private.us.icr.io"
   }
   ce_project_name = var.code_engine_project_name != null ? var.add_random_suffix_code_engine_project ? "${var.code_engine_project_name}-${random_string.random[0].result}" : var.code_engine_project_name : data.ibm_code_engine_project.code_engine_project[0].name
+  binaries_path = "/tmp"
 }
 
 ##############################################################################
@@ -90,6 +91,19 @@ module "code_engine_build" {
   depends_on = [module.code_engine]
 }
 
+resource "terraform_data" "install_required_binaries" {
+  count = var.install_required_binaries ? 1 : 0
+  triggers_replace    = {
+    REGION     = var.region
+    PROJECT_ID = module.code_engine.project_id
+    
+  }
+  provisioner "local-exec" {
+    command     = "${path.module}/scripts/install-binaries.sh ${local.binaries_path}"
+    interpreter = ["/bin/bash", "-c"]
+  }
+}
+
 resource "shell_script" "build_run" {
   lifecycle_commands {
     create = file("${path.module}/scripts/image-build.sh")
@@ -100,7 +114,8 @@ resource "shell_script" "build_run" {
   environment = {
     REGION     = var.region
     PROJECT_ID = module.code_engine.project_id
+    BINARIES_PATH = local.binaries_path
   }
 
-  depends_on = [module.code_engine_build]
+  depends_on = [module.code_engine_build, terraform_data.install_required_binaries]
 }
