@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export PATH=$PATH:${1:-"/tmp"}
 schematics_tmp_dir_exists=false
 schematics_tmp_dir_path="/tmp/.schematics"
 if [[ -d ${schematics_tmp_dir_path} ]]; then

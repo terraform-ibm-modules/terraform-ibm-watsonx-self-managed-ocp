@@ -11,7 +11,7 @@ variable "ibmcloud_api_key" {
 variable "provider_visibility" {
   description = "Set the visibility value for the IBM terraform provider. Supported values are `public`, `private`, `public-and-private`. [Learn more](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/guides/custom-service-endpoints)."
   type        = string
-  default     = "private"
+  default     = "public"
 
   validation {
     condition     = contains(["public", "private", "public-and-private"], var.provider_visibility)
@@ -240,4 +240,11 @@ variable "cloud_pak_deployer_release" {
   description = "The GIT release of Cloud Pak Deployer version to build from. Only applies if `cloud_pak_deployer_image` is `null`. View releases at: https://github.com/IBM/cloud-pak-deployer/releases."
   type        = string
   default     = "v3.2.1" # TODO: manage this version with renovate - https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/36
+}
+
+variable "install_required_binaries" {
+  type        = bool
+  default     = true
+  description = "When set to true, a script will run to check if `kubectl` and `jq` exist on the runtime and if not attempt to download them from the public internet and install them to /tmp. Set to false to skip running this script."
+  nullable    = false
 }
