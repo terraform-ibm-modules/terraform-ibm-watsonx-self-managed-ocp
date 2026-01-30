@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
 )
 
@@ -27,7 +28,7 @@ func TestRunBasicExample(t *testing.T) {
 		TerraformDir: "examples/basic",
 		Prefix:       "wx-basic",
 		TerraformVars: map[string]interface{}{
-			"cpd_admin_password":  GetRandomAdminPassword(t),
+			"cpd_admin_password":  common.GetRandomPasswordWithPrefix(),
 			"cpd_entitlement_key": *cpdEntitlementKey,
 		},
 	})
