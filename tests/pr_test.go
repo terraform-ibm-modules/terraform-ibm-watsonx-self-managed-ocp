@@ -2,8 +2,6 @@
 package test
 
 import (
-	"crypto/rand"
-	"encoding/base64"
 	"fmt"
 	"log"
 	"os"
@@ -267,15 +265,4 @@ func GetSecretsManagerKey(smId string, smRegion string, smKeyId string) (*string
 		return nil, err
 	}
 	return secret.(*secretsmanagerv2.ArbitrarySecret).Payload, nil
-}
-
-func GetRandomAdminPassword(t *testing.T) string {
-	// Generate a 15 char long random string for the admin_pass
-	randomBytes := make([]byte, 13)
-	_, randErr := rand.Read(randomBytes)
-	require.Nil(t, randErr) // do not proceed if we can't gen a random password
-
-	randomPass := "A1" + base64.URLEncoding.EncodeToString(randomBytes)[:13]
-
-	return randomPass
 }
