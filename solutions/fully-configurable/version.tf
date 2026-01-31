@@ -4,7 +4,7 @@ terraform {
   required_providers {
     ibm = {
       source  = "ibm-cloud/ibm"
-      version = "1.87.2"
+      version = "1.87.3"
     }
     external = {
       source  = "hashicorp/external"
@@ -24,7 +24,7 @@ terraform {
     }
     random = {
       source  = "hashicorp/random"
-      version = "3.8.0"
+      version = "3.8.1"
     }
   }
 }
