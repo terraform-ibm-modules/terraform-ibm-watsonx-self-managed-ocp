@@ -27,6 +27,8 @@ The following services are currently supported:
 * [Examples](./examples)
 :information_source: Ctrl/Cmd+Click or right-click on the Schematics deploy button to open in a new tab
     * <a href="./examples/basic">Basic example</a> <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=watsonx-self-managed-ocp-basic-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/tree/main/examples/basic"><img src="https://img.shields.io/badge/Deploy%20with IBM%20Cloud%20Schematics-0f62fe?logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
+* [Deployable Architectures](./solutions)
+    * <a href="./solutions/fully-configurable">Watsonx (Self-Managed) on Red Hat OpenShift</a>
 * [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 
