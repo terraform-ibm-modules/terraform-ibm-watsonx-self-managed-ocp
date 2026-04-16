@@ -25,6 +25,7 @@ resource "helm_release" "cloud_pak_deployer_helm_release" {
   force_update      = true
   cleanup_on_fail   = false
   wait              = true
+  atomic            = true
 
   set = [
     {
