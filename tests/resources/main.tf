@@ -81,5 +81,5 @@ module "ocp_base" {
   worker_pools                        = local.worker_pools
   access_tags                         = []
   disable_outbound_traffic_protection = true
-  ocp_version                         = "4.18"
+  ocp_version                         = "4.20"
 }
