@@ -12,7 +12,7 @@ variable "cloud_pak_deployer_image" {
   description = "Cloud Pak Deployer image to use. If `null`, the image will be built using Code Engine and publish to a private Container Registry namespace."
   type        = string
   # TODO: update renovate to manage this version
-  default = "quay.io/cloud-pak-deployer/cloud-pak-deployer:v3.2.1@sha256:311952546b0cbec425435269e9a1e7d8a4230dbcde6f257d1bd80461cb82f284"
+  default = "quay.io/cloud-pak-deployer/cloud-pak-deployer:v3.3.6@sha256:85df0250395085b4115e751be37937ac0675201929dc22e6e4e41446dff84359"
 }
 
 variable "cluster_name" {
@@ -57,7 +57,7 @@ variable "cpd_entitlement_key" {
 variable "cpd_version" {
   description = "Cloud Pak for Data version to install.  Only version 5.x.x is supported, latest versions can be found [here](https://www.ibm.com/docs/en/cloud-paks/cp-data?topic=versions-cloud-pak-data)."
   type        = string
-  default     = "5.1.3"
+  default     = "5.3.1"
 
   validation {
     error_message = "Cloud pak for data major version 5 is supported."
