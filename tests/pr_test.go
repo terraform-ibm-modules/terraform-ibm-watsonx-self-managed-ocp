@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -48,9 +49,9 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 	// Provision ROK's first
 	// ------------------------------------------------------------------------------------
 
-	prefix := fmt.Sprintf("cp-ex-%s", strings.ToLower(random.UniqueId()))
+	prefix := fmt.Sprintf("cp-ex-%s", strings.ToLower(random.UniqueID()))
 	realTerraformDir := "./resources"
-	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())))
+	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueID())))
 	tags := common.GetTagsFromTravis()
 	region := "us-south"
 
@@ -73,8 +74,8 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 		Upgrade: true,
 	})
 
-	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
-	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
+	terraform.WorkspaceSelectOrNewContext(t, context.Background(), existingTerraformOptions, prefix)
+	_, existErr := terraform.InitAndApplyContextE(t, context.Background(), existingTerraformOptions)
 	if existErr != nil {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
 	} else {
@@ -100,8 +101,8 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 			TerraformVars: map[string]any{
 				"prefix":                               prefix,
 				"region":                               region,
-				"existing_cluster_id":                  terraform.Output(t, existingTerraformOptions, "cluster_id"),
-				"existing_cluster_resource_group_name": terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"),
+				"existing_cluster_id":                  terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_id"),
+				"existing_cluster_resource_group_name": terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_resource_group_name"),
 				"cpd_entitlement_key":                  *cpdEntitlementKey,
 				"provider_visibility":                  "public", // TODO: use schematics test wrapper and default to private (https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/42)
 			},
@@ -137,8 +138,8 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
-		terraform.Destroy(t, existingTerraformOptions)
-		terraform.WorkspaceDelete(t, existingTerraformOptions, prefix)
+		terraform.DestroyContext(t, context.Background(), existingTerraformOptions)
+		terraform.WorkspaceDeleteContext(t, context.Background(), existingTerraformOptions, prefix)
 		logger.Log(t, "END: Destroy (existing resources)")
 	}
 }
@@ -146,9 +147,9 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
 	t.Parallel()
 
-	prefix := fmt.Sprintf("cp-up-%s", strings.ToLower(random.UniqueId()))
+	prefix := fmt.Sprintf("cp-up-%s", strings.ToLower(random.UniqueID()))
 	realTerraformDir := "./resources"
-	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueId())))
+	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueID())))
 	tags := common.GetTagsFromTravis()
 	region := "us-south"
 
@@ -171,8 +172,8 @@ func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
 		Upgrade: true,
 	})
 
-	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
-	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
+	terraform.WorkspaceSelectOrNewContext(t, context.Background(), existingTerraformOptions, prefix)
+	_, existErr := terraform.InitAndApplyContextE(t, context.Background(), existingTerraformOptions)
 	if existErr != nil {
 		assert.True(t, existErr == nil, "Init and Apply of temp existing resource failed")
 	} else {
@@ -199,8 +200,8 @@ func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
 			TerraformVars: map[string]any{
 				"prefix":                               prefix,
 				"region":                               region,
-				"existing_cluster_id":                  terraform.Output(t, existingTerraformOptions, "cluster_id"),
-				"existing_cluster_resource_group_name": terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"),
+				"existing_cluster_id":                  terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_id"),
+				"existing_cluster_resource_group_name": terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_resource_group_name"),
 				"cpd_entitlement_key":                  *cpdEntitlementKey,
 				"provider_visibility":                  "public", // TODO: use schematics test wrapper and default to private (https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/42)
 			},
@@ -238,8 +239,8 @@ func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
 		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
-		terraform.Destroy(t, existingTerraformOptions)
-		terraform.WorkspaceDelete(t, existingTerraformOptions, prefix)
+		terraform.DestroyContext(t, context.Background(), existingTerraformOptions)
+		terraform.WorkspaceDeleteContext(t, context.Background(), existingTerraformOptions, prefix)
 		logger.Log(t, "END: Destroy (existing resources)")
 	}
 }
