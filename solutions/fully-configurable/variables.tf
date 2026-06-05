@@ -153,7 +153,7 @@ variable "install_odf_cluster_addon" {
 variable "odf_version" {
   description = "Version of ODF to install."
   type        = string
-  default     = "4.20.0"
+  default     = "4.19.0"
   validation {
     error_message = "ODF version must be in the format 'x.y.z'."
     condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+$", var.odf_version))
