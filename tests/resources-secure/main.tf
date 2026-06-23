@@ -17,7 +17,7 @@ module "resource_group" {
 # Add a small delay to ensure resource group is fully propagated
 resource "time_sleep" "wait_for_resource_group" {
   depends_on = [module.resource_group]
-  
+
   create_duration = "30s"
 }
 
@@ -32,7 +32,7 @@ resource "ibm_is_vpc" "vpc" {
   resource_group            = module.resource_group.resource_group_id
   address_prefix_management = "auto"
   tags                      = var.resource_tags
-  
+
   depends_on = [time_sleep.wait_for_resource_group]
 }
 
