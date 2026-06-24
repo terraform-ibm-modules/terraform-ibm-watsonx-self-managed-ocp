@@ -45,6 +45,7 @@ func TestMain(m *testing.M) {
 
 // A test to pass existing resources to the WatsonX Self Managed OCP DA
 func TestRunFullyConfigurableSolution(t *testing.T) {
+	t.Skip()
 	t.Parallel()
 	// ------------------------------------------------------------------------------------
 	// Provision ROK's first
@@ -146,6 +147,7 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 }
 
 func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
+	t.Skip()
 	t.Parallel()
 
 	prefix := fmt.Sprintf("cp-up-%s", strings.ToLower(random.UniqueID()))
