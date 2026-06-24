@@ -9,9 +9,9 @@ data "ibm_resource_group" "group" {
 
 locals {
   resource_group_id                 = var.resource_group_id == null ? data.ibm_resource_group.group[0].id : var.resource_group_id
-  container_registry_server         = var.use_global_container_registry_location ? "private.icr.io" : lookup(local.registry_server_map, var.region, null) != null ? local.registry_server_map[var.region] : "private.icr.io"
-  container_registry_output_image   = "${local.container_registry_server}/${var.container_registry_namespace}/deployer:${var.cloud_pak_deployer_release}"
   container_registry_namespace_name = var.add_random_suffix_icr_namespace ? "${var.container_registry_namespace}-${random_string.random[0].result}" : var.container_registry_namespace
+  container_registry_server         = var.use_global_container_registry_location ? "private.icr.io" : lookup(local.registry_server_map, var.region, null) != null ? local.registry_server_map[var.region] : "private.icr.io"
+  container_registry_output_image   = "${local.container_registry_server}/${local.container_registry_namespace_name}/deployer:${var.cloud_pak_deployer_release}"
   registry_server_map = {
     au-syd   = "private.au.icr.io"
     br-sao   = "private.br.icr.io"
