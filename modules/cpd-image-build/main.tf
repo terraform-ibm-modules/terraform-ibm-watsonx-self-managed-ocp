@@ -2,6 +2,8 @@
 # Locals
 ##############################################################################
 
+data "ibm_iam_auth_token" "tokendata" {}
+
 data "ibm_resource_group" "group" {
   count      = var.resource_group_id == null ? 1 : 0
   is_default = "true"
@@ -100,6 +102,7 @@ resource "shell_script" "build_run" {
   environment = {
     REGION     = var.region
     PROJECT_ID = module.code_engine.project_id
+    TOKEN      = data.ibm_iam_auth_token.tokendata.iam_access_token
   }
 
   depends_on = [module.code_engine_build]
