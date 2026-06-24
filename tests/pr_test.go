@@ -300,6 +300,10 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 	assert.NoError(t, cpdEntitlementKeyErr, "Failed to retrieve Cloud Pak entitlement key from Secrets Manager")
 
 	advancedExampleDir := "examples/advanced"
+
+	// Set environment variable to prevent resource destruction on failure
+	_ = os.Setenv("DO_NOT_DESTROY_ON_FAILURE", "true")
+
 	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
 		Testing:               t,
 		Prefix:                prefix,
@@ -337,9 +341,13 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 	}
 	_ = os.Unsetenv("TF_VAR_resource_tags")
 
-	// Run the Schematics test
+	// Run the Schematics test (resources will not be destroyed on failure due to DO_NOT_DESTROY_ON_FAILURE=true)
 	err := options.RunSchematicTest()
+
+	// Clean up environment variable
+	_ = os.Unsetenv("DO_NOT_DESTROY_ON_FAILURE")
+
 	require.NoError(t, err, "Schematics test failed - this test validates the ICR image build use case with secure private cluster")
 
-	logger.Log(t, "Test PASSED: ICR image build use case validated successfully")
+	logger.Log(t, "✓ Test PASSED: ICR image build use case validated successfully")
 }
