@@ -102,7 +102,15 @@ resource "shell_script" "build_run" {
   environment = {
     REGION     = var.region
     PROJECT_ID = module.code_engine.project_id
-    TOKEN      = data.ibm_iam_auth_token.tokendata.iam_access_token
+  }
+
+  sensitive_environment = {
+    TOKEN = data.ibm_iam_auth_token.tokendata.iam_access_token
+  }
+
+  # Change in IAM token should not trigger build run re-create
+  lifecycle {
+    ignore_changes = [sensitive_environment]
   }
 
   depends_on = [module.code_engine_build]

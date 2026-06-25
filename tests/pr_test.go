@@ -328,6 +328,12 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 			"chart/cloud-pak-deployer/templates/*.tpl",
 			"scripts/*.sh",
 		},
+		// Ignore Helm release updates for consistency check (timestamp() causes drift)
+		IgnoreUpdates: testhelper.Exemptions{
+			List: []string{
+				"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+			},
+		},
 	})
 
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
