@@ -316,6 +316,7 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 		TarIncludePatterns: []string{
 			"*.tf",
 			advancedExampleDir + "/*.tf",
+			advancedExampleDir + "/scripts/*.sh",
 			"modules/cloud-pak-deployer/*.tf",
 			"modules/cloud-pak-deployer/config/*.tf",
 			"modules/cpd-image-build/*.tf",
