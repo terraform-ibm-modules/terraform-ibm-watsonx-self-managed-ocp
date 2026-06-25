@@ -76,13 +76,6 @@ locals {
       machine_type     = "bx3d.64x320" # CPU-based machine type
       operating_system = "RHEL_9_64"   # RHEL 9 for OCP 4.19+
       workers_per_zone = 3             # Minimum 3 workers to install ODF and ensure high availability
-    },
-    {
-      subnet_prefix    = "default"
-      pool_name        = "gpu-pool"       # Unique name for the GPU-enabled worker pool
-      machine_type     = "gx3.64x320.4l4" # GPU-based machine type
-      operating_system = "RHEL_9_64"      # RHEL 9 for OCP 4.19+
-      workers_per_zone = 2                # Minimum 2 workers per zone for high availability
     }
   ]
 }
