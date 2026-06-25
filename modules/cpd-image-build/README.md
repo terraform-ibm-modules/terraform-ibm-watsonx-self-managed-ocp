@@ -41,6 +41,7 @@ module "build_image" {
 | [random_string.random](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [shell_script.build_run](https://registry.terraform.io/providers/scottwinkler/shell/latest/docs/resources/script) | resource |
 | [ibm_code_engine_project.code_engine_project](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/data-sources/code_engine_project) | data source |
+| [ibm_iam_auth_token.tokendata](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/data-sources/iam_auth_token) | data source |
 | [ibm_resource_group.group](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/data-sources/resource_group) | data source |
 
 ### Inputs
