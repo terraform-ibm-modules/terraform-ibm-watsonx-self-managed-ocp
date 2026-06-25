@@ -334,6 +334,12 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 				"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
 			},
 		},
+		// Do not fail test if Helm release destroy times out (known Cloud Pak Deployer limitation)
+		IgnoreDestroys: testhelper.Exemptions{
+			List: []string{
+				"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+			},
+		},
 	})
 
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
