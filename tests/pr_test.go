@@ -45,7 +45,6 @@ func TestMain(m *testing.M) {
 
 // A test to pass existing resources to the WatsonX Self Managed OCP DA
 func TestRunFullyConfigurableSolution(t *testing.T) {
-	t.Skip()
 	t.Parallel()
 	// ------------------------------------------------------------------------------------
 	// Provision ROK's first
@@ -147,7 +146,6 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 }
 
 func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
-	t.Skip()
 	t.Parallel()
 
 	prefix := fmt.Sprintf("cp-up-%s", strings.ToLower(random.UniqueID()))
@@ -301,9 +299,6 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 
 	advancedExampleDir := "examples/advanced"
 
-	// Set environment variable to prevent resource destruction on failure
-	_ = os.Setenv("DO_NOT_DESTROY_ON_FAILURE", "true")
-
 	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
 		Testing:               t,
 		Prefix:                prefix,
@@ -354,13 +349,6 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 	}
 	_ = os.Unsetenv("TF_VAR_resource_tags")
 
-	// Run the Schematics test (resources will not be destroyed on failure due to DO_NOT_DESTROY_ON_FAILURE=true)
 	err := options.RunSchematicTest()
-
-	// Clean up environment variable
-	_ = os.Unsetenv("DO_NOT_DESTROY_ON_FAILURE")
-
 	require.NoError(t, err, "Schematics test failed - this test validates the ICR image build use case with secure private cluster")
-
-	logger.Log(t, "✓ Test PASSED: ICR image build use case validated successfully")
 }
