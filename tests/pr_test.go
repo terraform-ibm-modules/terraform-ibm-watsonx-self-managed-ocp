@@ -27,6 +27,9 @@ const instanceFlavorDir = "solutions/fully-configurable"
 
 const cpdEntitlementKeySecretId = "a4292c24-f093-2b8b-9016-37132b7b8788"
 
+// Use existing resource group
+const resourceGroup = "geretain-test-resources"
+
 var permanentResources map[string]any
 
 // Define a struct with fields that match the structure of the YAML data
@@ -283,12 +286,6 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 	tags := common.GetTagsFromTravis()
 	region := "us-south"
 
-	// Verify ibmcloud_api_key variable is set
-	checkVariable := "TF_VAR_ibmcloud_api_key"
-	apiKey, present := os.LookupEnv(checkVariable)
-	require.True(t, present, checkVariable+" environment variable not set")
-	require.NotEqual(t, "", apiKey, checkVariable+" environment variable is empty")
-
 	// Get Cloud Pak entitlement key from Secrets Manager
 	cpdEntitlementKey, cpdEntitlementKeyErr := GetSecretsManagerKey(
 		permanentResources["secretsManagerGuid"].(string),
@@ -307,6 +304,7 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 		TemplateFolder:        advancedExampleDir,
 		Tags:                  tags,
 		DeleteWorkspaceOnFail: false,
+		ResourceGroup:         resourceGroup,
 		// Include all necessary files in the TAR for Schematics
 		TarIncludePatterns: []string{
 			"*.tf",
@@ -338,9 +336,10 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 	})
 
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
-		{Name: "ibmcloud_api_key", Value: apiKey, DataType: "string", Secure: true},
+		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "prefix", Value: prefix, DataType: "string"},
 		{Name: "region", Value: region, DataType: "string"},
+		{Name: "resource_group", Value: options.ResourceGroup, DataType: "string"},
 		{Name: "cpd_entitlement_key", Value: *cpdEntitlementKey, DataType: "string", Secure: true},
 		{Name: "cpd_admin_password", Value: "Test1234!", DataType: "string", Secure: true},
 		{Name: "create_public_gateway", Value: "false", DataType: "bool"},
