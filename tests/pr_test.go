@@ -281,7 +281,7 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 
 	prefix := fmt.Sprintf("cp-adv-%s", strings.ToLower(random.UniqueID()))
 	tags := common.GetTagsFromTravis()
-	region := "eu-de"
+	region := "us-south"
 
 	// Verify ibmcloud_api_key variable is set
 	checkVariable := "TF_VAR_ibmcloud_api_key"
