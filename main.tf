@@ -97,6 +97,7 @@ module "cloud_pak_deployer" {
 data "ibm_container_vpc_cluster" "cluster_info" {
   name              = var.cluster_name
   resource_group_id = var.cluster_resource_group_id
+  depends_on        = [ibm_container_addons.odf_cluster_addon]
 }
 locals {
   openshift_version = join(".", slice(split(".", data.ibm_container_vpc_cluster.cluster_info.kube_version), 0, 2)) # Only use major and minor — no patch
