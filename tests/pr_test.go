@@ -19,12 +19,16 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/common"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
+	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
 )
 
 // Ensure every example directory has a corresponding test
 const instanceFlavorDir = "solutions/fully-configurable"
 
 const cpdEntitlementKeySecretId = "a4292c24-f093-2b8b-9016-37132b7b8788"
+
+// Use existing resource group
+const resourceGroup = "geretain-test-resources"
 
 var permanentResources map[string]any
 
@@ -266,4 +270,84 @@ func GetSecretsManagerKey(smId string, smRegion string, smKeyId string) (*string
 		return nil, err
 	}
 	return secret.(*secretsmanagerv2.ArbitrarySecret).Payload, nil
+}
+
+// TestRunICRImageBuildWithSecurePrivateCluster tests building and publishing image to ICR
+// with a secure private cluster.
+
+func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
+	t.Parallel()
+
+	// ------------------------------------------------------------------------------------
+	// Deploy secure private cluster + WatsonX using Schematics
+	// ------------------------------------------------------------------------------------
+
+	prefix := fmt.Sprintf("cp-adv-%s", strings.ToLower(random.UniqueID()))
+	tags := common.GetTagsFromTravis()
+	region := "us-south"
+
+	// Get Cloud Pak entitlement key from Secrets Manager
+	cpdEntitlementKey, cpdEntitlementKeyErr := GetSecretsManagerKey(
+		permanentResources["secretsManagerGuid"].(string),
+		permanentResources["secretsManagerRegion"].(string),
+		cpdEntitlementKeySecretId,
+	)
+	assert.NoError(t, cpdEntitlementKeyErr, "Failed to retrieve Cloud Pak entitlement key from Secrets Manager")
+
+	advancedExampleDir := "examples/advanced"
+
+	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
+		Testing:               t,
+		Prefix:                prefix,
+		BestRegionYAMLPath:    "../common-dev-assets/common-go-assets/cloudinfo-region-vpc-gen2-prefs.yaml",
+		Region:                region,
+		TemplateFolder:        advancedExampleDir,
+		Tags:                  tags,
+		DeleteWorkspaceOnFail: false,
+		ResourceGroup:         resourceGroup,
+		// Include all necessary files in the TAR for Schematics
+		TarIncludePatterns: []string{
+			"*.tf",
+			advancedExampleDir + "/*.tf",
+			advancedExampleDir + "/scripts/*.sh",
+			"modules/cloud-pak-deployer/*.tf",
+			"modules/cloud-pak-deployer/config/*.tf",
+			"modules/cpd-image-build/*.tf",
+			"modules/cpd-image-build/scripts/*.sh",
+			"modules/watsonx-ai/*.tf",
+			"modules/watsonx-data/*.tf",
+			"chart/cloud-pak-deployer/*.yaml",
+			"chart/cloud-pak-deployer/templates/*.yaml",
+			"chart/cloud-pak-deployer/templates/*.tpl",
+			"scripts/*.sh",
+		},
+		// Ignore Helm release updates for consistency check (timestamp() causes drift)
+		IgnoreUpdates: testhelper.Exemptions{
+			List: []string{
+				"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+			},
+		},
+		// Do not fail test if Helm release destroy times out (known Cloud Pak Deployer limitation)
+		IgnoreDestroys: testhelper.Exemptions{
+			List: []string{
+				"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+			},
+		},
+	})
+
+	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
+		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
+		{Name: "prefix", Value: prefix, DataType: "string"},
+		{Name: "region", Value: region, DataType: "string"},
+		{Name: "resource_group", Value: options.ResourceGroup, DataType: "string"},
+		{Name: "cpd_entitlement_key", Value: *cpdEntitlementKey, DataType: "string", Secure: true},
+		{Name: "cpd_admin_password", Value: "Test1234!", DataType: "string", Secure: true},
+		{Name: "create_public_gateway", Value: "false", DataType: "bool"},
+		{Name: "disable_outbound_traffic_protection", Value: "true", DataType: "bool"},
+		{Name: "cloud_pak_deployer_image", Value: "__NULL__", DataType: "string"},
+	}
+	_ = os.Unsetenv("TF_VAR_resource_tags")
+
+	err := options.RunSchematicTest()
+	require.NoError(t, err, "Schematics test failed - this test validates the ICR image build use case with secure private cluster")
 }
