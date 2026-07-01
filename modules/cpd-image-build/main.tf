@@ -60,7 +60,7 @@ data "ibm_code_engine_project" "code_engine_project" {
 module "code_engine" {
   source              = "terraform-ibm-modules/code-engine/ibm"
   version             = "4.9.6"
-  project_name        = var.code_engine_project_id == null ? var.code_engine_project_name : null
+  project_name        = var.code_engine_project_id == null ? local.ce_project_name : null
   existing_project_id = var.code_engine_project_id
   resource_group_id   = var.code_engine_project_id != null ? data.ibm_code_engine_project.code_engine_project[0].resource_group_id : local.resource_group_id
   secrets = {
