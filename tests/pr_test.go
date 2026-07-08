@@ -155,7 +155,7 @@ func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
 	realTerraformDir := "./resources"
 	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueID())))
 	tags := common.GetTagsFromTravis()
-	region := "us-south"
+	region := "eu-de"
 
 	// Verify ibmcloud_api_key variable is set
 	checkVariable := "TF_VAR_ibmcloud_api_key"
@@ -309,7 +309,6 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 		TarIncludePatterns: []string{
 			"*.tf",
 			advancedExampleDir + "/*.tf",
-			advancedExampleDir + "/scripts/*.sh",
 			"modules/cloud-pak-deployer/*.tf",
 			"modules/cloud-pak-deployer/config/*.tf",
 			"modules/cpd-image-build/*.tf",
