@@ -92,6 +92,7 @@ module "ocp_base" {
   vpc_id                              = ibm_is_vpc.vpc.id
   vpc_subnets                         = local.cluster_vpc_subnets
   worker_pools                        = local.worker_pools
+  ocp_version                         = "4.19"
   disable_outbound_traffic_protection = var.disable_outbound_traffic_protection
 }
 
