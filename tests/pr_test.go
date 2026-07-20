@@ -131,10 +131,8 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 		assert.NotNil(t, output, "Expected some output")
 	}
 
-	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
-	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
-	// Destroy the temporary existing resources if required
-	if t.Failed() && strings.ToLower(envVal) == "true" {
+	// Always preserve failed test environments for debugging.
+	if t.Failed() {
 		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
@@ -145,6 +143,7 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 }
 
 func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
+	t.Parallel()
 
 	prefix := fmt.Sprintf("cp-up-%s", strings.ToLower(random.UniqueID()))
 	realTerraformDir := "./resources"
@@ -231,10 +230,8 @@ func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
 		}
 	}
 
-	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
-	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
-	// Destroy the temporary existing resources if required
-	if t.Failed() && strings.ToLower(envVal) == "true" {
+	// Always preserve failed test environments for debugging.
+	if t.Failed() {
 		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
