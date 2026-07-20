@@ -145,7 +145,6 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 }
 
 func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
-	t.Parallel()
 
 	prefix := fmt.Sprintf("cp-up-%s", strings.ToLower(random.UniqueID()))
 	realTerraformDir := "./resources"
