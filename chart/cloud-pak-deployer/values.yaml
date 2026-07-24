@@ -16,6 +16,13 @@ deployer:
   image: "quay.io/cloud-pak-deployer/cloud-pak-deployer"
   job_name_suffix: ""
   entitlement_key: ""
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
 
 createImagePullSecret: false
 imagePullSecName: "cpd-docker-cfg"

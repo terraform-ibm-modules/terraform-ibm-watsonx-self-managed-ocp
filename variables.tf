@@ -36,6 +36,30 @@ variable "cloud_pak_deployer_secret" {
   default = null
 }
 
+variable "cloud_pak_deployer_resources" {
+  description = "Kubernetes resource requests and limits for the Cloud Pak Deployer install job."
+  type = object({
+    requests = object({
+      cpu    = string
+      memory = string
+    })
+    limits = object({
+      cpu    = string
+      memory = string
+    })
+  })
+  default = {
+    requests = {
+      cpu    = "500m"
+      memory = "1Gi"
+    }
+    limits = {
+      cpu    = "1000m"
+      memory = "2Gi"
+    }
+  }
+}
+
 variable "cpd_accept_license" {
   description = "When set to 'true', it is understood that the user has read the terms of the Cloud Pak license(s) and agrees to the terms outlined."
   type        = bool
