@@ -24,7 +24,6 @@ resource "ibm_is_vpc" "vpc" {
   resource_group            = module.resource_group.resource_group_id
   address_prefix_management = "auto"
   tags                      = var.resource_tags
-
 }
 
 resource "ibm_is_public_gateway" "gateway" {
