@@ -59,26 +59,6 @@ resource "helm_release" "cloud_pak_deployer_helm_release" {
       value = local.cloud_pak_deployer.image
     },
     {
-      name  = "deployer.resources.requests.cpu"
-      type  = "string"
-      value = var.cloud_pak_deployer_resources.requests.cpu
-    },
-    {
-      name  = "deployer.resources.requests.memory"
-      type  = "string"
-      value = var.cloud_pak_deployer_resources.requests.memory
-    },
-    {
-      name  = "deployer.resources.limits.cpu"
-      type  = "string"
-      value = var.cloud_pak_deployer_resources.limits.cpu
-    },
-    {
-      name  = "deployer.resources.limits.memory"
-      type  = "string"
-      value = var.cloud_pak_deployer_resources.limits.memory
-    },
-    {
       name  = "createImagePullSecret"
       value = var.cloud_pak_deployer_secret != null ? true : false
     },

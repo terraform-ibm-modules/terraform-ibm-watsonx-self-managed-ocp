@@ -48,27 +48,3 @@ variable "rollback_on_failure" {
   type        = bool
   default     = true
 }
-
-variable "cloud_pak_deployer_resources" {
-  description = "Kubernetes resource requests and limits for the Cloud Pak Deployer install job."
-  type = object({
-    requests = object({
-      cpu    = string
-      memory = string
-    })
-    limits = object({
-      cpu    = string
-      memory = string
-    })
-  })
-  default = {
-    requests = {
-      cpu    = "500m"
-      memory = "1Gi"
-    }
-    limits = {
-      cpu    = "1000m"
-      memory = "2Gi"
-    }
-  }
-}

@@ -87,11 +87,10 @@ module "cloud_pak_deployer" {
   cloud_pak_deployer_secret = var.cloud_pak_deployer_secret != null ? var.cloud_pak_deployer_secret : (var.cloud_pak_deployer_image == null ?
   { username : "iamapikey", password : var.ibmcloud_api_key, server : module.build_cpd_image[0].container_registry_server, email : "none" } : null)
 
-  cluster_name                 = var.cluster_name
-  cpd_accept_license           = var.cpd_accept_license
-  cpd_admin_password           = var.cpd_admin_password
-  cpd_entitlement_key          = var.cpd_entitlement_key
-  cloud_pak_deployer_resources = var.cloud_pak_deployer_resources
+  cluster_name        = var.cluster_name
+  cpd_accept_license  = var.cpd_accept_license
+  cpd_admin_password  = var.cpd_admin_password
+  cpd_entitlement_key = var.cpd_entitlement_key
 }
 
 # Retrieve the openshift cluster info
