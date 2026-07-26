@@ -10,12 +10,6 @@ module "resource_group" {
   existing_resource_group_name = var.resource_group
 }
 
-resource "time_sleep" "wait_for_resource_group" {
-  count           = var.resource_group == null ? 1 : 0
-  create_duration = "30s"
-  depends_on      = [module.resource_group]
-}
-
 ########################################################################################################################
 # VPC + Subnet + Public Gateway
 #
@@ -31,7 +25,6 @@ resource "ibm_is_vpc" "vpc" {
   address_prefix_management = "auto"
   tags                      = var.resource_tags
 
-  depends_on = [time_sleep.wait_for_resource_group]
 }
 
 resource "ibm_is_public_gateway" "gateway" {
