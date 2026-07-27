@@ -104,8 +104,9 @@ locals {
 
 # Cloud Pak Deployer configuration file local variable(s) only
 module "config" {
-  source            = "./modules/cloud-pak-deployer/config"
-  cluster_name      = var.cluster_name
-  cpd_version       = var.cpd_version
-  openshift_version = local.openshift_version
+  source                    = "./modules/cloud-pak-deployer/config"
+  cluster_name              = var.cluster_name
+  cpd_version               = var.cpd_version
+  openshift_version         = local.openshift_version
+  install_odf_cluster_addon = var.install_odf_cluster_addon
 }
