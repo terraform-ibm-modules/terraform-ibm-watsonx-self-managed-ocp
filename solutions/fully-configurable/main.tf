@@ -55,6 +55,7 @@ module "watsonx_self_managed_ocp" {
   cluster_name                           = data.ibm_container_vpc_cluster.cluster.name
   cluster_resource_group_id              = module.cluster_resource_group.resource_group_id
   install_odf_cluster_addon              = var.install_odf_cluster_addon
+  kubeconfig_path                        = data.ibm_container_cluster_config.cluster_config.config_file_path
   odf_version                            = var.odf_version
   odf_config                             = var.odf_config
   cpd_version                            = var.cpd_version
@@ -73,19 +74,6 @@ module "watsonx_self_managed_ocp" {
   add_random_suffix_code_engine_project = false
 }
 
-resource "null_resource" "wait_for_odf_storage_classes" {
-  count      = var.install_odf_cluster_addon ? 1 : 0
-  depends_on = [module.watsonx_self_managed_ocp]
-
-  provisioner "local-exec" {
-    command = "kubectl wait storagecluster ocs-storagecluster -n openshift-storage --for=jsonpath='{.status.phase}'=Ready --timeout=30m"
-
-    environment = {
-      KUBECONFIG = data.ibm_container_cluster_config.cluster_config.config_file_path
-    }
-  }
-}
-
 resource "null_resource" "wait_for_cloud_pak_deployer_complete" {
   provisioner "local-exec" {
     command = "${path.module}/../../scripts/wait_for_cpd_pod.sh"
@@ -100,6 +88,5 @@ resource "null_resource" "wait_for_cloud_pak_deployer_complete" {
 
   depends_on = [
     module.watsonx_self_managed_ocp,
-    null_resource.wait_for_odf_storage_classes,
   ]
 }

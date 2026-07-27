@@ -60,11 +60,25 @@ module "watsonx_data" {
 # Cloud Pak deployer
 ##############################################################################
 
+resource "null_resource" "wait_for_odf_storage_classes" {
+  count      = var.install_odf_cluster_addon && var.kubeconfig_path != null ? 1 : 0
+  depends_on = [ibm_container_addons.odf_cluster_addon]
+
+  provisioner "local-exec" {
+    command = "kubectl wait storagecluster ocs-storagecluster -n openshift-storage --for=jsonpath='{.status.phase}'=Ready --timeout=30m"
+
+    environment = {
+      KUBECONFIG = var.kubeconfig_path
+    }
+  }
+}
+
 module "cloud_pak_deployer" {
   depends_on = [
     module.watsonx_ai,
     module.watsonx_data,
-    module.build_cpd_image
+    module.build_cpd_image,
+    null_resource.wait_for_odf_storage_classes,
   ]
   source = "./modules/cloud-pak-deployer"
   cloud_pak_deployer_config = merge(
