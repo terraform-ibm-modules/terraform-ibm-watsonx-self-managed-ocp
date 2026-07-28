@@ -11,16 +11,7 @@ while true; do
   if [[ "${STATUS}" == "Succeeded" ]]; then
     break
   elif [[ "${STATUS}" == "Failed" ]]; then
-    echo "Pod failed. Collecting diagnostics before exit..."
-    echo "=== kubectl get pods -n ${NAMESPACE} -o wide ==="
-    kubectl get pods -n "${NAMESPACE}" -o wide || true
-    echo "=== kubectl describe pod ${POD_NAME} -n ${NAMESPACE} ==="
-    kubectl describe pod "${POD_NAME}" -n "${NAMESPACE}" || true
-    echo "=== kubectl logs ${POD_NAME} -n ${NAMESPACE} --all-containers=true ==="
-    kubectl logs "${POD_NAME}" -n "${NAMESPACE}" --all-containers=true || true
-    echo "=== kubectl get events -n ${NAMESPACE} --sort-by=.lastTimestamp ==="
-    kubectl get events -n "${NAMESPACE}" --sort-by=.lastTimestamp || true
-    echo "Exiting due to 'Failed' status after collecting diagnostics."
+    echo "Exiting due to 'Failed' status. Check pod logs for more info."
     exit 1
   fi
   sleep 60

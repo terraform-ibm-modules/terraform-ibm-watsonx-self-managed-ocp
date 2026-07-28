@@ -131,9 +131,11 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 		assert.NotNil(t, output, "Expected some output")
 	}
 
-	// Always preserve failed environments for debugging.
-	if t.Failed() {
-		fmt.Println("Terratest failed. Preserving resources for debugging. Delete them manually when finished.")
+	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
+	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
+	// Destroy the temporary existing resources if required
+	if t.Failed() && strings.ToLower(envVal) == "true" {
+		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
 		terraform.DestroyContext(t, context.Background(), existingTerraformOptions)
@@ -230,9 +232,11 @@ func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
 		}
 	}
 
-	// Always preserve failed environments for debugging.
-	if t.Failed() {
-		fmt.Println("Terratest failed. Preserving resources for debugging. Delete them manually when finished.")
+	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
+	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
+	// Destroy the temporary existing resources if required
+	if t.Failed() && strings.ToLower(envVal) == "true" {
+		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
 		terraform.DestroyContext(t, context.Background(), existingTerraformOptions)
