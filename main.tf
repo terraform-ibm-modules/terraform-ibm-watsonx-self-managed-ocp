@@ -28,7 +28,7 @@ resource "ibm_container_addons" "odf_cluster_addon" {
   resource_group_id = var.cluster_resource_group_id
   addons {
     name            = "openshift-data-foundation"
-    version         = var.odf_version
+    version         = local.odf_version
     parameters_json = jsonencode(var.odf_config)
   }
 }
@@ -114,6 +114,7 @@ data "ibm_container_vpc_cluster" "cluster_info" {
 }
 locals {
   openshift_version = join(".", slice(split(".", data.ibm_container_vpc_cluster.cluster_info.kube_version), 0, 2)) # Only use major and minor — no patch
+  odf_version       = "${local.openshift_version}.0"                                                               # ODF addon always ships as X.Y.0 matching OCP major.minor
 }
 
 # Cloud Pak Deployer configuration file local variable(s) only

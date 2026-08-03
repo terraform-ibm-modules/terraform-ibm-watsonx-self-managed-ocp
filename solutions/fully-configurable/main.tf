@@ -56,7 +56,6 @@ module "watsonx_self_managed_ocp" {
   cluster_resource_group_id              = module.cluster_resource_group.resource_group_id
   install_odf_cluster_addon              = var.install_odf_cluster_addon
   kubeconfig_path                        = data.ibm_container_cluster_config.cluster_config.config_file_path
-  odf_version                            = var.odf_version
   odf_config                             = var.odf_config
   cpd_version                            = var.cpd_version
   cpd_accept_license                     = var.cpd_accept_license

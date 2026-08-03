@@ -150,17 +150,6 @@ variable "install_odf_cluster_addon" {
   nullable    = false
 }
 
-variable "odf_version" {
-  description = "Version of ODF to install."
-  type        = string
-  default     = "4.19.0"
-  validation {
-    error_message = "ODF version must be in the format 'x.y.z'."
-    condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+$", var.odf_version))
-  }
-  nullable = false
-}
-
 variable "odf_config" {
   description = "Configuration for the ODF addon. Example add on options can be found [here](https://cloud.ibm.com/docs/openshift?topic=openshift-deploy-odf-classic&interface=cli#install-odf-cli-classic)"
   type        = map(string)
