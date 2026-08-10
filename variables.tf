@@ -201,9 +201,3 @@ variable "add_random_suffix_code_engine_project" {
   description = "Whether to add a randomly generated 4-character suffix to the newly created Code Engine project. Only applies if `code_engine_project_id` is `null`."
   default     = true
 }
-
-variable "kubeconfig_path" {
-  description = "Path to the kubeconfig file for the target OpenShift cluster. Required when install_odf_cluster_addon is true, to wait for ODF storage classes before deploying Cloud Pak Deployer."
-  type        = string
-  default     = null
-}

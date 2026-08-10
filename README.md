@@ -93,7 +93,6 @@ For more information on access and permissions, see [IBM Cloud IAM service roles
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >=1.79.2, <3.0.0 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0.0 |
 
 ### Modules
 
@@ -110,7 +109,8 @@ For more information on access and permissions, see [IBM Cloud IAM service roles
 | Name | Type |
 |------|------|
 | [ibm_container_addons.odf_cluster_addon](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/resources/container_addons) | resource |
-| [null_resource.wait_for_odf_storage_classes](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [terraform_data.wait_for_odf_storage_classes](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
+| [ibm_container_cluster_config.cluster_config](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/data-sources/container_cluster_config) | data source |
 | [ibm_container_vpc_cluster.cluster_info](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/data-sources/container_vpc_cluster) | data source |
 
 ### Inputs
@@ -133,7 +133,6 @@ For more information on access and permissions, see [IBM Cloud IAM service roles
 | <a name="input_cpd_version"></a> [cpd\_version](#input\_cpd\_version) | Cloud Pak for Data version to install.  Only version 5.x.x is supported, latest versions can be found [here](https://www.ibm.com/docs/en/cloud-paks/cp-data?topic=versions-cloud-pak-data). | `string` | `"5.3.1"` | no |
 | <a name="input_ibmcloud_api_key"></a> [ibmcloud\_api\_key](#input\_ibmcloud\_api\_key) | The IBM Cloud API key to deploy resources. | `string` | n/a | yes |
 | <a name="input_install_odf_cluster_addon"></a> [install\_odf\_cluster\_addon](#input\_install\_odf\_cluster\_addon) | Install the ODF cluster add-on. | `bool` | `true` | no |
-| <a name="input_kubeconfig_path"></a> [kubeconfig\_path](#input\_kubeconfig\_path) | Path to the kubeconfig file for the target OpenShift cluster. Required when install\_odf\_cluster\_addon is true, to wait for ODF storage classes before deploying Cloud Pak Deployer. | `string` | `null` | no |
 | <a name="input_odf_config"></a> [odf\_config](#input\_odf\_config) | Configuration for the ODF addon. Only applies if `install_odf_cluster_addon` is true. | `map(string)` | <pre>{<br/>  "addSingleReplicaPool": "false",<br/>  "billingType": "essentials",<br/>  "clusterEncryption": "false",<br/>  "disableNoobaaLB": "false",<br/>  "enableNFS": "false",<br/>  "encryptionInTransit": "false",<br/>  "hpcsBaseUrl": "",<br/>  "hpcsEncryption": "false",<br/>  "hpcsInstanceId": "",<br/>  "hpcsSecretName": "",<br/>  "hpcsServiceName": "",<br/>  "hpcsTokenUrl": "",<br/>  "ignoreNoobaa": "true",<br/>  "numOfOsd": "1",<br/>  "ocsUpgrade": "false",<br/>  "odfDeploy": "true",<br/>  "osdDevicePaths": "",<br/>  "osdSize": "512Gi",<br/>  "osdStorageClassName": "ibmc-vpc-block-metro-10iops-tier",<br/>  "resourceProfile": "balanced",<br/>  "taintNodes": "false",<br/>  "useCephRBDAsDefaultStorageClass": "false",<br/>  "workerNodes": "all",<br/>  "workerPool": ""<br/>}</pre> | no |
 | <a name="input_region"></a> [region](#input\_region) | Region where Code Engine and Container Registry resources will be provisioned. Only applies if `cloud_pak_deployer_image` is `null`. To use the 'Global' Container Registry location set `use_global_container_registry_location` to true. | `string` | `"us-south"` | no |
 | <a name="input_resource_group_id"></a> [resource\_group\_id](#input\_resource\_group\_id) | The ID of the resource group where Code Engine and Container Registry resources will be provisioned. Only applies if `cloud_pak_deployer_image` is `null`. If not set, Default resource group will be used. | `string` | `null` | no |

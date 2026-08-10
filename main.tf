@@ -60,15 +60,16 @@ module "watsonx_data" {
 # Cloud Pak deployer
 ##############################################################################
 
-resource "null_resource" "wait_for_odf_storage_classes" {
-  count      = var.install_odf_cluster_addon && var.kubeconfig_path != null ? 1 : 0
+resource "terraform_data" "wait_for_odf_storage_classes" {
+  count      = var.install_odf_cluster_addon ? 1 : 0
   depends_on = [ibm_container_addons.odf_cluster_addon]
 
   provisioner "local-exec" {
-    command = "kubectl wait storagecluster ocs-storagecluster -n openshift-storage --for=jsonpath='{.status.phase}'=Ready --timeout=30m"
+    command     = "${path.module}/scripts/wait_for_odf_storage_classes.sh"
+    interpreter = ["/bin/bash", "-c"]
 
     environment = {
-      KUBECONFIG = var.kubeconfig_path
+      KUBECONFIG = data.ibm_container_cluster_config.cluster_config.config_file_path
     }
   }
 }
@@ -78,7 +79,7 @@ module "cloud_pak_deployer" {
     module.watsonx_ai,
     module.watsonx_data,
     module.build_cpd_image,
-    null_resource.wait_for_odf_storage_classes,
+    terraform_data.wait_for_odf_storage_classes,
   ]
   source = "./modules/cloud-pak-deployer"
   cloud_pak_deployer_config = merge(
@@ -112,6 +113,14 @@ data "ibm_container_vpc_cluster" "cluster_info" {
   name              = var.cluster_name
   resource_group_id = var.cluster_resource_group_id
 }
+
+# Download the cluster kubeconfig - required to run kubectl commands against the cluster
+data "ibm_container_cluster_config" "cluster_config" {
+  cluster_name_id   = data.ibm_container_vpc_cluster.cluster_info.name
+  resource_group_id = var.cluster_resource_group_id
+  config_dir        = "${path.module}/kubeconfig"
+}
+
 locals {
   openshift_version = join(".", slice(split(".", data.ibm_container_vpc_cluster.cluster_info.kube_version), 0, 2)) # Only use major and minor — no patch
   odf_version       = "${local.openshift_version}.0"                                                               # ODF addon always ships as X.Y.0 matching OCP major.minor
