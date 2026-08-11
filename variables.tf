@@ -119,7 +119,7 @@ variable "odf_config" {
     "billingType"                     = "essentials"
     "osdSize"                         = "512Gi"
     "osdStorageClassName"             = "ibmc-vpc-block-metro-10iops-tier"
-    "numOfOsd"                        = "1"
+    "numOfOsd"                        = "3"
     "ocsUpgrade"                      = "false"
     "enableNFS"                       = "false"
     "hpcsEncryption"                  = "false"
