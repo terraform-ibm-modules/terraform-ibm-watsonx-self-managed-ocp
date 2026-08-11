@@ -4,7 +4,7 @@ set -e
 
 NAMESPACE="openshift-storage"
 STORAGE_CLUSTER="ocs-storagecluster"
-TIMEOUT="30m"
+TIMEOUT="60m"
 
 echo "INFO: Waiting for ODF StorageCluster '${STORAGE_CLUSTER}' to reach Ready phase (timeout: ${TIMEOUT})..."
 
