@@ -116,13 +116,13 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 
 		options.IgnoreAdds = testhelper.Exemptions{
 			List: []string{
-				"null_resource.wait_for_cloud_pak_deployer_complete",
+				"terraform_data.wait_for_cloud_pak_deployer_complete",
 			},
 		}
 
 		options.IgnoreDestroys = testhelper.Exemptions{
 			List: []string{
-				"null_resource.wait_for_cloud_pak_deployer_complete",
+				"terraform_data.wait_for_cloud_pak_deployer_complete",
 			},
 		}
 
@@ -131,10 +131,7 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 		assert.NotNil(t, output, "Expected some output")
 	}
 
-	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
-	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
-	// Destroy the temporary existing resources if required
-	if t.Failed() && strings.ToLower(envVal) == "true" {
+	if t.Failed() {
 		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
@@ -215,13 +212,13 @@ func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
 
 		options.IgnoreAdds = testhelper.Exemptions{
 			List: []string{
-				"null_resource.wait_for_cloud_pak_deployer_complete",
+				"terraform_data.wait_for_cloud_pak_deployer_complete",
 			},
 		}
 
 		options.IgnoreDestroys = testhelper.Exemptions{
 			List: []string{
-				"null_resource.wait_for_cloud_pak_deployer_complete",
+				"terraform_data.wait_for_cloud_pak_deployer_complete",
 			},
 		}
 

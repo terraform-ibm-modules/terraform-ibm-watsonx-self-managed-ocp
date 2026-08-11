@@ -65,8 +65,7 @@ resource "terraform_data" "wait_for_odf_storage_classes" {
   depends_on = [ibm_container_addons.odf_cluster_addon]
 
   provisioner "local-exec" {
-    command     = "${path.module}/scripts/wait_for_odf_storage_classes.sh"
-    interpreter = ["/bin/bash", "-c"]
+    command = "${path.module}/scripts/wait_for_odf_storage_classes.sh"
 
     environment = {
       KUBECONFIG = data.ibm_container_cluster_config.cluster_config.config_file_path
