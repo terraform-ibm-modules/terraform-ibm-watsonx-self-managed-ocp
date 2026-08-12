@@ -120,13 +120,13 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 
 		options.IgnoreAdds = testhelper.Exemptions{
 			List: []string{
-				"null_resource.wait_for_cloud_pak_deployer_complete",
+				"terraform_data.wait_for_cloud_pak_deployer_complete",
 			},
 		}
 
 		options.IgnoreDestroys = testhelper.Exemptions{
 			List: []string{
-				"null_resource.wait_for_cloud_pak_deployer_complete",
+				"terraform_data.wait_for_cloud_pak_deployer_complete",
 			},
 		}
 
@@ -219,13 +219,13 @@ func TestRunFullyConfigurableUpgradeSolution(t *testing.T) {
 
 		options.IgnoreAdds = testhelper.Exemptions{
 			List: []string{
-				"null_resource.wait_for_cloud_pak_deployer_complete",
+				"terraform_data.wait_for_cloud_pak_deployer_complete",
 			},
 		}
 
 		options.IgnoreDestroys = testhelper.Exemptions{
 			List: []string{
-				"null_resource.wait_for_cloud_pak_deployer_complete",
+				"terraform_data.wait_for_cloud_pak_deployer_complete",
 			},
 		}
 
