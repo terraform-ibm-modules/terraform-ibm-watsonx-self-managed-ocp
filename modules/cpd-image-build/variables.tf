@@ -61,3 +61,10 @@ variable "add_random_suffix_code_engine_project" {
   description = "Whether to add a randomly generated 4-character suffix to the newly created Code Engine project. Only applies if `code_engine_project_id` is `null`."
   default     = true
 }
+
+variable "container_registry_api_key" {
+  description = "An IBM Cloud API key with push access to the Container Registry namespace. If not set, `ibmcloud_api_key` is used. Providing a dedicated registry-scoped key avoids storing the platform API key in the registry secret."
+  type        = string
+  sensitive   = true
+  default     = null
+}
