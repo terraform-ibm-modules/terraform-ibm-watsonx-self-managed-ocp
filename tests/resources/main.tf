@@ -70,10 +70,10 @@ locals {
 
 module "ocp_base" {
   source                              = "terraform-ibm-modules/base-ocp-vpc/ibm"
-  version                             = "3.88.2"
+  version                             = "3.90.0"
   resource_group_id                   = module.resource_group.resource_group_id
   region                              = var.region
-  tags                                = var.resource_tags
+  resource_tags                       = var.resource_tags
   cluster_name                        = "${var.prefix}-cluster"
   force_delete_storage                = true
   vpc_id                              = ibm_is_vpc.vpc.id
@@ -81,5 +81,5 @@ module "ocp_base" {
   worker_pools                        = local.worker_pools
   access_tags                         = []
   disable_outbound_traffic_protection = true
-  ocp_version                         = "4.19"
+  ocp_version                         = "4.21"
 }
