@@ -14,10 +14,6 @@ terraform {
       source  = "hashicorp/helm"
       version = "3.2.0"
     }
-    shell = {
-      source  = "scottwinkler/shell"
-      version = "1.7.10"
-    }
     null = {
       source  = "hashicorp/null"
       version = "3.3.0"
