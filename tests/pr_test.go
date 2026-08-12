@@ -131,7 +131,10 @@ func TestRunFullyConfigurableSolution(t *testing.T) {
 		assert.NotNil(t, output, "Expected some output")
 	}
 
-	if t.Failed() {
+	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
+	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
+	// Destroy the temporary existing resources if required
+	if t.Failed() && strings.ToLower(envVal) == "true" {
 		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
