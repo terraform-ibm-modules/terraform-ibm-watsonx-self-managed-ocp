@@ -3,7 +3,8 @@
 ##############################################################################
 
 locals {
-  cluster_name = var.existing_cluster_name != null ? var.existing_cluster_name : module.ocp_base[0].cluster_name
+  cluster_name              = var.existing_cluster_name != null ? var.existing_cluster_name : module.ocp_base[0].cluster_name
+  cluster_resource_group_id = var.existing_cluster_name != null ? module.resource_group.resource_group_id : module.ocp_base[0].resource_group_id
 }
 
 ##############################################################################
@@ -111,7 +112,7 @@ module "watsonx_self_managed_ocp" {
   ibmcloud_api_key          = var.ibmcloud_api_key
   region                    = var.region
   cluster_name              = local.cluster_name
-  cluster_resource_group_id = module.resource_group.resource_group_id
+  cluster_resource_group_id = local.cluster_resource_group_id
   cpd_admin_password        = var.cpd_admin_password
   cpd_entitlement_key       = var.cpd_entitlement_key
   cloud_pak_deployer_image  = var.cloud_pak_deployer_image
