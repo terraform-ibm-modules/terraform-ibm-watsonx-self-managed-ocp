@@ -319,6 +319,7 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 			"chart/cloud-pak-deployer/templates/*.yaml",
 			"chart/cloud-pak-deployer/templates/*.tpl",
 			"scripts/*.sh",
+			"kubeconfig/README.md",
 		},
 		// Ignore Helm release updates for consistency check (timestamp() causes drift)
 		IgnoreUpdates: testhelper.Exemptions{
