@@ -9,7 +9,7 @@ output "cluster_id" {
 
 output "cluster_name" {
   description = "Name of the OpenShift cluster"
-  value       = local.cluster_name
+  value       = var.existing_cluster_name != null ? var.existing_cluster_name : module.ocp_base[0].cluster_name
 }
 
 output "resource_group_id" {

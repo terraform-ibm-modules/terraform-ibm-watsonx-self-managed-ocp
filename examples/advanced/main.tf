@@ -3,8 +3,8 @@
 ##############################################################################
 
 locals {
-  cluster_name              = var.existing_cluster_name != null ? var.existing_cluster_name : module.ocp_base[0].cluster_name
-  cluster_resource_group_id = var.existing_cluster_name != null ? module.resource_group.resource_group_id : module.ocp_base[0].resource_group_id
+  cluster_name              = var.existing_cluster_name != null ? var.existing_cluster_name : module.ocp_base[0].cluster_id
+  cluster_resource_group_id = module.resource_group.resource_group_id
 }
 
 ##############################################################################
