@@ -272,82 +272,129 @@ func GetSecretsManagerKey(smId string, smRegion string, smKeyId string) (*string
 	return secret.(*secretsmanagerv2.ArbitrarySecret).Payload, nil
 }
 
-// TestRunICRImageBuildWithSecurePrivateCluster tests building and publishing image to ICR
-// with a secure private cluster.
+// TestRunICRImageBuildWithSecurePrivateCluster tests building and publishing a Cloud Pak Deployer
+// image to ICR via Code Engine, using a secure private cluster (no public gateway).
 
 func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 	t.Parallel()
 
 	// ------------------------------------------------------------------------------------
-	// Deploy secure private cluster + WatsonX using Schematics
+	// Phase 1: Pre-provision private cluster (no public gateway, bx3d.64x320 workers)
 	// ------------------------------------------------------------------------------------
 
 	prefix := fmt.Sprintf("cp-adv-%s", strings.ToLower(random.UniqueID()))
+	realTerraformDir := "./resources"
+	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueID())))
 	tags := common.GetTagsFromTravis()
 	region := "us-south"
 
-	// Get Cloud Pak entitlement key from Secrets Manager
-	cpdEntitlementKey, cpdEntitlementKeyErr := GetSecretsManagerKey(
-		permanentResources["secretsManagerGuid"].(string),
-		permanentResources["secretsManagerRegion"].(string),
-		cpdEntitlementKeySecretId,
-	)
-	assert.NoError(t, cpdEntitlementKeyErr, "Failed to retrieve Cloud Pak entitlement key from Secrets Manager")
+	// Verify ibmcloud_api_key variable is set
+	checkVariable := "TF_VAR_ibmcloud_api_key"
+	val, present := os.LookupEnv(checkVariable)
+	require.True(t, present, checkVariable+" environment variable not set")
+	require.NotEqual(t, "", val, checkVariable+" environment variable is empty")
 
-	advancedExampleDir := "examples/advanced"
-
-	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
-		Testing:               t,
-		Prefix:                prefix,
-		BestRegionYAMLPath:    "../common-dev-assets/common-go-assets/cloudinfo-region-vpc-gen2-prefs.yaml",
-		Region:                region,
-		TemplateFolder:        advancedExampleDir,
-		Tags:                  tags,
-		DeleteWorkspaceOnFail: false,
-		ResourceGroup:         resourceGroup,
-		// Include all necessary files in the TAR for Schematics
-		TarIncludePatterns: []string{
-			"*.tf",
-			advancedExampleDir + "/*.tf",
-			"modules/cloud-pak-deployer/*.tf",
-			"modules/cloud-pak-deployer/config/*.tf",
-			"modules/cpd-image-build/*.tf",
-			"modules/cpd-image-build/scripts/*.sh",
-			"modules/watsonx-ai/*.tf",
-			"modules/watsonx-data/*.tf",
-			"chart/cloud-pak-deployer/*.yaml",
-			"chart/cloud-pak-deployer/templates/*.yaml",
-			"chart/cloud-pak-deployer/templates/*.tpl",
-			"scripts/*.sh",
-			"kubeconfig/README.md",
+	logger.Log(t, "Tempdir: ", tempTerraformDir)
+	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: tempTerraformDir,
+		Vars: map[string]any{
+			"prefix":                prefix,
+			"region":                region,
+			"resource_tags":         tags,
+			"resource_group":        resourceGroup,
+			"create_public_gateway": false,
 		},
-		// Ignore Helm release updates for consistency check (timestamp() causes drift)
-		IgnoreUpdates: testhelper.Exemptions{
-			List: []string{
-				"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
-			},
-		},
-		// Do not fail test if Helm release destroy times out (known Cloud Pak Deployer limitation)
-		IgnoreDestroys: testhelper.Exemptions{
-			List: []string{
-				"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
-			},
-		},
+		Upgrade: true,
 	})
 
-	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
-		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
-		{Name: "prefix", Value: prefix, DataType: "string"},
-		{Name: "region", Value: region, DataType: "string"},
-		{Name: "resource_group", Value: options.ResourceGroup, DataType: "string"},
-		{Name: "cpd_entitlement_key", Value: *cpdEntitlementKey, DataType: "string", Secure: true},
-		{Name: "cpd_admin_password", Value: "Test1234!", DataType: "string", Secure: true},
-		{Name: "create_public_gateway", Value: "false", DataType: "bool"},
-		{Name: "disable_outbound_traffic_protection", Value: "true", DataType: "bool"},
-		{Name: "cloud_pak_deployer_image", Value: "__NULL__", DataType: "string"},
-	}
-	_ = os.Unsetenv("TF_VAR_resource_tags")
+	terraform.WorkspaceSelectOrNewContext(t, context.Background(), existingTerraformOptions, prefix)
+	_, existErr := terraform.InitAndApplyContextE(t, context.Background(), existingTerraformOptions)
+	if existErr != nil {
+		assert.True(t, existErr == nil, "Init and Apply of private cluster resources failed")
+	} else {
+		// ------------------------------------------------------------------------------------
+		// Phase 2: Deploy WatsonX via Schematics using the pre-provisioned private cluster
+		// ------------------------------------------------------------------------------------
 
-	err := options.RunSchematicTest()
-	require.NoError(t, err, "Schematics test failed - this test validates the ICR image build use case with secure private cluster")
+		cpdEntitlementKey, cpdEntitlementKeyErr := GetSecretsManagerKey(
+			permanentResources["secretsManagerGuid"].(string),
+			permanentResources["secretsManagerRegion"].(string),
+			cpdEntitlementKeySecretId,
+		)
+		if !assert.NoError(t, cpdEntitlementKeyErr) {
+			t.Error("TestRunICRImageBuildWithSecurePrivateCluster Failed - geretain-software-entitlement-key not found in secrets manager")
+			panic(cpdEntitlementKeyErr)
+		}
+
+		existingClusterName := terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_name")
+		existingResourceGroupName := terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_resource_group_name")
+
+		advancedExampleDir := "examples/advanced"
+
+		schematicOptions := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
+			Testing:               t,
+			Prefix:                prefix,
+			BestRegionYAMLPath:    "../common-dev-assets/common-go-assets/cloudinfo-region-vpc-gen2-prefs.yaml",
+			Region:                region,
+			TemplateFolder:        advancedExampleDir,
+			Tags:                  tags,
+			DeleteWorkspaceOnFail: false,
+			ResourceGroup:         existingResourceGroupName,
+			// Include all necessary files in the TAR for Schematics
+			TarIncludePatterns: []string{
+				"*.tf",
+				advancedExampleDir + "/*.tf",
+				"modules/cloud-pak-deployer/*.tf",
+				"modules/cloud-pak-deployer/config/*.tf",
+				"modules/cpd-image-build/*.tf",
+				"modules/cpd-image-build/scripts/*.sh",
+				"modules/watsonx-ai/*.tf",
+				"modules/watsonx-data/*.tf",
+				"chart/cloud-pak-deployer/*.yaml",
+				"chart/cloud-pak-deployer/templates/*.yaml",
+				"chart/cloud-pak-deployer/templates/*.tpl",
+				"scripts/*.sh",
+				"kubeconfig/README.md",
+			},
+			// Ignore Helm release updates for consistency check (timestamp() causes drift)
+			IgnoreUpdates: testhelper.Exemptions{
+				List: []string{
+					"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+				},
+			},
+			// Do not fail test if Helm release destroy times out (known Cloud Pak Deployer limitation)
+			IgnoreDestroys: testhelper.Exemptions{
+				List: []string{
+					"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+				},
+			},
+		})
+
+		schematicOptions.TerraformVars = []testschematic.TestSchematicTerraformVar{
+			{Name: "ibmcloud_api_key", Value: schematicOptions.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
+			{Name: "prefix", Value: prefix, DataType: "string"},
+			{Name: "region", Value: region, DataType: "string"},
+			{Name: "resource_group", Value: existingResourceGroupName, DataType: "string"},
+			{Name: "existing_cluster_name", Value: existingClusterName, DataType: "string"},
+			{Name: "cpd_entitlement_key", Value: *cpdEntitlementKey, DataType: "string", Secure: true},
+			{Name: "cpd_admin_password", Value: "Test1234!", DataType: "string", Secure: true},
+			{Name: "cloud_pak_deployer_image", Value: "__NULL__", DataType: "string"},
+		}
+		_ = os.Unsetenv("TF_VAR_resource_tags")
+
+		err := schematicOptions.RunSchematicTest()
+		assert.NoError(t, err, "Schematics test failed - this test validates the ICR image build use case with secure private cluster")
+	}
+
+	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
+	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
+	// Destroy the temporary existing resources if required
+	if t.Failed() && strings.ToLower(envVal) == "true" {
+		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
+	} else {
+		logger.Log(t, "START: Destroy (existing private cluster resources)")
+		terraform.DestroyContext(t, context.Background(), existingTerraformOptions)
+		terraform.WorkspaceDeleteContext(t, context.Background(), existingTerraformOptions, prefix)
+		logger.Log(t, "END: Destroy (existing private cluster resources)")
+	}
 }
