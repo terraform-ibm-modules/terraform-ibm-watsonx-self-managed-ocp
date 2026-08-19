@@ -24,7 +24,7 @@ output "resource_group_name" {
 
 output "vpc_id" {
   description = "ID of the VPC"
-  value       = ibm_is_vpc.vpc.id
+  value       = var.existing_cluster_name == null ? ibm_is_vpc.vpc[0].id : null
 }
 
 output "cloud_pak_deployer_image_used" {

@@ -19,7 +19,19 @@ until kubectl get crd storageclusters.ocs.openshift.io &>/dev/null; do
   elapsed=$((elapsed + CRD_INTERVAL))
 done
 
-echo "storagecluster CRD is available. Waiting for StorageCluster to be Ready..."
+echo "storagecluster CRD is available. Waiting for ocs-storagecluster object to be created..."
+elapsed=0
+until kubectl get storagecluster ocs-storagecluster -n openshift-storage &>/dev/null; do
+  if [ "$elapsed" -ge "$CRD_TIMEOUT" ]; then
+    echo "Timed out waiting for ocs-storagecluster object after ${CRD_TIMEOUT}s"
+    exit 1
+  fi
+  echo "ocs-storagecluster object not yet created, retrying in ${CRD_INTERVAL}s (${elapsed}s elapsed)..."
+  sleep "$CRD_INTERVAL"
+  elapsed=$((elapsed + CRD_INTERVAL))
+done
+
+echo "ocs-storagecluster object exists. Waiting for StorageCluster to be Ready..."
 kubectl wait storagecluster ocs-storagecluster \
   -n openshift-storage \
   --for=jsonpath='{.status.phase}'=Ready \

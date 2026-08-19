@@ -28,6 +28,7 @@ module "resource_group" {
 ########################################################################################################################
 
 resource "ibm_is_vpc" "vpc" {
+  count                     = var.existing_cluster_name == null ? 1 : 0
   name                      = "${var.prefix}-vpc"
   resource_group            = module.resource_group.resource_group_id
   address_prefix_management = "auto"
@@ -35,16 +36,17 @@ resource "ibm_is_vpc" "vpc" {
 }
 
 resource "ibm_is_public_gateway" "gateway" {
-  count          = var.create_public_gateway ? 1 : 0
+  count          = var.existing_cluster_name == null && var.create_public_gateway ? 1 : 0
   name           = "${var.prefix}-gateway-1"
-  vpc            = ibm_is_vpc.vpc.id
+  vpc            = ibm_is_vpc.vpc[0].id
   resource_group = module.resource_group.resource_group_id
   zone           = "${var.region}-1"
 }
 
 resource "ibm_is_subnet" "subnet_zone_1" {
+  count                    = var.existing_cluster_name == null ? 1 : 0
   name                     = "${var.prefix}-subnet-1"
-  vpc                      = ibm_is_vpc.vpc.id
+  vpc                      = ibm_is_vpc.vpc[0].id
   resource_group           = module.resource_group.resource_group_id
   zone                     = "${var.region}-1"
   total_ipv4_address_count = 256
@@ -60,15 +62,15 @@ resource "ibm_is_subnet" "subnet_zone_1" {
 ########################################################################################################################
 
 locals {
-  cluster_vpc_subnets = {
+  cluster_vpc_subnets = var.existing_cluster_name == null ? {
     default = [
       {
-        id         = ibm_is_subnet.subnet_zone_1.id
-        cidr_block = ibm_is_subnet.subnet_zone_1.ipv4_cidr_block
-        zone       = ibm_is_subnet.subnet_zone_1.zone
+        id         = ibm_is_subnet.subnet_zone_1[0].id
+        cidr_block = ibm_is_subnet.subnet_zone_1[0].ipv4_cidr_block
+        zone       = ibm_is_subnet.subnet_zone_1[0].zone
       }
     ]
-  }
+  } : {}
 
   worker_pools = [
     {
@@ -90,7 +92,7 @@ module "ocp_base" {
   resource_tags                       = var.resource_tags
   cluster_name                        = var.prefix
   force_delete_storage                = true
-  vpc_id                              = ibm_is_vpc.vpc.id
+  vpc_id                              = ibm_is_vpc.vpc[0].id
   vpc_subnets                         = local.cluster_vpc_subnets
   worker_pools                        = local.worker_pools
   ocp_version                         = "4.19"
