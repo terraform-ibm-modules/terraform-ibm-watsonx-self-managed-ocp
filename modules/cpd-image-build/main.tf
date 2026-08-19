@@ -11,7 +11,9 @@ locals {
   resource_group_id                 = var.resource_group_id == null ? data.ibm_resource_group.group[0].id : var.resource_group_id
   container_registry_namespace_name = var.add_random_suffix_icr_namespace ? "${var.container_registry_namespace}-${random_string.random[0].result}" : var.container_registry_namespace
   ce_project_name                   = var.code_engine_project_id != null ? data.ibm_code_engine_project.code_engine_project[0].name : (var.add_random_suffix_code_engine_project ? "${var.code_engine_project_name}-${random_string.random[0].result}" : var.code_engine_project_name)
-  global_output_image               = var.use_global_container_registry_location ? "private.icr.io/${local.container_registry_namespace_name}/deployer:${var.cloud_pak_deployer_release}" : null
+  # Global registry uses the multi-region endpoint; regional uses the region-specific one.
+  # The namespace itself is always created — only the image URL differs.
+  output_image = var.use_global_container_registry_location ? "private.icr.io/${local.container_registry_namespace_name}/deployer:${var.cloud_pak_deployer_release}" : "private.${var.region}.icr.io/${local.container_registry_namespace_name}/deployer:${var.cloud_pak_deployer_release}"
 }
 
 ##############################################################################
@@ -36,17 +38,12 @@ data "ibm_code_engine_project" "code_engine_project" {
 }
 
 ##############################################################################
-# Container registry namespace (only when global ICR location is requested,
-# since the build submodule creates the namespace itself for regional builds)
+# Container registry namespace — always created regardless of registry location.
+# use_global_container_registry_location only controls the image URL endpoint,
+# not whether the namespace exists.
 ##############################################################################
 
-moved {
-  from = ibm_cr_namespace.cr_namespace
-  to   = ibm_cr_namespace.cr_namespace[0]
-}
-
 resource "ibm_cr_namespace" "cr_namespace" {
-  count             = var.use_global_container_registry_location ? 1 : 0
   name              = local.container_registry_namespace_name
   resource_group_id = local.resource_group_id
 }
@@ -72,26 +69,25 @@ module "code_engine" {
   # When using the global registry, also create the registry secret in the CE
   # project so the build module can reference it by name via output_secret.
   # For regional builds the build submodule creates the secret automatically.
-  secrets = var.use_global_container_registry_location ? {
-    "registry-secret" = {
+  secrets = {
+    "registry-secret" = { # pragma: allowlist secret
       format = "registry"
       data = {
         "password" : coalesce(var.container_registry_api_key, var.ibmcloud_api_key),
-        "server" : "private.icr.io",
+        "server" : var.use_global_container_registry_location ? "private.icr.io" : "private.${var.region}.icr.io",
         "username" : "iamapikey"
       }
     }
-  } : {}
+  }
 
   builds = {
     "cpd-build" = {
-      source_url                   = "https://github.com/IBM/cloud-pak-deployer"
-      source_revision              = var.cloud_pak_deployer_release
-      strategy_type                = "dockerfile"
-      region                       = var.region
-      container_registry_namespace = var.use_global_container_registry_location ? null : local.container_registry_namespace_name
-      output_image                 = local.global_output_image
-      output_secret                = var.use_global_container_registry_location ? "registry-secret" : null # pragma: allowlist secret
+      source_url      = "https://github.com/IBM/cloud-pak-deployer"
+      source_revision = var.cloud_pak_deployer_release
+      strategy_type   = "dockerfile"
+      region          = var.region
+      output_image    = local.output_image
+      output_secret   = "registry-secret" # pragma: allowlist secret
     }
   }
 
