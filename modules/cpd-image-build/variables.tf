@@ -17,7 +17,7 @@ variable "resource_group_id" {
 }
 
 variable "use_global_container_registry_location" {
-  description = "Set to true to use the global Container Registry endpoint (`private.icr.io`) when pushing and pulling images. If set to false (default), the regional endpoint (`private.<region>.icr.io`) is used. The namespace is always created regardless of this setting."
+  description = "Set to true to use the global Container Registry endpoint (`private.icr.io`) when pushing and pulling images. If set to false (default), the regional endpoint for the given region is used (e.g. `private.us.icr.io` for `us-south`). The namespace is always created regardless of this setting."
   type        = bool
   default     = false
 }

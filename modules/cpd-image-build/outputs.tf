@@ -5,8 +5,7 @@ output "container_registry_namespace" {
 
 output "container_registry_server" {
   description = "The url of the container registry"
-  # Extract just the registry server.
-  value = split("/", module.code_engine.build["cpd-build"].output_image)[0]
+  value       = local.container_registry_server
 }
 
 output "container_registry_output_image" {

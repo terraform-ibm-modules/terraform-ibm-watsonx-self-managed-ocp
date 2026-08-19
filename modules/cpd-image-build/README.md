@@ -54,7 +54,7 @@ module "build_image" {
 | <a name="input_ibmcloud_api_key"></a> [ibmcloud\_api\_key](#input\_ibmcloud\_api\_key) | The IBM Cloud API key to deploy resources. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Region where Code Engine and Container Registry resources will be provisioned. To use the 'Global' Container Registry location set `use_global_container_registry_location` to true. | `string` | `"us-south"` | no |
 | <a name="input_resource_group_id"></a> [resource\_group\_id](#input\_resource\_group\_id) | The ID of the resource group to create resource in. If not set, Default resource group will be used. | `string` | `null` | no |
-| <a name="input_use_global_container_registry_location"></a> [use\_global\_container\_registry\_location](#input\_use\_global\_container\_registry\_location) | Set to true to use the global Container Registry endpoint (`private.icr.io`) when pushing and pulling images. If set to false (default), the regional endpoint (`private.<region>.icr.io`) is used. The namespace is always created regardless of this setting. | `bool` | `false` | no |
+| <a name="input_use_global_container_registry_location"></a> [use\_global\_container\_registry\_location](#input\_use\_global\_container\_registry\_location) | Set to true to use the global Container Registry endpoint (`private.icr.io`) when pushing and pulling images. If set to false (default), the regional endpoint for the given region is used (e.g. `private.us.icr.io` for `us-south`). The namespace is always created regardless of this setting. | `bool` | `false` | no |
 
 ### Outputs
 

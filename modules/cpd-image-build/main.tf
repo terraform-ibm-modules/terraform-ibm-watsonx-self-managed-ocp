@@ -11,9 +11,18 @@ locals {
   resource_group_id                 = var.resource_group_id == null ? data.ibm_resource_group.group[0].id : var.resource_group_id
   container_registry_namespace_name = var.add_random_suffix_icr_namespace ? "${var.container_registry_namespace}-${random_string.random[0].result}" : var.container_registry_namespace
   ce_project_name                   = var.code_engine_project_id != null ? data.ibm_code_engine_project.code_engine_project[0].name : (var.add_random_suffix_code_engine_project ? "${var.code_engine_project_name}-${random_string.random[0].result}" : var.code_engine_project_name)
-  # Global registry uses the multi-region endpoint; regional uses the region-specific one.
-  # The namespace itself is always created — only the image URL differs.
-  output_image = var.use_global_container_registry_location ? "private.icr.io/${local.container_registry_namespace_name}/deployer:${var.cloud_pak_deployer_release}" : "private.${var.region}.icr.io/${local.container_registry_namespace_name}/deployer:${var.cloud_pak_deployer_release}"
+  registry_server_map = {
+    au-syd   = "private.au.icr.io"
+    br-sao   = "private.br.icr.io"
+    ca-tor   = "private.ca.icr.io"
+    eu-de    = "private.de.icr.io"
+    eu-es    = "private.es.icr.io"
+    jp-tok   = "private.jp.icr.io"
+    eu-gb    = "private.uk.icr.io"
+    us-south = "private.us.icr.io"
+  }
+  container_registry_server = var.use_global_container_registry_location ? "private.icr.io" : lookup(local.registry_server_map, var.region, "private.icr.io")
+  output_image              = "${local.container_registry_server}/${local.container_registry_namespace_name}/deployer:${var.cloud_pak_deployer_release}"
 }
 
 ##############################################################################
@@ -29,18 +38,7 @@ resource "random_string" "random" {
 }
 
 ##############################################################################
-# Look up existing CE project name
-##############################################################################
-
-data "ibm_code_engine_project" "code_engine_project" {
-  count      = var.code_engine_project_id != null ? 1 : 0
-  project_id = var.code_engine_project_id
-}
-
-##############################################################################
-# Container registry namespace — always created regardless of registry location.
-# use_global_container_registry_location only controls the image URL endpoint,
-# not whether the namespace exists.
+# Container registry namespace
 ##############################################################################
 
 resource "ibm_cr_namespace" "cr_namespace" {
@@ -56,6 +54,11 @@ resource "ibm_cr_namespace" "cr_namespace" {
 # the CE module does not attempt to create a project in the wrong group.
 locals {
   ce_resource_group_id = var.code_engine_project_id != null ? data.ibm_code_engine_project.code_engine_project[0].resource_group_id : local.resource_group_id
+}
+
+data "ibm_code_engine_project" "code_engine_project" {
+  count      = var.code_engine_project_id != null ? 1 : 0
+  project_id = var.code_engine_project_id
 }
 
 module "code_engine" {
@@ -74,7 +77,7 @@ module "code_engine" {
       format = "registry"
       data = {
         "password" : coalesce(var.container_registry_api_key, var.ibmcloud_api_key),
-        "server" : var.use_global_container_registry_location ? "private.icr.io" : "private.${var.region}.icr.io",
+        "server" : local.container_registry_server,
         "username" : "iamapikey"
       }
     }
