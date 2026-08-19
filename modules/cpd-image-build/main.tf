@@ -40,6 +40,11 @@ data "ibm_code_engine_project" "code_engine_project" {
 # since the build submodule creates the namespace itself for regional builds)
 ##############################################################################
 
+moved {
+  from = ibm_cr_namespace.cr_namespace
+  to   = ibm_cr_namespace.cr_namespace[0]
+}
+
 resource "ibm_cr_namespace" "cr_namespace" {
   count             = var.use_global_container_registry_location ? 1 : 0
   name              = local.container_registry_namespace_name
@@ -50,13 +55,19 @@ resource "ibm_cr_namespace" "cr_namespace" {
 # Code Engine project + build
 ##############################################################################
 
+# Use the project's own resource group so
+# the CE module does not attempt to create a project in the wrong group.
+locals {
+  ce_resource_group_id = var.code_engine_project_id != null ? data.ibm_code_engine_project.code_engine_project[0].resource_group_id : local.resource_group_id
+}
+
 module "code_engine" {
   source              = "terraform-ibm-modules/code-engine/ibm"
   version             = "4.9.9"
   ibmcloud_api_key    = var.ibmcloud_api_key
   project_name        = var.code_engine_project_id == null ? (var.add_random_suffix_code_engine_project ? "${var.code_engine_project_name}-${random_string.random[0].result}" : var.code_engine_project_name) : null
   existing_project_id = var.code_engine_project_id
-  resource_group_id   = local.resource_group_id
+  resource_group_id   = local.ce_resource_group_id
 
   # When using the global registry, also create the registry secret in the CE
   # project so the build module can reference it by name via output_secret.
@@ -81,7 +92,6 @@ module "code_engine" {
       container_registry_namespace = var.use_global_container_registry_location ? null : local.container_registry_namespace_name
       output_image                 = local.global_output_image
       output_secret                = var.use_global_container_registry_location ? "registry-secret" : null # pragma: allowlist secret
-      container_registry_api_key   = var.container_registry_api_key                                        # pragma: allowlist secret
     }
   }
 
