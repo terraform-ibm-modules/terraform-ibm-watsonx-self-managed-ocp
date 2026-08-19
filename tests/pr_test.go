@@ -379,6 +379,7 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 			{Name: "cpd_entitlement_key", Value: *cpdEntitlementKey, DataType: "string", Secure: true},
 			{Name: "cpd_admin_password", Value: "Test1234!", DataType: "string", Secure: true},
 			{Name: "cloud_pak_deployer_image", Value: "__NULL__", DataType: "string"},
+			{Name: "install_odf_cluster_addon", Value: "false", DataType: "bool"},
 		}
 		_ = os.Unsetenv("TF_VAR_resource_tags")
 

@@ -96,6 +96,12 @@ variable "cloud_pak_deployer_secret" {
   default = null
 }
 
+variable "install_odf_cluster_addon" {
+  description = "Set to true to install the ODF cluster add-on. Requires internet egress from worker nodes to pull operator images. Set to false for private clusters with no public gateway."
+  type        = bool
+  default     = true
+}
+
 ##############################################################################
 # WatsonX Service Variables
 ##############################################################################

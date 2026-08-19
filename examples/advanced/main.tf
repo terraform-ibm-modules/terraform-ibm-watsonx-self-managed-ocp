@@ -119,6 +119,7 @@ module "watsonx_self_managed_ocp" {
   cpd_entitlement_key       = var.cpd_entitlement_key
   cloud_pak_deployer_image  = var.cloud_pak_deployer_image
   cloud_pak_deployer_secret = var.cloud_pak_deployer_secret
+  install_odf_cluster_addon = var.install_odf_cluster_addon
   watsonx_ai_install        = var.watsonx_ai_install
   watsonx_data_install      = var.watsonx_data_install
   watson_assistant_install  = var.watson_assistant_install
