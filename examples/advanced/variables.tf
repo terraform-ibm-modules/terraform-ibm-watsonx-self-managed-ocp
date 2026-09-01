@@ -82,7 +82,7 @@ variable "cpd_entitlement_key" {
 variable "cloud_pak_deployer_image" {
   description = "Cloud Pak Deployer image to use. Set to null to trigger automatic image build using Code Engine and publish to IBM Container Registry."
   type        = string
-  default     = "quay.io/cloud-pak-deployer/cloud-pak-deployer:v3.3.6@sha256:85df0250395085b4115e751be37937ac0675201929dc22e6e4e41446dff84359"
+  default     = "quay.io/cloud-pak-deployer/cloud-pak-deployer:v3.3.7@sha256:4e87857e1c30f3e818134adf5cbd446a58ac64072eb21c8a3bbc7867123d7d53"
 }
 
 variable "cloud_pak_deployer_secret" {
