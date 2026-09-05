@@ -24,14 +24,12 @@ module "build_image" {
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >=1.79.2, <3.0.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.4.3, < 4.0.0 |
-| <a name="requirement_shell"></a> [shell](#requirement\_shell) | >= 1.7.10, <2.0.0 |
 
 ### Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_code_engine"></a> [code\_engine](#module\_code\_engine) | terraform-ibm-modules/code-engine/ibm | 4.9.9 |
-| <a name="module_code_engine_build"></a> [code\_engine\_build](#module\_code\_engine\_build) | terraform-ibm-modules/code-engine/ibm//modules/build | 4.9.9 |
 
 ### Resources
 
@@ -39,7 +37,6 @@ module "build_image" {
 |------|------|
 | [ibm_cr_namespace.cr_namespace](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/resources/cr_namespace) | resource |
 | [random_string.random](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
-| [shell_script.build_run](https://registry.terraform.io/providers/scottwinkler/shell/latest/docs/resources/script) | resource |
 | [ibm_code_engine_project.code_engine_project](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/data-sources/code_engine_project) | data source |
 | [ibm_resource_group.group](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/data-sources/resource_group) | data source |
 
@@ -52,11 +49,12 @@ module "build_image" {
 | <a name="input_cloud_pak_deployer_release"></a> [cloud\_pak\_deployer\_release](#input\_cloud\_pak\_deployer\_release) | The GIT release of Cloud Pak Deployer version to build from. View releases at: https://github.com/IBM/cloud-pak-deployer/releases. | `string` | `"v3.1.8"` | no |
 | <a name="input_code_engine_project_id"></a> [code\_engine\_project\_id](#input\_code\_engine\_project\_id) | If you want to use an existing project, you can pass the Code Engine project ID. Alternatively use `code_engine_project_name` to create a new project. | `string` | `null` | no |
 | <a name="input_code_engine_project_name"></a> [code\_engine\_project\_name](#input\_code\_engine\_project\_name) | The name of the Code Engine project to be created for the image build. Alternatively use `code_engine_project_id` to use existing project. If `add_random_suffix_code_engine_project` is set to true, a randomly generated 4-character suffix will be added to this value. | `string` | `"cpd"` | no |
+| <a name="input_container_registry_api_key"></a> [container\_registry\_api\_key](#input\_container\_registry\_api\_key) | An IBM Cloud API key with push access to the Container Registry namespace. If not set, `ibmcloud_api_key` is used. Providing a dedicated registry-scoped key avoids storing the platform API key in the registry secret. | `string` | `null` | no |
 | <a name="input_container_registry_namespace"></a> [container\_registry\_namespace](#input\_container\_registry\_namespace) | The name of the Container Registry namespace to create. If `add_random_suffix_icr_namespace` is set to true, a randomly generated 4-character suffix will be added to this value. | `string` | `"cpd"` | no |
 | <a name="input_ibmcloud_api_key"></a> [ibmcloud\_api\_key](#input\_ibmcloud\_api\_key) | The IBM Cloud API key to deploy resources. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Region where Code Engine and Container Registry resources will be provisioned. To use the 'Global' Container Registry location set `use_global_container_registry_location` to true. | `string` | `"us-south"` | no |
 | <a name="input_resource_group_id"></a> [resource\_group\_id](#input\_resource\_group\_id) | The ID of the resource group to create resource in. If not set, Default resource group will be used. | `string` | `null` | no |
-| <a name="input_use_global_container_registry_location"></a> [use\_global\_container\_registry\_location](#input\_use\_global\_container\_registry\_location) | Set to true to create the Container Registry namespace in the 'Global' location. If set to false, the namespace will be created in the region provided in the `region` input value. | `bool` | `false` | no |
+| <a name="input_use_global_container_registry_location"></a> [use\_global\_container\_registry\_location](#input\_use\_global\_container\_registry\_location) | Set to true to use the global Container Registry endpoint (`private.icr.io`) when pushing and pulling images. If set to false (default), the regional endpoint for the given region is used (e.g. `private.us.icr.io` for `us-south`). The namespace is always created regardless of this setting. | `bool` | `false` | no |
 
 ### Outputs
 

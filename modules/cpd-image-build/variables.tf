@@ -17,7 +17,7 @@ variable "resource_group_id" {
 }
 
 variable "use_global_container_registry_location" {
-  description = "Set to true to create the Container Registry namespace in the 'Global' location. If set to false, the namespace will be created in the region provided in the `region` input value."
+  description = "Set to true to use the global Container Registry endpoint (`private.icr.io`) when pushing and pulling images. If set to false (default), the regional endpoint for the given region is used (e.g. `private.us.icr.io` for `us-south`). The namespace is always created regardless of this setting."
   type        = bool
   default     = false
 }
@@ -60,4 +60,11 @@ variable "add_random_suffix_code_engine_project" {
   type        = bool
   description = "Whether to add a randomly generated 4-character suffix to the newly created Code Engine project. Only applies if `code_engine_project_id` is `null`."
   default     = true
+}
+
+variable "container_registry_api_key" {
+  description = "An IBM Cloud API key with push access to the Container Registry namespace. If not set, `ibmcloud_api_key` is used. Providing a dedicated registry-scoped key avoids storing the platform API key in the registry secret."
+  type        = string
+  sensitive   = true
+  default     = null
 }
