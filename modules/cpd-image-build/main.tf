@@ -14,15 +14,20 @@ locals {
   registry_server_map = {
     au-syd   = "private.au.icr.io"
     br-sao   = "private.br.icr.io"
+    ca-mon   = "private.ca2.icr.io"
     ca-tor   = "private.ca.icr.io"
     eu-de    = "private.de.icr.io"
     eu-es    = "private.es.icr.io"
-    jp-tok   = "private.jp.icr.io"
     eu-gb    = "private.uk.icr.io"
+    in-che   = "private.in.icr.io"
+    in-mum   = "private.in2.icr.io"
+    jp-osa   = "private.jp2.icr.io"
+    jp-tok   = "private.jp.icr.io"
     us-south = "private.us.icr.io"
   }
   container_registry_server = var.use_global_container_registry_location ? "private.icr.io" : lookup(local.registry_server_map, var.region, "private.icr.io")
   output_image              = "${local.container_registry_server}/${local.container_registry_namespace_name}/deployer:${var.cloud_pak_deployer_release}"
+  ce_resource_group_id      = var.code_engine_project_id != null ? data.ibm_code_engine_project.code_engine_project[0].resource_group_id : local.resource_group_id
 }
 
 ##############################################################################
@@ -50,12 +55,6 @@ resource "ibm_cr_namespace" "cr_namespace" {
 # Code Engine project + build
 ##############################################################################
 
-# Use the project's own resource group so
-# the CE module does not attempt to create a project in the wrong group.
-locals {
-  ce_resource_group_id = var.code_engine_project_id != null ? data.ibm_code_engine_project.code_engine_project[0].resource_group_id : local.resource_group_id
-}
-
 data "ibm_code_engine_project" "code_engine_project" {
   count      = var.code_engine_project_id != null ? 1 : 0
   project_id = var.code_engine_project_id
@@ -65,7 +64,7 @@ module "code_engine" {
   source              = "terraform-ibm-modules/code-engine/ibm"
   version             = "4.9.9"
   ibmcloud_api_key    = var.ibmcloud_api_key
-  project_name        = var.code_engine_project_id == null ? (var.add_random_suffix_code_engine_project ? "${var.code_engine_project_name}-${random_string.random[0].result}" : var.code_engine_project_name) : null
+  project_name        = var.code_engine_project_id == null ? local.ce_project_name : null
   existing_project_id = var.code_engine_project_id
   resource_group_id   = local.ce_resource_group_id
 
@@ -93,6 +92,4 @@ module "code_engine" {
       output_secret   = "registry-secret" # pragma: allowlist secret
     }
   }
-
-  depends_on = [ibm_cr_namespace.cr_namespace]
 }
