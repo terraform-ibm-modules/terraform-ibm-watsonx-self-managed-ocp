@@ -13,7 +13,7 @@ variable "cloud_pak_deployer_secret" {
   description = "Image pull secret for the cloud pak deployer image"
   type = object({
     username = string
-    password = string
+    password = string # pragma: allowlist secret
     server   = string
     email    = string
   })
