@@ -25,7 +25,10 @@ The following services are currently supported:
   <li><a href="#terraform-ibm-watsonx-self-managed-ocp">terraform-ibm-watsonx-self-managed-ocp</a></li>
   <li><a href="https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/tree/main/modules">Submodules</a>
     <ul>
+      <li><a href="https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/tree/main/modules/cloud-pak-deployer">cloud-pak-deployer</a></li>
       <li><a href="https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/tree/main/modules/cpd-image-build">cpd-image-build</a></li>
+      <li><a href="https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/tree/main/modules/watsonx-ai">watsonx-ai</a></li>
+      <li><a href="https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/tree/main/modules/watsonx-data">watsonx-data</a></li>
     </ul>
   </li>
   <li><a href="https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/tree/main/examples">Examples</a>
