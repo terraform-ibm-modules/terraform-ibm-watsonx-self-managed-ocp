@@ -12,7 +12,7 @@ variable "cloud_pak_deployer_image" {
   description = "Cloud Pak Deployer image to use. If `null`, the image will be built using Code Engine and publish to a private Container Registry namespace."
   type        = string
   # TODO: update renovate to manage this version
-  default = "quay.io/cloud-pak-deployer/cloud-pak-deployer:v3.3.6@sha256:85df0250395085b4115e751be37937ac0675201929dc22e6e4e41446dff84359"
+  default = "quay.io/cloud-pak-deployer/cloud-pak-deployer:v3.3.7@sha256:4e87857e1c30f3e818134adf5cbd446a58ac64072eb21c8a3bbc7867123d7d53"
 }
 
 variable "cluster_name" {
@@ -187,7 +187,7 @@ variable "code_engine_project_id" {
 variable "cloud_pak_deployer_release" {
   description = "The GIT release of Cloud Pak Deployer version to build from. Only applies if `cloud_pak_deployer_image` is `null`. View releases at: https://github.com/IBM/cloud-pak-deployer/releases."
   type        = string
-  default     = "v3.3.6" # TODO: manage this version with renovate - https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/36
+  default     = "v3.3.7" # TODO: manage this version with renovate - https://github.com/terraform-ibm-modules/terraform-ibm-watsonx-self-managed-ocp/issues/36
 }
 
 variable "add_random_suffix_icr_namespace" {
