@@ -279,7 +279,7 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 	t.Parallel()
 
 	// ------------------------------------------------------------------------------------
-	// Phase 1: Pre-provision private cluster (no public gateway, bx3d.64x320 workers)
+	// Phase 1: Pre-provision private cluster (no public gateway, bx2.16x64 workers)
 	// ------------------------------------------------------------------------------------
 
 	prefix := fmt.Sprintf("cp-adv-%s", strings.ToLower(random.UniqueID()))
@@ -347,7 +347,6 @@ func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
 				"modules/cloud-pak-deployer/*.tf",
 				"modules/cloud-pak-deployer/config/*.tf",
 				"modules/cpd-image-build/*.tf",
-				"modules/cpd-image-build/scripts/*.sh",
 				"modules/watsonx-ai/*.tf",
 				"modules/watsonx-data/*.tf",
 				"chart/cloud-pak-deployer/*.yaml",
