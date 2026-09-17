@@ -11,10 +11,11 @@ module "resource_group" {
 }
 
 ########################################################################################################################
-# VPC + Subnet + Public Gateway
+# VPC + Subnet + Public Gateway (optional)
 #
-# NOTE: This is a very simple VPC with single subnet in a single zone with a public gateway enabled, that will allow
-# all traffic ingress/egress by default.
+# NOTE: This is a very simple VPC with single subnet in a single zone.
+# Set create_public_gateway = true (default) for internet-accessible clusters.
+# Set create_public_gateway = false for private clusters that use Code Engine ICR image build.
 # For production use cases this would need to be enhanced by adding more subnets and zones for resiliency, and
 # ACLs/Security Groups for network security.
 ########################################################################################################################
@@ -27,6 +28,7 @@ resource "ibm_is_vpc" "vpc" {
 }
 
 resource "ibm_is_public_gateway" "gateway" {
+  count          = var.create_public_gateway ? 1 : 0
   name           = "${var.prefix}-gateway-1"
   vpc            = ibm_is_vpc.vpc.id
   resource_group = module.resource_group.resource_group_id
@@ -39,7 +41,7 @@ resource "ibm_is_subnet" "subnet_zone_1" {
   resource_group           = module.resource_group.resource_group_id
   zone                     = "${var.region}-1"
   total_ipv4_address_count = 256
-  public_gateway           = ibm_is_public_gateway.gateway.id
+  public_gateway           = var.create_public_gateway ? ibm_is_public_gateway.gateway[0].id : null
 }
 
 ########################################################################################################################
