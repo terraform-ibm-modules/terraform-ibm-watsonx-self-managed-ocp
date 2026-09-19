@@ -29,7 +29,7 @@ module "build_image" {
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_code_engine"></a> [code\_engine](#module\_code\_engine) | terraform-ibm-modules/code-engine/ibm | 4.9.13 |
+| <a name="module_code_engine"></a> [code\_engine](#module\_code\_engine) | terraform-ibm-modules/code-engine/ibm | 4.9.14 |
 
 ### Resources
 
