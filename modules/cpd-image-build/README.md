@@ -20,7 +20,7 @@ module "build_image" {
 ### Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >=1.79.2, <3.0.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.4.3, < 4.0.0 |
@@ -28,13 +28,13 @@ module "build_image" {
 ### Modules
 
 | Name | Source | Version |
-|------|--------|---------|
-| <a name="module_code_engine"></a> [code\_engine](#module\_code\_engine) | terraform-ibm-modules/code-engine/ibm | 4.9.14 |
+| ---- | ------ | ------- |
+| <a name="module_code_engine"></a> [code\_engine](#module\_code\_engine) | terraform-ibm-modules/code-engine/ibm | 4.9.15 |
 
 ### Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [ibm_cr_namespace.cr_namespace](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/resources/cr_namespace) | resource |
 | [random_string.random](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [ibm_code_engine_project.code_engine_project](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/data-sources/code_engine_project) | data source |
@@ -43,7 +43,7 @@ module "build_image" {
 ### Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_add_random_suffix_code_engine_project"></a> [add\_random\_suffix\_code\_engine\_project](#input\_add\_random\_suffix\_code\_engine\_project) | Whether to add a randomly generated 4-character suffix to the newly created Code Engine project. Only applies if `code_engine_project_id` is `null`. | `bool` | `true` | no |
 | <a name="input_add_random_suffix_icr_namespace"></a> [add\_random\_suffix\_icr\_namespace](#input\_add\_random\_suffix\_icr\_namespace) | Whether to add a randomly generated 4-character suffix to the newly created ICR namespace. | `bool` | `true` | no |
 | <a name="input_cloud_pak_deployer_release"></a> [cloud\_pak\_deployer\_release](#input\_cloud\_pak\_deployer\_release) | The GIT release of Cloud Pak Deployer version to build from. View releases at: https://github.com/IBM/cloud-pak-deployer/releases. | `string` | `"v3.1.8"` | no |
@@ -59,7 +59,7 @@ module "build_image" {
 ### Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_code_engine_project_id"></a> [code\_engine\_project\_id](#output\_code\_engine\_project\_id) | The ID of the code engine project that used |
 | <a name="output_code_engine_project_name"></a> [code\_engine\_project\_name](#output\_code\_engine\_project\_name) | The name of the code engine project that was used |
 | <a name="output_container_registry_namespace"></a> [container\_registry\_namespace](#output\_container\_registry\_namespace) | The name of the container registry namespace |
