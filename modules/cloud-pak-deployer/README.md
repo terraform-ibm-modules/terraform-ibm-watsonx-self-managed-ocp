@@ -20,7 +20,7 @@ module "cloud_pak_deployer" {
 ### Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.1.0, <4.0.0 |
 
@@ -31,13 +31,13 @@ No modules.
 ### Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [helm_release.cloud_pak_deployer_helm_release](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 
 ### Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_cloud_pak_deployer_config"></a> [cloud\_pak\_deployer\_config](#input\_cloud\_pak\_deployer\_config) | Object definition of the Cloud Pak Deployer configuration | `any` | n/a | yes |
 | <a name="input_cloud_pak_deployer_image"></a> [cloud\_pak\_deployer\_image](#input\_cloud\_pak\_deployer\_image) | The cloud pak deployer image location | `string` | `null` | no |
 | <a name="input_cloud_pak_deployer_secret"></a> [cloud\_pak\_deployer\_secret](#input\_cloud\_pak\_deployer\_secret) | Image pull secret for the cloud pak deployer image | <pre>object({<br/>    username = string<br/>    password = string # pragma: allowlist secret<br/>    server   = string<br/>    email    = string<br/>  })</pre> | `null` | no |

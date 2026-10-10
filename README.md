@@ -93,14 +93,14 @@ For more information on access and permissions, see [IBM Cloud IAM service roles
 ### Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >=1.79.2, <3.0.0 |
 
 ### Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_build_cpd_image"></a> [build\_cpd\_image](#module\_build\_cpd\_image) | ./modules/cpd-image-build | n/a |
 | <a name="module_cloud_pak_deployer"></a> [cloud\_pak\_deployer](#module\_cloud\_pak\_deployer) | ./modules/cloud-pak-deployer | n/a |
 | <a name="module_config"></a> [config](#module\_config) | ./modules/cloud-pak-deployer/config | n/a |
@@ -110,7 +110,7 @@ For more information on access and permissions, see [IBM Cloud IAM service roles
 ### Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [ibm_container_addons.odf_cluster_addon](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/resources/container_addons) | resource |
 | [terraform_data.wait_for_odf_storage_classes](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [ibm_container_cluster_config.cluster_config](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/data-sources/container_cluster_config) | data source |
@@ -119,7 +119,7 @@ For more information on access and permissions, see [IBM Cloud IAM service roles
 ### Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_add_random_suffix_code_engine_project"></a> [add\_random\_suffix\_code\_engine\_project](#input\_add\_random\_suffix\_code\_engine\_project) | Whether to add a randomly generated 4-character suffix to the newly created Code Engine project. Only applies if `code_engine_project_id` is `null`. | `bool` | `true` | no |
 | <a name="input_add_random_suffix_icr_namespace"></a> [add\_random\_suffix\_icr\_namespace](#input\_add\_random\_suffix\_icr\_namespace) | Whether to add a randomly generated 4-character suffix to the newly created ICR namespace. | `bool` | `true` | no |
 | <a name="input_cloud_pak_deployer_image"></a> [cloud\_pak\_deployer\_image](#input\_cloud\_pak\_deployer\_image) | Cloud Pak Deployer image to use. If `null`, the image will be built using Code Engine and publish to a private Container Registry namespace. | `string` | `"quay.io/cloud-pak-deployer/cloud-pak-deployer:v3.3.7@sha256:4e87857e1c30f3e818134adf5cbd446a58ac64072eb21c8a3bbc7867123d7d53"` | no |
@@ -149,7 +149,7 @@ For more information on access and permissions, see [IBM Cloud IAM service roles
 ### Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_cloud_pak_deployer_image"></a> [cloud\_pak\_deployer\_image](#output\_cloud\_pak\_deployer\_image) | The Cloud Pak Deployer image used. |
 | <a name="output_cloud_pak_deployer_secret"></a> [cloud\_pak\_deployer\_secret](#output\_cloud\_pak\_deployer\_secret) | The secret used for accessing the Cloud Pak Deployer image. |
 | <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | The name of the OpenShift cluster. |

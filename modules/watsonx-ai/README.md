@@ -19,7 +19,7 @@ module "watsonx_ai" {
 ### Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 
 ### Modules
@@ -33,7 +33,7 @@ No resources.
 ### Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_watson_assistant_install"></a> [watson\_assistant\_install](#input\_watson\_assistant\_install) | If watsonx.ai is being installed, also install watson assistant | `bool` | `false` | no |
 | <a name="input_watson_discovery_install"></a> [watson\_discovery\_install](#input\_watson\_discovery\_install) | If watsonx.ai is being installed, also install watson discovery | `bool` | `false` | no |
 | <a name="input_watsonx_ai_install"></a> [watsonx\_ai\_install](#input\_watsonx\_ai\_install) | Determine whether the watsonx.ai cartridge for the deployer will be installed | `bool` | `false` | no |
@@ -42,6 +42,6 @@ No resources.
 ### Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_watsonx_ai_cloud_pak_deployer_config"></a> [watsonx\_ai\_cloud\_pak\_deployer\_config](#output\_watsonx\_ai\_cloud\_pak\_deployer\_config) | Cloud Pak Deployer configuration corresponding to the watsonx.ai cartridge |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
