@@ -5,11 +5,11 @@ go 1.26.10
 require (
 	github.com/gruntwork-io/terratest v1.0.1
 	github.com/stretchr/testify v1.12.1
-	github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper v1.80.6
+	github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper v1.80.8
 )
 
 require (
-	github.com/IBM/networking-go-sdk v0.56.1 // indirect
+	github.com/IBM/networking-go-sdk v0.56.2 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/apparentlymart/go-textseg/v17 v17.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -42,10 +42,10 @@ require (
 	github.com/IBM-Cloud/power-go-client v1.17.0 // indirect
 	github.com/IBM/cloud-databases-go-sdk v0.8.3 // indirect
 	github.com/IBM/go-sdk-core/v5 v5.25.2
-	github.com/IBM/platform-services-go-sdk v0.103.5 // indirect
+	github.com/IBM/platform-services-go-sdk v0.103.6 // indirect
 	github.com/IBM/project-go-sdk v0.4.0 // indirect
 	github.com/IBM/schematics-go-sdk v0.4.1 // indirect
-	github.com/IBM/secrets-manager-go-sdk/v2 v2.0.23
+	github.com/IBM/secrets-manager-go-sdk/v2 v2.0.24
 	github.com/IBM/vpc-go-sdk v1.0.2 // indirect
 	github.com/Microsoft/go-winio v0.6.4 // indirect
 	github.com/ProtonMail/go-crypto v1.5.2 // indirect
