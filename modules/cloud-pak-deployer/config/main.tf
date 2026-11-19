@@ -15,7 +15,7 @@ locals {
         openshift_storage = [
           {
             storage_name = "auto-storage"
-            storage_type = "auto"
+            storage_type = var.install_odf_cluster_addon ? "odf" : "auto"
           }
         ],
         gpu = {

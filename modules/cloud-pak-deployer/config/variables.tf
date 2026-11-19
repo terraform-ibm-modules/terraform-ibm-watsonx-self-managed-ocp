@@ -14,3 +14,9 @@ variable "openshift_version" {
   description = "OpenShift version"
   type        = string
 }
+
+variable "install_odf_cluster_addon" {
+  description = "Whether ODF addon is being installed. When true, uses explicit 'odf' storage type instead of 'auto'."
+  type        = bool
+  default     = false
+}

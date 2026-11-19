@@ -74,12 +74,7 @@ spec:
           args:
             - '/cloud-pak-deployer/cp-deploy.sh vault set -vs cp4d_admin_cpd_{{ .Values.cluster_name }} -vsv {{ .Values.deployer.admin_password }} && /cloud-pak-deployer/cp-deploy.sh env apply -vvvv {{ .Values.deployer.accept_license_flag }}'
           resources:
-            limits:
-              cpu: 500m
-              memory: 768Mi
-            requests:
-              cpu: 250m
-              memory: 512Mi
+{{ toYaml .Values.deployer.resources | indent 12 }}
       serviceAccount: {{ .Values.deployer.prefix }}-sa
       volumes:
         - name: config-volume

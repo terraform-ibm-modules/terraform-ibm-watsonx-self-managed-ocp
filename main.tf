@@ -28,7 +28,7 @@ resource "ibm_container_addons" "odf_cluster_addon" {
   resource_group_id = var.cluster_resource_group_id
   addons {
     name            = "openshift-data-foundation"
-    version         = var.odf_version
+    version         = local.odf_version
     parameters_json = jsonencode(var.odf_config)
   }
 }
@@ -60,11 +60,26 @@ module "watsonx_data" {
 # Cloud Pak deployer
 ##############################################################################
 
+resource "terraform_data" "wait_for_odf_storage_classes" {
+  count      = var.install_odf_cluster_addon ? 1 : 0
+  depends_on = [ibm_container_addons.odf_cluster_addon]
+
+  provisioner "local-exec" {
+    command     = "${path.module}/scripts/wait_for_odf_storage_classes.sh"
+    interpreter = ["/bin/bash", "-c"]
+
+    environment = {
+      KUBECONFIG = data.ibm_container_cluster_config.cluster_config.config_file_path
+    }
+  }
+}
+
 module "cloud_pak_deployer" {
   depends_on = [
     module.watsonx_ai,
     module.watsonx_data,
-    module.build_cpd_image
+    module.build_cpd_image,
+    terraform_data.wait_for_odf_storage_classes,
   ]
   source = "./modules/cloud-pak-deployer"
   cloud_pak_deployer_config = merge(
@@ -98,14 +113,24 @@ data "ibm_container_vpc_cluster" "cluster_info" {
   name              = var.cluster_name
   resource_group_id = var.cluster_resource_group_id
 }
+
+# Download the cluster kubeconfig - required to run kubectl commands against the cluster
+data "ibm_container_cluster_config" "cluster_config" {
+  cluster_name_id   = data.ibm_container_vpc_cluster.cluster_info.name
+  resource_group_id = var.cluster_resource_group_id
+  config_dir        = "${path.module}/kubeconfig"
+}
+
 locals {
   openshift_version = join(".", slice(split(".", data.ibm_container_vpc_cluster.cluster_info.kube_version), 0, 2)) # Only use major and minor — no patch
+  odf_version       = "${local.openshift_version}.0"                                                               # ODF addon always ships as X.Y.0 matching OCP major.minor
 }
 
 # Cloud Pak Deployer configuration file local variable(s) only
 module "config" {
-  source            = "./modules/cloud-pak-deployer/config"
-  cluster_name      = var.cluster_name
-  cpd_version       = var.cpd_version
-  openshift_version = local.openshift_version
+  source                    = "./modules/cloud-pak-deployer/config"
+  cluster_name              = var.cluster_name
+  cpd_version               = var.cpd_version
+  openshift_version         = local.openshift_version
+  install_odf_cluster_addon = var.install_odf_cluster_addon
 }

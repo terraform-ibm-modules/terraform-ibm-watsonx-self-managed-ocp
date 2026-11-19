@@ -2,8 +2,7 @@
 package test
 
 import (
-	"crypto/rand"
-	"encoding/base64"
+	"context"
 	"fmt"
 	"io/fs"
 	"log"
@@ -29,6 +28,9 @@ import (
 const instanceFlavorDir = "solutions/fully-configurable"
 
 const cpdEntitlementKeySecretId = "a4292c24-f093-2b8b-9016-37132b7b8788"
+
+// Use existing resource group
+const resourceGroup = "geretain-test-resources"
 
 var permanentResources map[string]any
 
@@ -87,7 +89,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func setupFullyConfigurableOptions(t *testing.T, prefix string) (*testschematic.TestSchematicOptions, *terraform.Options) {
+func setupFullyConfigurableOptions(t *testing.T, prefix string, region string) (*testschematic.TestSchematicOptions, *terraform.Options) {
 
 	excludeDirs := []string{
 		".terraform",
@@ -113,13 +115,10 @@ func setupFullyConfigurableOptions(t *testing.T, prefix string) (*testschematic.
 	// if error producing tar patterns (very unexpected) fail test immediately
 	require.NoError(t, recurseErr, "Schematic Test had unexpected error traversing directory tree")
 
-	// Force region to us-south
-	region := "us-south"
-
 	// Copy Terraform folder to temp dir
 	realTerraformDir := "./resources"
 	tempTerraformDir, err := files.CopyTerraformFolderToTemp(
-		realTerraformDir, fmt.Sprintf("%s-%s", prefix, strings.ToLower(random.UniqueId())),
+		realTerraformDir, fmt.Sprintf("%s-%s", prefix, strings.ToLower(random.UniqueID())),
 	)
 	require.NoError(t, err, "Failed to copy Terraform folder to temp")
 
@@ -142,10 +141,10 @@ func setupFullyConfigurableOptions(t *testing.T, prefix string) (*testschematic.
 	})
 
 	// Select or create workspace
-	terraform.WorkspaceSelectOrNew(t, existingTerraformOptions, prefix)
+	terraform.WorkspaceSelectOrNewContext(t, context.Background(), existingTerraformOptions, prefix)
 
 	// Apply Terraform resources
-	_, existErr := terraform.InitAndApplyE(t, existingTerraformOptions)
+	_, existErr := terraform.InitAndApplyContextE(t, context.Background(), existingTerraformOptions)
 	if existErr != nil {
 		t.Fatalf("Init and Apply of temp Terraform resources failed: %v", existErr)
 		return nil, nil
@@ -176,13 +175,13 @@ func setupFullyConfigurableOptions(t *testing.T, prefix string) (*testschematic.
 		},
 		IgnoreAdds: testhelper.Exemptions{
 			List: []string{
-				"null_resource.wait_for_cloud_pak_deployer_complete",
+				"terraform_data.wait_for_cloud_pak_deployer_complete",
 			},
 		},
 
 		IgnoreDestroys: testhelper.Exemptions{
 			List: []string{
-				"null_resource.wait_for_cloud_pak_deployer_complete",
+				"terraform_data.wait_for_cloud_pak_deployer_complete",
 			},
 		},
 	})
@@ -191,8 +190,8 @@ func setupFullyConfigurableOptions(t *testing.T, prefix string) (*testschematic.
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "cpd_entitlement_key", Value: *cpdEntitlementKey, DataType: "string", Secure: true},
-		{Name: "existing_cluster_id", Value: terraform.Output(t, existingTerraformOptions, "cluster_id"), DataType: "string"},
-		{Name: "existing_cluster_resource_group_name", Value: terraform.Output(t, existingTerraformOptions, "cluster_resource_group_name"), DataType: "string"},
+		{Name: "existing_cluster_id", Value: terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_id"), DataType: "string"},
+		{Name: "existing_cluster_resource_group_name", Value: terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_resource_group_name"), DataType: "string"},
 		{Name: "prefix", Value: prefix, DataType: "string"},
 		{Name: "provider_visibility", Value: "public", DataType: "string"},
 		{Name: "region", Value: region, DataType: "string"},
@@ -203,8 +202,8 @@ func setupFullyConfigurableOptions(t *testing.T, prefix string) (*testschematic.
 
 func TestRunFullyConfigurableSolutionInSchematics(t *testing.T) {
 	t.Parallel()
-	prefix := fmt.Sprintf("wt-s-%s", strings.ToLower(random.UniqueId()))
-	options, existingTerraformOptions := setupFullyConfigurableOptions(t, prefix)
+	prefix := fmt.Sprintf("wt-s-%s", strings.ToLower(random.UniqueID()))
+	options, existingTerraformOptions := setupFullyConfigurableOptions(t, prefix, "us-south")
 	if options == nil || existingTerraformOptions == nil {
 		t.Fatal("Failed to create watsonx schematic options (prerequisite Terraform deployment failed)")
 	}
@@ -219,8 +218,8 @@ func TestRunFullyConfigurableSolutionInSchematics(t *testing.T) {
 		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
-		terraform.Destroy(t, existingTerraformOptions)
-		terraform.WorkspaceDelete(t, existingTerraformOptions, prefix)
+		terraform.DestroyContext(t, context.Background(), existingTerraformOptions)
+		terraform.WorkspaceDeleteContext(t, context.Background(), existingTerraformOptions, prefix)
 		logger.Log(t, "END: Destroy (existing resources)")
 	}
 }
@@ -230,8 +229,8 @@ func TestRunFullyConfigurableSolutionInSchematicsUpgrade(t *testing.T) {
 	t.Parallel()
 
 	// Use the shared setup function to prepare agent schematic options and Terraform prereqs
-	prefix := fmt.Sprintf("wt-u-%s", strings.ToLower(random.UniqueId()))
-	options, existingTerraformOptions := setupFullyConfigurableOptions(t, prefix)
+	prefix := fmt.Sprintf("wt-u-%s", strings.ToLower(random.UniqueID()))
+	options, existingTerraformOptions := setupFullyConfigurableOptions(t, prefix, "eu-de")
 
 	if options == nil || existingTerraformOptions == nil {
 		t.Fatal("Failed to create watsonx schematic options (prerequisite Terraform deployment failed)")
@@ -251,8 +250,8 @@ func TestRunFullyConfigurableSolutionInSchematicsUpgrade(t *testing.T) {
 		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
 	} else {
 		logger.Log(t, "START: Destroy (existing resources)")
-		terraform.Destroy(t, existingTerraformOptions)
-		terraform.WorkspaceDelete(t, existingTerraformOptions, prefix)
+		terraform.DestroyContext(t, context.Background(), existingTerraformOptions)
+		terraform.WorkspaceDeleteContext(t, context.Background(), existingTerraformOptions, prefix)
 		logger.Log(t, "END: Destroy (existing resources)")
 	}
 }
@@ -280,13 +279,129 @@ func GetSecretsManagerKey(smId string, smRegion string, smKeyId string) (*string
 	return secret.(*secretsmanagerv2.ArbitrarySecret).Payload, nil
 }
 
-func GetRandomAdminPassword(t *testing.T) string {
-	// Generate a 15 char long random string for the admin_pass
-	randomBytes := make([]byte, 13)
-	_, randErr := rand.Read(randomBytes)
-	require.Nil(t, randErr) // do not proceed if we can't gen a random password
+// TestRunICRImageBuildWithSecurePrivateCluster tests building and publishing a Cloud Pak Deployer
+// image to ICR via Code Engine, using a secure private cluster (no public gateway).
 
-	randomPass := "A1" + base64.URLEncoding.EncodeToString(randomBytes)[:13]
+func TestRunICRImageBuildWithSecurePrivateCluster(t *testing.T) {
+	t.Parallel()
 
-	return randomPass
+	// ------------------------------------------------------------------------------------
+	// Phase 1: Pre-provision private cluster (no public gateway, bx2.16x64 workers)
+	// ------------------------------------------------------------------------------------
+
+	prefix := fmt.Sprintf("cp-adv-%s", strings.ToLower(random.UniqueID()))
+	realTerraformDir := "./resources"
+	tempTerraformDir, _ := files.CopyTerraformFolderToTemp(realTerraformDir, fmt.Sprintf(prefix+"-%s", strings.ToLower(random.UniqueID())))
+	tags := common.GetTagsFromTravis()
+	region := "us-south"
+
+	// Verify ibmcloud_api_key variable is set
+	checkVariable := "TF_VAR_ibmcloud_api_key"
+	val, present := os.LookupEnv(checkVariable)
+	require.True(t, present, checkVariable+" environment variable not set")
+	require.NotEqual(t, "", val, checkVariable+" environment variable is empty")
+
+	logger.Log(t, "Tempdir: ", tempTerraformDir)
+	existingTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: tempTerraformDir,
+		Vars: map[string]any{
+			"prefix":                prefix,
+			"region":                region,
+			"resource_tags":         tags,
+			"resource_group":        resourceGroup,
+			"create_public_gateway": false,
+		},
+		Upgrade: true,
+	})
+
+	terraform.WorkspaceSelectOrNewContext(t, context.Background(), existingTerraformOptions, prefix)
+	_, existErr := terraform.InitAndApplyContextE(t, context.Background(), existingTerraformOptions)
+	if existErr != nil {
+		assert.True(t, existErr == nil, "Init and Apply of private cluster resources failed")
+	} else {
+		// ------------------------------------------------------------------------------------
+		// Phase 2: Deploy WatsonX via Schematics using the pre-provisioned private cluster
+		// ------------------------------------------------------------------------------------
+
+		cpdEntitlementKey, cpdEntitlementKeyErr := GetSecretsManagerKey(
+			permanentResources["secretsManagerGuid"].(string),
+			permanentResources["secretsManagerRegion"].(string),
+			cpdEntitlementKeySecretId,
+		)
+		if !assert.NoError(t, cpdEntitlementKeyErr) {
+			t.Error("TestRunICRImageBuildWithSecurePrivateCluster Failed - geretain-software-entitlement-key not found in secrets manager")
+			panic(cpdEntitlementKeyErr)
+		}
+
+		existingClusterName := terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_name")
+		existingResourceGroupName := terraform.OutputContext(t, context.Background(), existingTerraformOptions, "cluster_resource_group_name")
+
+		advancedExampleDir := "examples/advanced"
+
+		schematicOptions := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
+			Testing:               t,
+			Prefix:                prefix,
+			BestRegionYAMLPath:    "../common-dev-assets/common-go-assets/cloudinfo-region-vpc-gen2-prefs.yaml",
+			Region:                region,
+			TemplateFolder:        advancedExampleDir,
+			Tags:                  tags,
+			DeleteWorkspaceOnFail: false,
+			ResourceGroup:         existingResourceGroupName,
+			// Include all necessary files in the TAR for Schematics
+			TarIncludePatterns: []string{
+				"*.tf",
+				advancedExampleDir + "/*.tf",
+				"modules/cloud-pak-deployer/*.tf",
+				"modules/cloud-pak-deployer/config/*.tf",
+				"modules/cpd-image-build/*.tf",
+				"modules/watsonx-ai/*.tf",
+				"modules/watsonx-data/*.tf",
+				"chart/cloud-pak-deployer/*.yaml",
+				"chart/cloud-pak-deployer/templates/*.yaml",
+				"chart/cloud-pak-deployer/templates/*.tpl",
+				"scripts/*.sh",
+				"kubeconfig/README.md",
+			},
+			// Ignore Helm release updates for consistency check (timestamp() causes drift)
+			IgnoreUpdates: testhelper.Exemptions{
+				List: []string{
+					"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+				},
+			},
+			// Do not fail test if Helm release destroy times out (known Cloud Pak Deployer limitation)
+			IgnoreDestroys: testhelper.Exemptions{
+				List: []string{
+					"module.watsonx_self_managed_ocp.module.cloud_pak_deployer.helm_release.cloud_pak_deployer_helm_release",
+				},
+			},
+		})
+
+		schematicOptions.TerraformVars = []testschematic.TestSchematicTerraformVar{
+			{Name: "ibmcloud_api_key", Value: schematicOptions.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
+			{Name: "prefix", Value: prefix, DataType: "string"},
+			{Name: "region", Value: region, DataType: "string"},
+			{Name: "resource_group", Value: existingResourceGroupName, DataType: "string"},
+			{Name: "existing_cluster_name", Value: existingClusterName, DataType: "string"},
+			{Name: "cpd_entitlement_key", Value: *cpdEntitlementKey, DataType: "string", Secure: true},
+			{Name: "cpd_admin_password", Value: "Test1234!", DataType: "string", Secure: true},
+			{Name: "cloud_pak_deployer_image", Value: "__NULL__", DataType: "string"},
+			{Name: "install_odf_cluster_addon", Value: "false", DataType: "bool"},
+		}
+		_ = os.Unsetenv("TF_VAR_resource_tags")
+
+		err := schematicOptions.RunSchematicTest()
+		assert.NoError(t, err, "Schematics test failed - this test validates the ICR image build use case with secure private cluster")
+	}
+
+	// Check if "DO_NOT_DESTROY_ON_FAILURE" is set
+	envVal, _ := os.LookupEnv("DO_NOT_DESTROY_ON_FAILURE")
+	// Destroy the temporary existing resources if required
+	if t.Failed() && strings.ToLower(envVal) == "true" {
+		fmt.Println("Terratest failed. Debug the test and delete resources manually.")
+	} else {
+		logger.Log(t, "START: Destroy (existing private cluster resources)")
+		terraform.DestroyContext(t, context.Background(), existingTerraformOptions)
+		terraform.WorkspaceDeleteContext(t, context.Background(), existingTerraformOptions, prefix)
+		logger.Log(t, "END: Destroy (existing private cluster resources)")
+	}
 }

@@ -13,7 +13,7 @@ variable "cloud_pak_deployer_secret" {
   description = "Image pull secret for the cloud pak deployer image"
   type = object({
     username = string
-    password = string
+    password = string # pragma: allowlist secret
     server   = string
     email    = string
   })
@@ -41,4 +41,10 @@ variable "cpd_entitlement_key" {
   description = "Cloud Pak for Data entitlement key for access to the IBM Entitled Registry. Can be fetched from https://myibm.ibm.com/products-services/containerlibrary."
   sensitive   = true
   type        = string
+}
+
+variable "rollback_on_failure" {
+  description = "Flag to automatically rollback the helm chart on installation failure."
+  type        = bool
+  default     = true
 }

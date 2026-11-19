@@ -27,3 +27,9 @@ variable "resource_group" {
   description = "The name of an existing resource group to provision resources in. If not specified, a new resource group is created with the `prefix` variable."
   default     = null
 }
+
+variable "create_public_gateway" {
+  type        = bool
+  description = "Set to true to attach a public gateway to the subnet. Set to false for a private cluster that requires Code Engine ICR image build."
+  default     = true
+}
