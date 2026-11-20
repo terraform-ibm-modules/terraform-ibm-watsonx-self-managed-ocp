@@ -114,6 +114,9 @@ func setupFullyConfigurableOptions(t *testing.T, prefix string, region string) (
 	tarIncludePatterns, recurseErr := getTarIncludePatternsRecursively("..", excludeDirs, includeFiletypes)
 	// if error producing tar patterns (very unexpected) fail test immediately
 	require.NoError(t, recurseErr, "Schematic Test had unexpected error traversing directory tree")
+	// The kubeconfig directories must exist in the TAR (they only contain a README.md) because
+	// ibm_container_cluster_config downloads the kubeconfig into them
+	tarIncludePatterns = append(tarIncludePatterns, "kubeconfig/README.md", instanceFlavorDir+"/kubeconfig/README.md")
 
 	// Copy Terraform folder to temp dir
 	realTerraformDir := "./resources"
